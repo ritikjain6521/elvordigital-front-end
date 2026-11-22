@@ -28,6 +28,7 @@ import {
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import AdminCard from "@/components/admin/ui/AdminCard";
 import { ProductCategory, ProductDeliverable, ProductBonus, ProductFAQ } from "@/types";
+import { API_BASE } from "@/lib/api";
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
@@ -195,7 +196,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     // Also sync to MongoDB backend
     try {
       const token = localStorage.getItem("znv_admin_token");
-      await fetch(`http://localhost:5000/api/products/${product.id}`, {
+      await fetch(`${API_BASE}/api/products/${product.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

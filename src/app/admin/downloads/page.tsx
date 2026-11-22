@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { API_BASE } from "@/lib/api";
 import {
   Download,
   Plus,
@@ -65,7 +66,7 @@ export default function DigitalAssetsPage() {
 
     try {
       const token = localStorage.getItem("znv_admin_token");
-      const res = await fetch("http://localhost:5000/api/assets/upload", {
+      const res = await fetch(`${API_BASE}/api/assets/upload`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token || ""}`,

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { API_BASE } from "@/lib/api";
 import Link from "next/link";
 import {
   FolderTree,
@@ -44,7 +45,7 @@ export default function AdminCategoriesPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/categories");
+        const res = await fetch(`${API_BASE}/api/categories`);
         const data = await res.json();
         if (data.success && data.categories?.length > 0) {
           const merged: any[] = [...INITIAL_STATIC_CATEGORIES];
@@ -94,7 +95,7 @@ export default function AdminCategoriesPage() {
 
     try {
       const token = localStorage.getItem("znv_admin_token");
-      await fetch("http://localhost:5000/api/categories", {
+      await fetch(`${API_BASE}/api/categories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

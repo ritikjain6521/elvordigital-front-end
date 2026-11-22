@@ -20,6 +20,7 @@ import {
   HelpCircle
 } from "lucide-react";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import { API_BASE } from "@/lib/api";
 
 export default function CloudVaultPage({
   params,
@@ -35,7 +36,7 @@ export default function CloudVaultPage({
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/products/${slug}`)
+    fetch(`${API_BASE}/api/products/${slug}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.success && data.product) {
@@ -100,7 +101,7 @@ export default function CloudVaultPage({
     );
   }
 
-  const downloadApiUrl = `http://localhost:5000/api/download/${slug}`;
+  const downloadApiUrl = `${API_BASE}/api/download/${slug}`;
   const driveUrl = product?.googleDriveLink && !product.googleDriveLink.includes("1zenovavibe")
     ? product.googleDriveLink
     : `https://drive.google.com/drive/u/0/my-drive`;

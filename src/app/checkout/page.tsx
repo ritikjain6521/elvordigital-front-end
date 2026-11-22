@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { API_BASE } from "@/lib/api";
 import Link from "next/link";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
@@ -55,12 +56,12 @@ export default function CheckoutPage() {
             `http://localhost:3000/vault/${itemSlug}`,
           downloadFileUrl:
             (item.product as any).downloadFileUrl ||
-            `http://localhost:5000/api/download/${itemSlug}`,
+            `${API_BASE}/api/download/${itemSlug}`,
         };
       });
 
       // 1. Initialize order on backend with Razorpay
-      const createOrderRes = await fetch("http://localhost:5000/api/payment/create-order", {
+      const createOrderRes = await fetch(`${API_BASE}/api/payment/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -111,7 +112,7 @@ export default function CheckoutPage() {
             setStatusMessage("Verifying signature & generating access tokens...");
             try {
               // 2. Verify signature on backend
-              const verifyRes = await fetch("http://localhost:5000/api/payment/verify", {
+              const verifyRes = await fetch(`${API_BASE}/api/payment/verify`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -160,7 +161,7 @@ export default function CheckoutPage() {
       } else {
         // Fallback: If script blocked by browser ad blocker, execute direct order
         setStatusMessage("Direct payment mode fallback...");
-        const fallbackRes = await fetch("http://localhost:5000/api/orders", {
+        const fallbackRes = await fetch(`${API_BASE}/api/orders`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

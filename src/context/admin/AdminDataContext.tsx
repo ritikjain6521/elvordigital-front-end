@@ -48,6 +48,7 @@ import {
   DEFAULT_EMAIL_TEMPLATES,
   INITIAL_EMAIL_LOGS,
 } from "@/data/admin/mockData";
+import { API_BASE } from "@/lib/api";
 
 interface AdminDataContextType {
   // Current user & role
@@ -229,7 +230,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     const fetchMongoDatabase = async () => {
       // 1. Fetch real products
       try {
-        const res = await fetch("http://localhost:5000/api/products");
+        const res = await fetch("${API_BASE}/api/products");
         const data = await res.json();
         if (data.success && Array.isArray(data.products) && data.products.length > 0) {
           setProducts(data.products.map((p: any) => ({
@@ -275,7 +276,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
       // 2. Fetch real orders directly from MongoDB
       try {
-        const res = await fetch("http://localhost:5000/api/orders");
+        const res = await fetch("${API_BASE}/api/orders");
         const data = await res.json();
         if (data.success && Array.isArray(data.orders)) {
           setOrders(data.orders.map((o: any) => ({
@@ -314,7 +315,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
       // 3. Fetch real customers aggregated from MongoDB
       try {
-        const res = await fetch("http://localhost:5000/api/admin/customers");
+        const res = await fetch("${API_BASE}/api/admin/customers");
         const data = await res.json();
         if (data.success && Array.isArray(data.customers)) {
           setCustomers(data.customers.map((c: any) => ({
@@ -338,7 +339,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
       // 4. Fetch real access records from MongoDB
       try {
-        const res = await fetch("http://localhost:5000/api/access");
+        const res = await fetch("${API_BASE}/api/access");
         const data = await res.json();
         if (data.success && Array.isArray(data.accessRecords)) {
           setAccessRecords(data.accessRecords.map((a: any) => ({
@@ -363,7 +364,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
       // 5. Fetch real digital assets from MongoDB
       try {
-        const res = await fetch("http://localhost:5000/api/assets");
+        const res = await fetch("${API_BASE}/api/assets");
         const data = await res.json();
         if (data.success && Array.isArray(data.assets)) {
           setDigitalAssets(data.assets.map((a: any) => ({
@@ -620,7 +621,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   // Digital Assets (Connected to MongoDB Atlas)
   const addDigitalAsset = async (assetData: Omit<DigitalAsset, "id" | "uploadDate" | "downloadCount">) => {
     try {
-      const res = await fetch("http://localhost:5000/api/assets", {
+      const res = await fetch("${API_BASE}/api/assets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(assetData),
@@ -653,7 +654,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
   const deleteDigitalAsset = async (id: string) => {
     try {
-      await fetch(`http://localhost:5000/api/assets/${id}`, { method: "DELETE" });
+      await fetch(`${API_BASE}/api/assets/${id}`, { method: "DELETE" });
     } catch {
       // Fallback
     }

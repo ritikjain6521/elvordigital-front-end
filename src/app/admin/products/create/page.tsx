@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { API_BASE } from "@/lib/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -248,7 +249,7 @@ export default function CreateProductPage() {
     // 1. Post to MongoDB Atlas via Backend API
     try {
       const token = typeof window !== "undefined" ? localStorage.getItem("znv_admin_token") : null;
-      await fetch("http://localhost:5000/api/products", {
+      await fetch(`${API_BASE}/api/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

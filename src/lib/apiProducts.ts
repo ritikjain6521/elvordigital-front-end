@@ -2,7 +2,8 @@ import { Product, ProductCategory, CategoryInfo } from "@/types";
 import { PRODUCTS } from "@/data/products";
 import { CATEGORIES } from "@/data/categories";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+import { API_BASE as _API_BASE } from "@/lib/api";
+const API_BASE = _API_BASE;
 
 function mapMongoToProduct(p: any): Product {
   const whatsIncluded =

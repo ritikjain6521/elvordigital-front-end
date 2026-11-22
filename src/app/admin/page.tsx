@@ -34,6 +34,7 @@ import {
 import StatCard from "@/components/admin/ui/StatCard";
 import AdminCard from "@/components/admin/ui/AdminCard";
 import { useAdminData } from "@/context/admin/AdminDataContext";
+import { API_BASE } from "@/lib/api";
 
 const REVENUE_DATA = [
   { date: "Feb 14", revenue: 14200, orders: 18 },
@@ -70,7 +71,7 @@ export default function AdminOverviewDashboard() {
   React.useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/admin/metrics");
+        const res = await fetch(`${API_BASE}/api/admin/metrics`);
         const data = await res.json();
         if (data.success && data.metrics) {
           setLiveMetrics(data);
@@ -152,11 +153,10 @@ export default function AdminOverviewDashboard() {
             <button
               key={tab}
               onClick={() => setDateFilter(tab)}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap ${
-                dateFilter === tab
-                  ? "bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30"
-                  : "text-[#A7A3BC] hover:text-white"
-              }`}
+              className={`px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap ${dateFilter === tab
+                ? "bg-purple-600 text-white font-bold shadow-md shadow-purple-600/30"
+                : "text-[#A7A3BC] hover:text-white"
+                }`}
             >
               {tab}
             </button>
@@ -418,13 +418,12 @@ export default function AdminOverviewDashboard() {
                       </td>
                       <td className="py-3">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                            ord.paymentStatus === "paid"
-                              ? "bg-emerald-500/20 text-emerald-300"
-                              : ord.paymentStatus === "refunded"
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${ord.paymentStatus === "paid"
+                            ? "bg-emerald-500/20 text-emerald-300"
+                            : ord.paymentStatus === "refunded"
                               ? "bg-pink-500/20 text-pink-300"
                               : "bg-amber-500/20 text-amber-300"
-                          }`}
+                            }`}
                         >
                           {ord.paymentStatus}
                         </span>

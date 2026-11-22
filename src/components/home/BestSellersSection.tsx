@@ -6,12 +6,13 @@ import { ArrowRight, Flame } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { PRODUCTS } from "@/data/products";
 import { Product } from "@/types";
+import { API_BASE } from "@/lib/api";
 
 export default function BestSellersSection() {
   const [products, setProducts] = useState<Product[]>(PRODUCTS);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/products")
+    fetch(`${API_BASE}/api/products`)
       .then((r) => r.json())
       .then((data) => {
         if (data.success && Array.isArray(data.products) && data.products.length > 0) {

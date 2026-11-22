@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import { API_BASE } from "@/lib/api";
 
 export default function OrderSuccessPage({
   params,
@@ -33,7 +34,7 @@ export default function OrderSuccessPage({
     // 1. Try to fetch from backend MongoDB API
     const fetchOrder = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/orders/${orderId}`);
+        const res = await fetch(`${API_BASE}/api/orders/${orderId}`);
         const data = await res.json();
         if (data.success && data.order) {
           setOrder(data.order);

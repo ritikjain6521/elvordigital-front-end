@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
+import { API_BASE } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import {
   Lock,
   User,
   KeyRound,
-  ShieldCheck,
   ArrowRight,
-  Sparkles,
   AlertCircle,
   Eye,
   EyeOff,
@@ -16,8 +15,8 @@ import {
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [identifier, setIdentifier] = useState("admin");
-  const [password, setPassword] = useState("Admin@123456");
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +28,7 @@ export default function AdminLoginPage() {
 
     try {
       // First attempt to login with backend MongoDB API
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier, password }),
@@ -162,17 +161,6 @@ export default function AdminLoginPage() {
               </div>
             </div>
 
-            {/* Quick Demo Hint */}
-            <div className="p-3 bg-purple-950/30 border border-purple-500/20 rounded-xl text-[11px] text-[#A7A3BC] space-y-1">
-              <div className="flex items-center gap-1.5 text-purple-300 font-semibold">
-                <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
-                Default Credentials:
-              </div>
-              <div className="flex justify-between font-mono">
-                <span>User ID: <strong className="text-white">admin</strong></span>
-                <span>Pass: <strong className="text-white">Admin@123456</strong></span>
-              </div>
-            </div>
 
             <button
               type="submit"

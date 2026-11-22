@@ -360,6 +360,33 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       } catch {
         // Fallback
       }
+
+      // 5. Fetch real digital assets from MongoDB
+      try {
+        const res = await fetch("http://localhost:5000/api/assets");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.assets)) {
+          setDigitalAssets(data.assets.map((a: any) => ({
+            id: a._id || a.id,
+            name: a.name,
+            fileName: a.fileName || a.name,
+            fileType: a.fileType || "ZIP",
+            fileSize: a.fileSize || "25 MB",
+            version: a.version || "1.0",
+            associatedProductId: a.associatedProductId || "",
+            associatedProductName: a.associatedProductName || "",
+            fileUrl: a.fileUrl || "",
+            googleDriveLink: a.googleDriveLink || "",
+            accessFolderLink: a.accessFolderLink || "",
+            videoLink: a.videoLink || "",
+            uploadDate: a.createdAt ? new Date(a.createdAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+            downloadCount: a.downloadCount || 0,
+            status: a.status || "active",
+          })));
+        }
+      } catch {
+        // Fallback
+      }
     };
 
     fetchMongoDatabase();
@@ -590,8 +617,30 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     addAuditLog("Extended Access Expiry", "Customer Access", `Extended expiry to ${newDate} for record ${id}`);
   };
 
-  // Digital Assets
-  const addDigitalAsset = (assetData: Omit<DigitalAsset, "id" | "uploadDate" | "downloadCount">) => {
+  // Digital Assets (Connected to MongoDB Atlas)
+  const addDigitalAsset = async (assetData: Omit<DigitalAsset, "id" | "uploadDate" | "downloadCount">) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/assets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(assetData),
+      });
+      const data = await res.json();
+      if (data.success && data.asset) {
+        const newAsset: DigitalAsset = {
+          ...assetData,
+          id: data.asset._id || `ast-${Date.now()}`,
+          uploadDate: new Date().toISOString().split("T")[0],
+          downloadCount: 0,
+        };
+        setDigitalAssets((prev) => [newAsset, ...prev]);
+        addAuditLog("Uploaded Digital Asset", "Downloads", `Uploaded asset "${newAsset.name}" to MongoDB Atlas`);
+        return;
+      }
+    } catch {
+      // Fallback
+    }
+
     const newAsset: DigitalAsset = {
       ...assetData,
       id: `ast-${Date.now()}`,
@@ -602,7 +651,12 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     addAuditLog("Uploaded Digital Asset", "Downloads", `Uploaded asset "${newAsset.name}"`);
   };
 
-  const deleteDigitalAsset = (id: string) => {
+  const deleteDigitalAsset = async (id: string) => {
+    try {
+      await fetch(`http://localhost:5000/api/assets/${id}`, { method: "DELETE" });
+    } catch {
+      // Fallback
+    }
     setDigitalAssets((prev) => prev.filter((a) => a.id !== id));
     addAuditLog("Deleted Digital Asset", "Downloads", `Removed asset ID ${id}`);
   };

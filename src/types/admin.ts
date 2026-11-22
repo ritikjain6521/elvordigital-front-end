@@ -181,7 +181,7 @@ export interface DigitalAsset {
   id: string;
   name: string;
   fileName: string;
-  fileType: "PDF" | "ZIP" | "DOCX" | "PPTX" | "XLSX" | "MP4" | "PNG" | "JPG";
+  fileType: "PDF" | "ZIP" | "DOCX" | "PPTX" | "XLSX" | "MP4" | "PNG" | "JPG" | "GOOGLE_DRIVE" | "FOLDER" | "OTHER";
   fileSize: string;
   version: string;
   associatedProductId: string;
@@ -189,6 +189,10 @@ export interface DigitalAsset {
   uploadDate: string;
   downloadCount: number;
   status: "active" | "archived";
+  fileUrl?: string;
+  googleDriveLink?: string;
+  accessFolderLink?: string;
+  videoLink?: string;
 }
 
 export interface SupportTicket {

@@ -30,7 +30,7 @@ export default function DigitalAssetsPage() {
   const [form, setForm] = useState({
     name: "",
     fileName: "",
-    fileType: "ZIP" as "ZIP" | "PDF" | "MP4" | "DOCX" | "PNG" | "JPG",
+    fileType: "GOOGLE_DRIVE" as "ZIP" | "PDF" | "MP4" | "DOCX" | "PNG" | "JPG" | "GOOGLE_DRIVE" | "FOLDER" | "OTHER",
     fileSize: "25 MB",
     version: "2026.1",
     associatedProductId: products[0]?.id || "",
@@ -105,14 +105,14 @@ export default function DigitalAssetsPage() {
     }
   };
 
-  const handleUploadSubmit = (e: React.FormEvent) => {
+  const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name) {
       alert("Please provide an asset title");
       return;
     }
     const prod = products.find((p) => p.id === form.associatedProductId);
-    addDigitalAsset({
+    await addDigitalAsset({
       ...form,
       associatedProductName: prod?.name || "General Asset",
     });
@@ -123,12 +123,12 @@ export default function DigitalAssetsPage() {
       `Registered "${form.name}" with Google Drive/Folder links for "${prod?.name || "Store"}"`
     );
 
-    alert(`Asset "${form.name}" registered successfully!`);
+    alert(`Asset "${form.name}" registered and deliverable links connected to "${prod?.name || "Product"}"!`);
     setUploadModalOpen(false);
     setForm({
       name: "",
       fileName: "",
-      fileType: "ZIP",
+      fileType: "GOOGLE_DRIVE",
       fileSize: "30 MB",
       version: "1.0",
       associatedProductId: products[0]?.id || "",
@@ -312,17 +312,20 @@ export default function DigitalAssetsPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-[#A7A3BC] uppercase">Asset Category / Type</label>
+              <label className="text-xs font-semibold text-[#A7A3BC] uppercase">Asset Category / Delivery Type</label>
               <select
                 value={form.fileType}
                 onChange={(e) => setForm({ ...form, fileType: e.target.value as any })}
                 className="w-full mt-1 px-3 py-2 bg-[#17152E] border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-[#8B5CF6]"
               >
-                <option value="ZIP">ZIP Master Archive</option>
-                <option value="MP4">MP4 Video Lesson / Course</option>
-                <option value="PDF">PDF Ebook / Cheat Sheet</option>
-                <option value="DOCX">DOCX Document / Contract</option>
+                <option value="GOOGLE_DRIVE">Google Drive Master Folder Link</option>
+                <option value="ZIP">ZIP Master Archive (Upload / File Link)</option>
+                <option value="MP4">MP4 Video Lesson / Course Video</option>
+                <option value="PDF">PDF Ebook / Playbook / Guide</option>
+                <option value="FOLDER">Cloud Resource / Asset Folder Link</option>
+                <option value="DOCX">DOCX Word Document / Contract</option>
                 <option value="XLSX">Excel / Sheet Calculator</option>
+                <option value="OTHER">Other Custom Deliverable Link</option>
               </select>
             </div>
 

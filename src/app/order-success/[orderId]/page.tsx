@@ -153,20 +153,10 @@ export default function OrderSuccessPage({
           </h2>
 
           {order?.items?.map((item: any, idx: number) => {
-            const itemSlug =
-              item.slug ||
-              (item.productName || "digital-product")
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, "-")
-                .replace(/^-+|-+$/g, "");
-
-            const googleDrive =
-              item.googleDriveLink && !item.googleDriveLink.includes("1zenovavibe")
-                ? item.googleDriveLink
-                : `https://drive.google.com/drive/u/0/my-drive`;
-
-            const folderLink = `/vault/${itemSlug}`;
-            const downloadUrl = `http://localhost:5000/api/download/${itemSlug}`;
+            const googleDrive = item.googleDriveLink && item.googleDriveLink.trim() ? item.googleDriveLink.trim() : null;
+            const folderLink = item.accessFolderLink && item.accessFolderLink.trim() ? item.accessFolderLink.trim() : null;
+            const videoLink = item.videoLink && item.videoLink.trim() ? item.videoLink.trim() : null;
+            const downloadUrl = item.downloadFileUrl && item.downloadFileUrl.trim() ? item.downloadFileUrl.trim() : null;
 
             return (
               <div
@@ -177,7 +167,7 @@ export default function OrderSuccessPage({
                   <div>
                     <h3 className="text-lg font-bold text-white">{item.productName}</h3>
                     <p className="text-xs text-[#A7A3BC] mt-0.5">
-                      {item.format} • Amount Paid: <strong className="text-white">₹{item.price}</strong>
+                      {item.format || "Digital Master"} • Amount Paid: <strong className="text-white">₹{item.price}</strong>
                     </p>
                   </div>
                   <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold self-start sm:self-center">
@@ -185,21 +175,23 @@ export default function OrderSuccessPage({
                   </span>
                 </div>
 
-                {/* Instant Deliverable Action Buttons */}
+                {/* Instant Deliverable Action Buttons (Dynamic based strictly on admin Digital Asset Vault) */}
                 <div className="flex flex-wrap items-center gap-3">
                   {/* Google Drive Link */}
-                  <a
-                    href={googleDrive}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-500/30 transition-all hover:scale-[1.02]"
-                  >
-                    <Globe size={16} />
-                    <span>Open Google Drive Access</span>
-                    <ExternalLink size={13} />
-                  </a>
+                  {googleDrive && (
+                    <a
+                      href={googleDrive}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-500/30 transition-all hover:scale-[1.02]"
+                    >
+                      <Globe size={16} />
+                      <span>Open Google Drive Access</span>
+                      <ExternalLink size={13} />
+                    </a>
+                  )}
 
-                  {/* Resource Folder */}
+                  {/* Cloud Resource Folder */}
                   {folderLink && (
                     <a
                       href={folderLink}
@@ -209,10 +201,25 @@ export default function OrderSuccessPage({
                     >
                       <FolderLock size={15} className="text-cyan-400" />
                       <span>Cloud Folder Access</span>
+                      <ExternalLink size={13} />
                     </a>
                   )}
 
-                  {/* Direct Download */}
+                  {/* Video Lesson / Stream Link */}
+                  {videoLink && (
+                    <a
+                      href={videoLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-pink-600/20 hover:bg-pink-600/30 text-pink-300 font-semibold text-xs border border-pink-500/30 transition-colors"
+                    >
+                      <Sparkles size={15} className="text-pink-400" />
+                      <span>Watch Video Lessons</span>
+                      <ExternalLink size={13} />
+                    </a>
+                  )}
+
+                  {/* Direct Download (Uploaded File / ZIP / PDF) */}
                   {downloadUrl && (
                     <a
                       href={downloadUrl}
@@ -221,8 +228,15 @@ export default function OrderSuccessPage({
                       className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 transition-colors"
                     >
                       <Download size={15} className="text-emerald-400" />
-                      <span>Download Master Files</span>
+                      <span>Download Master File ({item.fileType || "Package"})</span>
+                      <ExternalLink size={13} />
                     </a>
+                  )}
+
+                  {!googleDrive && !folderLink && !videoLink && !downloadUrl && (
+                    <div className="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/20 px-3.5 py-2 rounded-xl flex items-center gap-2">
+                      <span>Deliverables attached to customer email and library.</span>
+                    </div>
                   )}
                 </div>
               </div>

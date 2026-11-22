@@ -168,20 +168,40 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load from LocalStorage
+  // Load from LocalStorage (Strictly filter out any legacy mock data)
   useEffect(() => {
     try {
       const storedProds = localStorage.getItem("znv_admin_products");
       if (storedProds) setProducts(JSON.parse(storedProds));
 
       const storedOrders = localStorage.getItem("znv_admin_orders");
-      if (storedOrders) setOrders(JSON.parse(storedOrders));
+      if (storedOrders) {
+        const parsed = JSON.parse(storedOrders);
+        // Only keep genuine MongoDB orders with ZNV- prefix
+        const realOnly = Array.isArray(parsed) ? parsed.filter((o: any) => o.orderNumber?.startsWith("ZNV-")) : [];
+        setOrders(realOnly);
+      } else {
+        setOrders([]);
+      }
 
       const storedAccess = localStorage.getItem("znv_admin_access");
-      if (storedAccess) setAccessRecords(JSON.parse(storedAccess));
+      if (storedAccess) {
+        const parsed = JSON.parse(storedAccess);
+        const realOnly = Array.isArray(parsed) ? parsed.filter((a: any) => a.orderId?.startsWith("ZNV-") || a.orderId?.startsWith("MANUAL-")) : [];
+        setAccessRecords(realOnly);
+      } else {
+        setAccessRecords([]);
+      }
 
       const storedCustomers = localStorage.getItem("znv_admin_customers");
-      if (storedCustomers) setCustomers(JSON.parse(storedCustomers));
+      if (storedCustomers) {
+        const parsed = JSON.parse(storedCustomers);
+        // Clean out mock customer seed lists
+        const realOnly = Array.isArray(parsed) ? parsed.filter((c: any) => !c.id?.startsWith("CUST-00") && c.email) : [];
+        setCustomers(realOnly);
+      } else {
+        setCustomers([]);
+      }
 
       const storedCoupons = localStorage.getItem("znv_admin_coupons");
       if (storedCoupons) setCoupons(JSON.parse(storedCoupons));
@@ -204,65 +224,145 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Fetch from MongoDB Atlas Backend if active
+  // Fetch real-time data from MongoDB Atlas Backend
   useEffect(() => {
-    const fetchMongoProducts = async () => {
+    const fetchMongoDatabase = async () => {
+      // 1. Fetch real products
       try {
         const res = await fetch("http://localhost:5000/api/products");
         const data = await res.json();
         if (data.success && Array.isArray(data.products) && data.products.length > 0) {
-          setProducts((prev) => {
-            const mongoList: AdminProduct[] = data.products.map((p: any) => ({
-              id: p._id || p.id,
-              name: p.name,
-              slug: p.slug,
-              sku: p.sku || `ZNV-${(p.category || "PROD").substring(0, 3).toUpperCase()}-100`,
-              category: p.category,
-              categoryName: p.categoryName || p.category,
-              shortDescription: p.shortDescription || "",
-              fullDescription: p.fullDescription || "",
-              price: p.price,
-              originalPrice: p.originalPrice || p.price,
-              isFree: !!p.isFree,
-              badge: p.badge || "Featured",
-              isFeatured: !!p.isFeatured,
-              isBestSeller: !!p.isBestSeller,
-              isNewArrival: !!p.isNewArrival,
-              rating: p.rating || 5.0,
-              reviewsCount: p.reviewsCount || 1,
-              productFormat: p.productFormat || "Digital Download",
-              compatibility: p.compatibility || "Web & Mobile",
-              fileSize: p.fileSize || "Cloud Archive",
-              features: p.features || [],
-              whatsIncluded: p.whatsIncluded || [],
-              bonuses: p.bonuses || [],
-              faqs: p.faqs || [],
-              googleDriveLink: p.googleDriveLink || "",
-              accessFolderLink: p.accessFolderLink || "",
-              videoLink: p.videoLink || "",
-              downloadFileUrl: p.downloadFileUrl || "",
-              photos: p.photos || [],
-              status: p.status || "published",
-              totalSales: p.totalSales || 0,
-              totalRevenue: p.totalRevenue || 0,
-              createdAt: p.createdAt || new Date().toISOString(),
-              updatedAt: p.updatedAt || new Date().toISOString(),
-            }));
-
-            const existingIds = new Set(prev.map((item) => item.id));
-            const existingSlugs = new Set(prev.map((item) => item.slug));
-            const fresh = mongoList.filter(
-              (item) => !existingIds.has(item.id) && !existingSlugs.has(item.slug)
-            );
-            return fresh.length > 0 ? [...prev, ...fresh] : prev;
-          });
+          setProducts(data.products.map((p: any) => ({
+            id: p._id || p.id,
+            name: p.name,
+            slug: p.slug,
+            sku: p.sku || `ZNV-${(p.category || "PROD").substring(0, 3).toUpperCase()}-100`,
+            category: p.category,
+            categoryName: p.categoryName || p.category,
+            shortDescription: p.shortDescription || "",
+            fullDescription: p.fullDescription || "",
+            price: p.price,
+            originalPrice: p.originalPrice || p.price,
+            isFree: !!p.isFree,
+            badge: p.badge || "Featured",
+            isFeatured: !!p.isFeatured,
+            isBestSeller: !!p.isBestSeller,
+            isNewArrival: !!p.isNewArrival,
+            rating: p.rating || 5.0,
+            reviewsCount: p.reviewsCount || 1,
+            productFormat: p.productFormat || "Digital Download",
+            compatibility: p.compatibility || "Web & Mobile",
+            fileSize: p.fileSize || "Cloud Archive",
+            features: p.features || [],
+            whatsIncluded: p.whatsIncluded || [],
+            bonuses: p.bonuses || [],
+            faqs: p.faqs || [],
+            googleDriveLink: p.googleDriveLink || "",
+            accessFolderLink: p.accessFolderLink || "",
+            videoLink: p.videoLink || "",
+            downloadFileUrl: p.downloadFileUrl || "",
+            photos: p.photos || [],
+            status: p.status || "published",
+            totalSales: p.totalSales || 0,
+            totalRevenue: p.totalRevenue || 0,
+            createdAt: p.createdAt || new Date().toISOString(),
+            updatedAt: p.updatedAt || new Date().toISOString(),
+          })));
         }
       } catch {
-        // Fallback to local storage
+        // Fallback to existing
+      }
+
+      // 2. Fetch real orders directly from MongoDB
+      try {
+        const res = await fetch("http://localhost:5000/api/orders");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.orders)) {
+          setOrders(data.orders.map((o: any) => ({
+            id: o._id || o.id,
+            orderNumber: o.orderNumber,
+            customerId: o.customerEmail,
+            customerName: o.customerName || "Customer",
+            customerEmail: o.customerEmail,
+            items: (o.items || []).map((it: any) => ({
+              productId: it.productId,
+              productName: it.productName,
+              price: it.price,
+              quantity: it.quantity,
+              format: it.format || "Digital Download",
+            })),
+            subtotal: o.subtotal || o.totalAmount,
+            discount: o.discount || 0,
+            totalAmount: o.totalAmount,
+            paymentStatus: o.paymentStatus || "paid",
+            orderDate: o.createdAt || new Date().toISOString(),
+            accessStatus: o.accessStatus || "granted",
+            paymentMethod: o.paymentMethod || "RAZORPAY",
+            couponUsed: o.couponUsed || "",
+            timeline: [
+              {
+                title: "Order Created & Paid",
+                time: o.createdAt ? new Date(o.createdAt).toLocaleTimeString() : "Just now",
+                description: `Payment recorded via ${o.paymentMethod || "Razorpay"}.`,
+              },
+            ],
+          })));
+        }
+      } catch {
+        // Fallback
+      }
+
+      // 3. Fetch real customers aggregated from MongoDB
+      try {
+        const res = await fetch("http://localhost:5000/api/admin/customers");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.customers)) {
+          setCustomers(data.customers.map((c: any) => ({
+            id: c.id,
+            name: c.name,
+            email: c.email,
+            phone: c.phone || "N/A",
+            registeredDate: c.lastOrderDate || new Date().toISOString(),
+            totalOrders: c.ordersCount || 1,
+            totalSpending: c.totalSpent || 0,
+            productsOwned: [],
+            status: "active" as const,
+            isEmailVerified: true,
+            avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop`,
+            notes: [],
+          })));
+        }
+      } catch {
+        // Fallback
+      }
+
+      // 4. Fetch real access records from MongoDB
+      try {
+        const res = await fetch("http://localhost:5000/api/access");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.accessRecords)) {
+          setAccessRecords(data.accessRecords.map((a: any) => ({
+            id: a._id || a.id,
+            customerEmail: a.customerEmail,
+            customerName: a.customerName || "Customer",
+            productId: a.productId,
+            productName: a.productName,
+            orderId: a.orderId,
+            purchaseDate: a.createdAt || new Date().toISOString(),
+            status: a.status || "active",
+            expiryDate: a.expiresAt ? new Date(a.expiresAt).toLocaleDateString() : "Lifetime",
+            downloadLimit: a.downloadLimit || 999,
+            downloadCount: a.downloadCount || 0,
+            accessType: "purchase" as const,
+            lastAccessed: a.lastAccessedAt || undefined,
+          })));
+        }
+      } catch {
+        // Fallback
       }
     };
 
-    fetchMongoProducts();
+    fetchMongoDatabase();
   }, []);
 
   // Sync to LocalStorage

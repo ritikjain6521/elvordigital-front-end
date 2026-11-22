@@ -62,51 +62,52 @@ export default function AnalyticsPage() {
 
   const refundRate = paidOrders.length > 0 ? ((refunds.length / paidOrders.length) * 100).toFixed(1) : "0";
 
-  // Trend Mock Data based on range
+  // Dynamic Trend Data based strictly on live MongoDB orders
   const revenueTrendData = useMemo(() => {
-    if (timeRange === "7d") {
+    if (orders.length === 0) {
       return [
-        { date: "Day 1", revenue: 14500, orders: 18 },
-        { date: "Day 2", revenue: 22400, orders: 26 },
-        { date: "Day 3", revenue: 19800, orders: 22 },
-        { date: "Day 4", revenue: 31200, orders: 38 },
-        { date: "Day 5", revenue: 28900, orders: 34 },
-        { date: "Day 6", revenue: 42100, orders: 51 },
-        { date: "Day 7", revenue: 38700, orders: 46 },
-      ];
-    } else if (timeRange === "30d") {
-      return [
-        { date: "Week 1", revenue: 58200, orders: 74 },
-        { date: "Week 2", revenue: 76400, orders: 98 },
-        { date: "Week 3", revenue: 94800, orders: 122 },
-        { date: "Week 4", revenue: 121500, orders: 156 },
-      ];
-    } else {
-      return [
-        { date: "Jan", revenue: 185000, orders: 230 },
-        { date: "Feb", revenue: 245000, orders: 310 },
-        { date: "Mar", revenue: 295000, orders: 380 },
-        { date: "Apr", revenue: 340000, orders: 430 },
+        { date: "Day 1", revenue: 0, orders: 0 },
+        { date: "Day 2", revenue: 0, orders: 0 },
+        { date: "Day 3", revenue: 0, orders: 0 },
+        { date: "Today", revenue: 0, orders: 0 },
       ];
     }
-  }, [timeRange]);
 
-  // Product sales chart
+    const map: Record<string, { revenue: number; orders: number }> = {};
+    orders.forEach((o) => {
+      const d = o.orderDate ? new Date(o.orderDate).toLocaleDateString("en-IN", { month: "short", day: "numeric" }) : "Today";
+      if (!map[d]) {
+        map[d] = { revenue: 0, orders: 0 };
+      }
+      map[d].orders += 1;
+      if (o.paymentStatus === "paid") {
+        map[d].revenue += o.totalAmount;
+      }
+    });
+
+    return Object.entries(map).map(([date, val]) => ({
+      date,
+      revenue: val.revenue,
+      orders: val.orders,
+    }));
+  }, [orders]);
+
+  // Product sales chart from real products
   const productSalesData = useMemo(() => {
     return products
       .slice(0, 6)
       .map((p) => ({
         name: p.name.length > 18 ? p.name.substring(0, 16) + "..." : p.name,
-        revenue: p.totalRevenue || p.price * (p.totalSales || 12),
-        sales: p.totalSales || 15,
+        revenue: p.totalRevenue || 0,
+        sales: p.totalSales || 0,
       }))
       .sort((a, b) => b.revenue - a.revenue);
   }, [products]);
 
   // Customer acquisition composition
   const customerTypeData = [
-    { name: "New Customers", value: Math.max(1, customers.length - repeatCustomers), color: "#8B5CF6" },
-    { name: "Repeat Buyers", value: repeatCustomers || 6, color: "#22D3EE" },
+    { name: "New Customers", value: Math.max(0, customers.length - repeatCustomers), color: "#8B5CF6" },
+    { name: "Repeat Buyers", value: repeatCustomers, color: "#22D3EE" },
   ];
 
   // Export CSV handler

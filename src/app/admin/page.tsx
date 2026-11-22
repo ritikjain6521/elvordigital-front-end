@@ -64,20 +64,70 @@ const CONVERSION_DATA = [
 export default function AdminOverviewDashboard() {
   const { products, orders, customers, refunds, accessRecords, auditLogs } = useAdminData();
   const [dateFilter, setDateFilter] = useState("30 Days");
+  const [liveMetrics, setLiveMetrics] = useState<any>(null);
 
-  // Calculate dynamic aggregates
-  const totalRevenue = orders
+  // Fetch real-time live metrics directly from MongoDB API
+  React.useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/admin/metrics");
+        const data = await res.json();
+        if (data.success && data.metrics) {
+          setLiveMetrics(data);
+        }
+      } catch {
+        // Fallback to context state
+      }
+    };
+    fetchMetrics();
+  }, [orders.length]);
+
+  // Calculate dynamic aggregates strictly from MongoDB records (ZERO hardcoded mock offsets)
+  const totalRevenue = liveMetrics?.metrics?.totalRevenue ?? orders
     .filter((o) => o.paymentStatus === "paid")
-    .reduce((sum, o) => sum + o.totalAmount, 0) + 185000; // include historical base
-  const totalOrdersCount = orders.length + 295;
-  const totalCustomersCount = customers.length + 246;
-  const activeProductsCount = products.filter((p) => p.status === "published").length;
-  const pendingOrdersCount = orders.filter((o) => o.paymentStatus === "pending").length + 9;
+    .reduce((sum, o) => sum + o.totalAmount, 0);
+  const totalOrdersCount = liveMetrics?.metrics?.totalOrders ?? orders.length;
+  const totalCustomersCount = liveMetrics?.metrics?.totalCustomers ?? customers.length;
+  const activeProductsCount = liveMetrics?.metrics?.activeProducts ?? products.filter((p) => p.status === "published").length;
+  const pendingOrdersCount = orders.filter((o) => o.paymentStatus === "pending").length;
   const pendingRefundsCount = refunds.filter((r) => r.status === "pending").length;
 
   const recentOrders = orders.slice(0, 5);
   const recentCustomers = customers.slice(0, 5);
-  const topProducts = [...products].sort((a, b) => b.totalSales - a.totalSales).slice(0, 5);
+  const topProducts = [...products].sort((a, b) => (b.totalSales || 0) - (a.totalSales || 0)).slice(0, 5);
+
+  // Dynamic Category chart from live database
+  const categoryChartData = React.useMemo(() => {
+    if (liveMetrics?.categoryStats && liveMetrics.categoryStats.length > 0) {
+      const colors = ["#8B5CF6", "#EC4899", "#6366F1", "#22C55E", "#06B6D4"];
+      return liveMetrics.categoryStats.map((c: any, idx: number) => ({
+        name: c.name,
+        value: c.productCount || 1,
+        color: colors[idx % colors.length],
+      }));
+    }
+    return [
+      { name: "Digital Mastery", value: products.length || 1, color: "#8B5CF6" },
+    ];
+  }, [liveMetrics, products.length]);
+
+  // Dynamic Revenue Trends from live orders
+  const revenueChartData = React.useMemo(() => {
+    if (liveMetrics?.revenueTrends && liveMetrics.revenueTrends.length > 0) {
+      return liveMetrics.revenueTrends;
+    }
+    if (orders.length > 0) {
+      const map: Record<string, number> = {};
+      orders.forEach((o) => {
+        const d = o.orderDate ? new Date(o.orderDate).toLocaleDateString("en-IN", { month: "short", day: "numeric" }) : "Today";
+        map[d] = (map[d] || 0) + o.totalAmount;
+      });
+      return Object.entries(map).map(([date, revenue]) => ({ date, revenue }));
+    }
+    return [
+      { date: "Current", revenue: totalRevenue, orders: totalOrdersCount },
+    ];
+  }, [liveMetrics, orders, totalRevenue, totalOrdersCount]);
 
   return (
     <div className="space-y-8">
@@ -181,7 +231,7 @@ export default function AdminOverviewDashboard() {
           >
             <div className="h-72 w-full pt-4">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={REVENUE_DATA}>
+                <AreaChart data={revenueChartData}>
                   <defs>
                     <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.4} />
@@ -198,7 +248,7 @@ export default function AdminOverviewDashboard() {
                     stroke="#525070"
                     fontSize={11}
                     tickLine={false}
-                    tickFormatter={(val) => `₹${val / 1000}k`}
+                    tickFormatter={(val) => `₹${val}`}
                   />
                   <Tooltip
                     contentStyle={{
@@ -227,20 +277,20 @@ export default function AdminOverviewDashboard() {
         {/* Category Share (4 cols) */}
         <div className="lg:col-span-4">
           <AdminCard
-            title="Orders by Category"
-            subtitle="Revenue distribution by category"
+            title="Catalog Distribution"
+            subtitle="Products across active categories"
           >
             <div className="h-52 w-full flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={CATEGORY_PIE}
+                    data={categoryChartData}
                     innerRadius={50}
                     outerRadius={75}
                     paddingAngle={4}
                     dataKey="value"
                   >
-                    {CATEGORY_PIE.map((entry) => (
+                    {categoryChartData.map((entry: any) => (
                       <Cell key={entry.name} fill={entry.color} />
                     ))}
                   </Pie>
@@ -251,13 +301,13 @@ export default function AdminOverviewDashboard() {
                       borderRadius: "10px",
                       fontSize: "11px",
                     }}
-                    formatter={(val) => [`${val}%`, "Share"]}
+                    formatter={(val) => [`${val} Products`, "Catalog"]}
                   />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="space-y-1.5 pt-2 border-t border-white/5">
-              {CATEGORY_PIE.map((item) => (
+              {categoryChartData.map((item: any) => (
                 <div key={item.name} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span
@@ -266,7 +316,7 @@ export default function AdminOverviewDashboard() {
                     />
                     <span className="text-gray-300 truncate max-w-[150px]">{item.name}</span>
                   </div>
-                  <span className="font-bold text-white">{item.value}%</span>
+                  <span className="font-bold text-white">{item.value}</span>
                 </div>
               ))}
             </div>

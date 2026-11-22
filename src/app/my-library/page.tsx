@@ -46,7 +46,7 @@ export default function MyLibraryPage() {
     setSearched(true);
     try {
       const res = await fetch(
-        `${API_BASE}/api/orders?email=${encodeURIComponent(lookupEmail.trim())}&status=paid`
+        `${API_BASE}/api/orders/my?email=${encodeURIComponent(lookupEmail.trim())}`
       );
       const data = await res.json();
       if (data.success && Array.isArray(data.orders)) {

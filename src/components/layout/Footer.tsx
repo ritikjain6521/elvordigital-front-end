@@ -247,14 +247,47 @@ export default function Footer() {
         </div>
 
         {/* Bottom copyright */}
-        <div className="mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#A7A3BC]">
-          <p>© 2026 ElvoraDigital. All Rights Reserved. Crafted for digital creators worldwide.</p>
-          <div className="flex items-center gap-6">
-            <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Terms of Service</span>
-            <span className="hover:text-white cursor-pointer transition-colors">Refund Guidelines</span>
+        <div className="mt-12 pt-8 border-t border-white/5 space-y-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#A7A3BC]">
+            <p>© 2026 ElvoraDigital. All Rights Reserved. Crafted for digital creators worldwide.</p>
+            <div className="flex items-center gap-6">
+              <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Terms of Service</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Refund Guidelines</span>
+            </div>
+          </div>
+
+          {/* Developer & Agency Credit */}
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#A7A3BC]/70 pt-1">
+            <span>Designed &amp; Developed with</span>
+            <span
+              className="inline-block text-rose-500 animate-pulse"
+              style={{ animation: "heartbeat 1.4s ease-in-out infinite" }}
+              aria-label="love"
+            >
+              ♥
+            </span>
+            <span>by</span>
+            <a
+              href="https://mahaveerweb.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-purple-400 hover:text-purple-300 transition-colors hover:underline"
+            >
+              Mahaveer Web &amp; Software Solutions
+            </a>
           </div>
         </div>
+
+        <style jsx>{`
+          @keyframes heartbeat {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            14%       { transform: scale(1.3); }
+            28%       { transform: scale(1); }
+            42%       { transform: scale(1.2); }
+            70%       { transform: scale(1); opacity: 0.8; }
+          }
+        `}</style>
       </div>
     </footer>
   );

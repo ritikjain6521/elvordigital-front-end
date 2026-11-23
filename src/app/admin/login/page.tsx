@@ -212,6 +212,28 @@ export default function AdminLoginPage() {
         <p className="text-center text-xs text-[#A7A3BC] mt-6">
           Direct access to <code>/admin</code> without credentials is strictly prohibited.
         </p>
+
+        {/* Developer Credit */}
+        <div className="mt-8 pt-5 border-t border-white/5 text-center space-y-1">
+          <p className="text-[10px] text-[#A7A3BC]/50 uppercase tracking-widest font-semibold">
+            Developed &amp; Maintained by
+          </p>
+          <p className="text-sm font-bold text-white/80">
+            Ritik Jain
+          </p>
+          <p className="text-[10px] text-purple-400/80 font-medium tracking-wide">
+            Full-Stack Developer · ElvoraDigital Platform
+          </p>
+          <a
+            href="https://mahaveerweb.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 mt-2 text-[10px] text-[#A7A3BC]/60 hover:text-purple-300 transition-colors group"
+          >
+            <span className="inline-block w-3.5 h-3.5 rounded-sm bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-[6px] font-black text-white shrink-0">M</span>
+            <span className="group-hover:underline">Mahaveer Web &amp; Software Solutions</span>
+          </a>
+        </div>
       </div>
     </div>
   );

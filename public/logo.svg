@@ -1,0 +1,23 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="18" fill="#090816"/>
+  <rect x="1" y="1" width="62" height="62" rx="17" stroke="url(#borderGrad)" stroke-width="2"/>
+  <!-- Modern Stylized E for ElvoraDigital -->
+  <path d="M48 16H20C17.7909 16 16 17.7909 16 20V44C16 46.2091 17.7909 48 20 48H48" stroke="url(#eGradient)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M16 32H40" stroke="url(#eGradient)" stroke-width="6.5" stroke-linecap="round"/>
+  <!-- Glowing Tech Nodes -->
+  <circle cx="48" cy="16" r="3.5" fill="#EC4899"/>
+  <circle cx="40" cy="32" r="3.5" fill="#A855F7"/>
+  <circle cx="48" cy="48" r="3.5" fill="#22D3EE"/>
+  <defs>
+    <linearGradient id="borderGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6"/>
+      <stop offset="0.5" stop-color="#A855F7"/>
+      <stop offset="1" stop-color="#EC4899"/>
+    </linearGradient>
+    <linearGradient id="eGradient" x1="16" y1="16" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6"/>
+      <stop offset="0.5" stop-color="#A855F7"/>
+      <stop offset="1" stop-color="#22D3EE"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -18,13 +18,16 @@
   --color-foreground: var(--foreground);
 }
 
+/* Scrollbar */
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+  box-sizing: border-box;
 }
 
 *::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 *::-webkit-scrollbar-track {
@@ -40,6 +43,10 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
   background-color: #090816;
+  /* Prevent horizontal overflow on all devices */
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -49,7 +56,36 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  /* Prevent iOS tap highlight */
+  -webkit-tap-highlight-color: transparent;
+  /* Prevent font scaling on orientation change */
+  -webkit-text-size-adjust: 100%;
+  min-height: 100dvh;
+  width: 100%;
 }
+
+/* Make images responsive by default */
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent text overflow in flex/grid containers */
+.truncate-safe {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* Touch-friendly tap targets */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Safe area insets for notch devices */
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 
 ::selection {
   background: rgba(168, 85, 247, 0.4);
@@ -66,3 +102,12 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Mobile: prevent overflow from wide children */
+@media (max-width: 640px) {
+  .admin-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+

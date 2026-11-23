@@ -32,7 +32,7 @@ export interface ProductDeliverable {
 
 export interface ComparisonRow {
   feature: string;
-  zenova: string | boolean;
+  elvora: string | boolean;
   standard: string | boolean;
 }
 
@@ -77,6 +77,31 @@ export interface Product {
   videoLink?: string;
   downloadFileUrl?: string;
   deliverablesText?: string[];
+  adCopy?: {
+    headline?: string;
+    hook?: string;
+    primaryText?: string;
+    callToAction?: string;
+    targetAudience?: string;
+    adMediaUrl?: string;
+  };
+  curriculum?: Array<{
+    title: string;
+    duration?: string;
+    lessons?: string[];
+  }>;
+  targetAudienceList?: string[];
+  requirements?: string[];
+  guaranteeText?: string;
+  urgencyNotice?: string;
+  reviews?: Array<{
+    author: string;
+    rating: number;
+    title?: string;
+    comment: string;
+    date?: string;
+    verified?: boolean;
+  }>;
 }
 
 export interface DemoTestimonial {

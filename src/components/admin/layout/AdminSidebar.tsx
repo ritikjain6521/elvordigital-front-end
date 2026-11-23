@@ -126,14 +126,44 @@ export default function AdminSidebar({
       <div className="h-16 flex items-center justify-between px-4 border-b border-white/10 shrink-0">
         <Link href="/admin" className="flex items-center gap-2.5 overflow-hidden">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#8B5CF6] via-[#A855F7] to-[#EC4899] p-[1.5px] shadow-lg shadow-purple-500/30">
-            <div className="h-full w-full rounded-[10px] bg-[#090816] flex items-center justify-center font-black text-xs text-white">
-              Z
+            <div className="h-full w-full rounded-[10px] bg-[#090816] flex items-center justify-center overflow-hidden">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M19 5H7C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19H19"
+                  stroke="url(#admElvGrad)"
+                  strokeWidth="2.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M5 12H15.5"
+                  stroke="url(#admElvGrad)"
+                  strokeWidth="2.8"
+                  strokeLinecap="round"
+                />
+                <circle cx="19" cy="5" r="1.5" fill="#EC4899" />
+                <circle cx="15.5" cy="12" r="1.5" fill="#A855F7" />
+                <circle cx="19" cy="19" r="1.5" fill="#22D3EE" />
+                <defs>
+                  <linearGradient id="admElvGrad" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#8B5CF6" />
+                    <stop offset="0.5" stopColor="#A855F7" />
+                    <stop offset="1" stopColor="#22D3EE" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
           </div>
           {!collapsed && (
             <div className="flex flex-col truncate">
               <span className="font-bold text-sm tracking-tight text-white leading-none">
-                Zenova<span className="text-purple-400">Vibe</span>
+                Elvora<span>Digital</span>
               </span>
               <span className="text-[10px] uppercase font-semibold tracking-wider text-purple-300/80 mt-1">
                 Admin Console

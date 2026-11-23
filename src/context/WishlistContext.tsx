@@ -17,9 +17,10 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
 
+  // sessionStorage only — no cross-session persistence
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("zenovavibe_wishlist");
+      const saved = sessionStorage.getItem("elvoradigital_wishlist");
       if (saved) {
         setWishlist(JSON.parse(saved));
       }
@@ -33,7 +34,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isHydrated) return;
     try {
-      localStorage.setItem("zenovavibe_wishlist", JSON.stringify(wishlist));
+      sessionStorage.setItem("elvoradigital_wishlist", JSON.stringify(wishlist));
     } catch {
       // Ignore
     }

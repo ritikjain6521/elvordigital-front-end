@@ -3,7 +3,7 @@ import StoreView from "@/components/store/StoreView";
 import { fetchLiveProducts } from "@/lib/apiProducts";
 
 export const metadata: Metadata = {
-  title: "Digital Product Store | ZenovaVibe – Explore The Full Catalogue",
+  title: "Digital Product Store | ElvoraDigital – Explore The Full Catalogue",
   description:
     "Browse our complete catalog of AI prompt bundles, Meta ad masterclasses, Canva creator kits, business ebooks, and automation toolkits.",
 };

@@ -96,8 +96,12 @@ export default function AdminCustomersPage() {
                   {/* Name, email, avatar */}
                   <td className="py-3 px-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-purple-600 to-pink-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
-                        {c.avatar}
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-purple-600 to-pink-600 text-white font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+                        {c.avatar && (c.avatar.startsWith("http") || c.avatar.startsWith("/")) ? (
+                          <img src={c.avatar} alt={c.name} className="w-full h-full object-cover" />
+                        ) : (
+                          c.avatar || (c.name ? c.name.charAt(0) : "?")
+                        )}
                       </div>
                       <div className="truncate max-w-[180px]">
                         <Link
@@ -120,7 +124,9 @@ export default function AdminCustomersPage() {
 
                   {/* Registered */}
                   <td className="py-3 px-3 text-gray-400">
-                    {c.registeredDate}
+                    {c.registeredDate && !isNaN(Date.parse(c.registeredDate))
+                      ? new Date(c.registeredDate).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" })
+                      : c.registeredDate}
                   </td>
 
                   {/* Orders */}

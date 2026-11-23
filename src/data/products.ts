@@ -46,10 +46,10 @@ export const PRODUCTS: Product[] = [
       "Automate order fulfillment and post-purchase customer retention"
     ],
     comparison: [
-      { feature: "Actionable step-by-step systems", zenova: true, standard: false },
-      { feature: "Ready-to-use Notion workspace", zenova: true, standard: false },
-      { feature: "Financial & Unit Economics models", zenova: true, standard: false },
-      { feature: "Up-to-date 2026 digital landscape", zenova: true, standard: false }
+      { feature: "Actionable step-by-step systems", elvora: true, standard: false },
+      { feature: "Ready-to-use Notion workspace", elvora: true, standard: false },
+      { feature: "Financial & Unit Economics models", elvora: true, standard: false },
+      { feature: "Up-to-date 2026 digital landscape", elvora: true, standard: false }
     ],
     faqs: [
       { question: "Is this book suitable for beginners with no business experience?", answer: "Yes! It starts with foundational customer discovery and walks all the way through advanced multi-tier pricing and automation." },
@@ -186,10 +186,10 @@ export const PRODUCTS: Product[] = [
       "Automate tedious operational analysis with structured JSON formatting"
     ],
     comparison: [
-      { feature: "Few-shot & Chain-of-Thought architecture", zenova: true, standard: false },
-      { feature: "Categorized Airtable & Notion database", zenova: true, standard: false },
-      { feature: "Updated for latest 2026 AI models", zenova: true, standard: false },
-      { feature: "Includes variables and real business examples", zenova: true, standard: false }
+      { feature: "Few-shot & Chain-of-Thought architecture", elvora: true, standard: false },
+      { feature: "Categorized Airtable & Notion database", elvora: true, standard: false },
+      { feature: "Updated for latest 2026 AI models", elvora: true, standard: false },
+      { feature: "Includes variables and real business examples", elvora: true, standard: false }
     ],
     faqs: [
       { question: "Do these prompts work on the free version of ChatGPT?", answer: "Yes! Every single prompt is engineered to produce clean, high-grade output on free GPT-4o mini, as well as premium models like Claude 3.5 Sonnet." },
@@ -323,10 +323,10 @@ export const PRODUCTS: Product[] = [
       "Implement server-side Conversions API (CAPI) for 100% signal accuracy"
     ],
     comparison: [
-      { feature: "Updated for 2026 Advantage+ algorithms", zenova: true, standard: false },
-      { feature: "Includes 500+ creative templates & 100+ copy swipes", zenova: true, standard: false },
-      { feature: "First-Party Data & CAPI tracking setup", zenova: true, standard: false },
-      { feature: "AI ad generation workflows included", zenova: true, standard: false }
+      { feature: "Updated for 2026 Advantage+ algorithms", elvora: true, standard: false },
+      { feature: "Includes 500+ creative templates & 100+ copy swipes", elvora: true, standard: false },
+      { feature: "First-Party Data & CAPI tracking setup", elvora: true, standard: false },
+      { feature: "AI ad generation workflows included", elvora: true, standard: false }
     ],
     faqs: [
       { question: "Is this suitable for someone who has never run an ad before?", answer: "Yes! Module 01 starts with basic account setup and nomenclature, while Module 07 dives into multi-lakh daily scaling." },
@@ -458,10 +458,10 @@ export const PRODUCTS: Product[] = [
       "Package your knowledge into sellable digital workbooks and PDFs"
     ],
     comparison: [
-      { feature: "Luxury, non-generic aesthetic", zenova: true, standard: false },
-      { feature: "100% functional on free Canva accounts", zenova: true, standard: false },
-      { feature: "Includes full client proposals and eBooks", zenova: true, standard: false },
-      { feature: "Curated color palettes and typography codes", zenova: true, standard: false }
+      { feature: "Luxury, non-generic aesthetic", elvora: true, standard: false },
+      { feature: "100% functional on free Canva accounts", elvora: true, standard: false },
+      { feature: "Includes full client proposals and eBooks", elvora: true, standard: false },
+      { feature: "Curated color palettes and typography codes", elvora: true, standard: false }
     ],
     faqs: [
       { question: "Do I need Canva Pro to use these templates?", answer: "Not at all! Every single element, font, and photo placeholder in this bundle is accessible on a completely free Canva account." },
@@ -593,10 +593,10 @@ export const PRODUCTS: Product[] = [
       "Track net profit across diverse creator income streams"
     ],
     comparison: [
-      { feature: "Connected relational databases", zenova: true, standard: false },
-      { feature: "Automated invoice and revenue tracking", zenova: true, standard: false },
-      { feature: "Designed specifically for multi-platform creators", zenova: true, standard: false },
-      { feature: "Includes 30-minute implementation video", zenova: true, standard: false }
+      { feature: "Connected relational databases", elvora: true, standard: false },
+      { feature: "Automated invoice and revenue tracking", elvora: true, standard: false },
+      { feature: "Designed specifically for multi-platform creators", elvora: true, standard: false },
+      { feature: "Includes 30-minute implementation video", elvora: true, standard: false }
     ],
     faqs: [
       { question: "Is Notion free to use with this template?", answer: "Yes! This template works 100% seamlessly on Notion's free tier." },

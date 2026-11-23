@@ -3,9 +3,9 @@ import StoreView from "@/components/store/StoreView";
 import { fetchLiveProducts } from "@/lib/apiProducts";
 
 export const metadata: Metadata = {
-  title: "Best Selling Digital Products | ZenovaVibe",
+  title: "Best Selling Digital Products | ElvoraDigital",
   description:
-    "Explore the most downloaded and highest-rated digital products, prompt libraries, and design assets on ZenovaVibe.",
+    "Explore the most downloaded and highest-rated digital products, prompt libraries, and design assets on ElvoraDigital.",
 };
 
 export default async function BestSellersPage() {

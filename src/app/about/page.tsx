@@ -4,16 +4,16 @@ import { Sparkles, ShieldCheck, Zap, Globe, Heart, ArrowRight } from "lucide-rea
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "About Us | ZenovaVibe – The Modern Digital Marketplace",
+  title: "About Us | ElvoraDigital – The Modern Digital Marketplace",
   description:
-    "Learn about ZenovaVibe's mission to curate battle-tested digital playbooks, prompt bundles, and creative templates for modern founders.",
+    "Learn about ElvoraDigital's mission to curate battle-tested digital playbooks, prompt bundles, and creative templates for modern founders.",
 };
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen py-10 lg:py-16">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <Breadcrumbs items={[{ label: "About ZenovaVibe" }]} />
+        <Breadcrumbs items={[{ label: "About ElvoraDigital" }]} />
 
         {/* Hero */}
         <div className="text-center max-w-3xl mx-auto my-12">
@@ -30,7 +30,7 @@ export default function AboutPage() {
           </h1>
 
           <p className="mt-4 text-base sm:text-lg text-[#A7A3BC] leading-relaxed">
-            ZenovaVibe was born from a simple conviction: digital entrepreneurs, designers, and marketers shouldn&apos;t have to wade through generic templates and outdated theory to build high-growth assets.
+            ElvoraDigital was born from a simple conviction: digital entrepreneurs, designers, and marketers shouldn&apos;t have to wade through generic templates and outdated theory to build high-growth assets.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export default function AboutPage() {
 
         {/* Story Section */}
         <div className="p-8 sm:p-12 rounded-3xl bg-[#17152E]/50 border border-white/10 space-y-6 text-sm text-gray-300 leading-relaxed">
-          <h2 className="text-2xl font-bold text-white">Why &ldquo;ZenovaVibe&rdquo;?</h2>
+          <h2 className="text-2xl font-bold text-white">Why &ldquo;ElvoraDigital&rdquo;?</h2>
           <p>
             The name blends <strong className="text-purple-300">Zen</strong> (clarity, focus, calm mastery) with <strong className="text-pink-300">Nova</strong> (explosive brilliance, creative energy), anchored by the electric vibe of modern digital innovation.
           </p>

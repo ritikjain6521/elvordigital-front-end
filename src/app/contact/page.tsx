@@ -42,7 +42,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-white">Direct Email</h4>
-                  <p className="text-xs text-[#A7A3BC] mt-0.5">support@zenovavibe.com</p>
+                  <p className="text-xs text-[#A7A3BC] mt-0.5">support@elvoradigital.com</p>
                   <span className="text-[10px] text-purple-400">Guaranteed reply within 24h</span>
                 </div>
               </div>

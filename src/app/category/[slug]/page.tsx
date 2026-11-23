@@ -17,11 +17,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const category = CATEGORIES.find((c) => c.slug === slug);
   if (!category) {
-    return { title: "Category Not Found | ZenovaVibe" };
+    return { title: "Category Not Found | ElvoraDigital" };
   }
 
   return {
-    title: `${category.name} | ZenovaVibe Marketplace`,
+    title: `${category.name} | ElvoraDigital Marketplace`,
     description: category.description,
   };
 }

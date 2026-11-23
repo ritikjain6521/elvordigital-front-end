@@ -15,14 +15,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await fetchLiveProductBySlug(slug);
   if (!product) {
-    return { title: "Product Not Found | ZenovaVibe" };
+    return { title: "Product Not Found | ElvoraDigital" };
   }
 
   return {
-    title: `${product.name} | ZenovaVibe – ₹${product.price.toLocaleString("en-IN")}`,
+    title: `${product.name} | ElvoraDigital – ₹${product.price.toLocaleString("en-IN")}`,
     description: product.shortDescription,
     openGraph: {
-      title: `${product.name} | ZenovaVibe`,
+      title: `${product.name} | ElvoraDigital`,
       description: product.shortDescription,
       type: "website",
     },

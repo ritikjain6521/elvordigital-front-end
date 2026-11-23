@@ -4,7 +4,7 @@ import FeaturedCategories from "@/components/home/FeaturedCategories";
 import BestSellersSection from "@/components/home/BestSellersSection";
 import PromotionalBanner from "@/components/home/PromotionalBanner";
 import NewArrivalsSection from "@/components/home/NewArrivalsSection";
-import WhyZenovaVibe from "@/components/home/WhyZenovaVibe";
+import WhyElvoraDigital from "@/components/home/WhyElvoraDigital";
 import ProductSpotlight from "@/components/home/ProductSpotlight";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import HomeFAQ from "@/components/home/HomeFAQ";
@@ -19,7 +19,7 @@ export default function HomePage() {
       <BestSellersSection />
       <PromotionalBanner />
       <NewArrivalsSection />
-      <WhyZenovaVibe />
+      <WhyElvoraDigital />
       <ProductSpotlight />
       <TestimonialsSection />
       <HomeFAQ />

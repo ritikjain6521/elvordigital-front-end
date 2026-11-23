@@ -47,7 +47,7 @@ export default function EmailConfigPage() {
   const [isSavedSmtp, setIsSavedSmtp] = useState(false);
 
   // Test email state
-  const [testRecipient, setTestRecipient] = useState("admin@zenovavibe.com");
+  const [testRecipient, setTestRecipient] = useState("admin@elvoradigital.com");
   const [isTesting, setIsTesting] = useState(false);
   const [testOutput, setTestOutput] = useState<string[] | null>(null);
 
@@ -92,7 +92,7 @@ export default function EmailConfigPage() {
         host = "smtp.mailgun.org";
         port = 587;
         encryption = "tls";
-        username = "postmaster@zenovavibe.com";
+        username = "postmaster@elvoradigital.com";
         break;
       case "postmark":
         host = "smtp.postmarkapp.com";
@@ -166,22 +166,22 @@ export default function EmailConfigPage() {
   // Interpolate mock data for live email preview
   const previewSubject = templateForm.subject
     .replace("{{product_name}}", "Meta Ads Mastery 2026")
-    .replace("{{order_number}}", "#ZNV-9041")
+    .replace("{{order_number}}", "#ELV-9041")
     .replace("{{amount}}", "499")
     .replace("{{coupon_code}}", "SAVE15NOW")
-    .replace("{{license_key}}", "ZNVA-4920-K192-M941")
+    .replace("{{license_key}}", "ELVA-4920-K192-M941")
     .replace("{{ticket_number}}", "TICK-702");
 
   const previewBody = templateForm.body
     .replace(/{{customer_name}}/g, "Priya Sharma")
     .replace(/{{customer_email}}/g, "priya.sharma@gmail.com")
     .replace(/{{product_name}}/g, "Meta Ads Mastery 2026 – PRO Edition")
-    .replace(/{{order_number}}/g, "#ZNV-9041")
+    .replace(/{{order_number}}/g, "#ELV-9041")
     .replace(/{{amount}}/g, "499")
     .replace(/{{transaction_id}}/g, "TXN_UPI_84920194")
     .replace(/{{order_date}}/g, "24 March 2026")
     .replace(/{{coupon_code}}/g, "SAVE15NOW")
-    .replace(/{{license_key}}/g, "ZNVA-4920-K192-M941")
+    .replace(/{{license_key}}/g, "ELVA-4920-K192-M941")
     .replace(/{{ticket_number}}/g, "TICK-702");
 
   return (
@@ -692,7 +692,7 @@ export default function EmailConfigPage() {
                           Z
                         </div>
                         <span className="font-bold text-sm tracking-tight text-white">
-                          Zenova<span className="text-[#8B5CF6]">Vibe</span>
+                          Elvora<span>Digital</span>
                         </span>
                       </div>
                       <span className="text-[10px] uppercase font-bold tracking-widest text-[#22D3EE] bg-cyan-950/40 px-2 py-0.5 rounded border border-cyan-500/20">
@@ -727,12 +727,12 @@ export default function EmailConfigPage() {
                     <div className="pt-6 border-t border-white/10 text-center text-[11px] text-[#A7A3BC] space-y-1">
                       <p>
                         Need assistance with your files? Reach us at{" "}
-                        <a href="mailto:support@zenovavibe.com" className="text-[#8B5CF6] underline">
+                        <a href="mailto:support@elvoradigital.com" className="text-[#8B5CF6] underline">
                           {smtpForm.replyToEmail}
                         </a>
                       </p>
                       <p className="text-[10px] text-gray-500">
-                        © 2026 ZenovaVibe Marketplace Inc. • Encrypted Digital License Assurance
+                        © 2026 ElvoraDigital Marketplace Inc. • Encrypted Digital License Assurance
                       </p>
                     </div>
                   </div>
@@ -829,24 +829,24 @@ export default function EmailConfigPage() {
                 {
                   type: "TXT",
                   host: "@",
-                  value: "v=spf1 include:_spf.zenovavibe.com ~all",
+                  value: "v=spf1 include:_spf.elvoradigital.com ~all",
                   purpose: "SPF (Sender Policy Framework): Authorizes your SMTP servers to send email.",
                 },
                 {
                   type: "CNAME",
-                  host: "resend._domainkey.zenovavibe.com",
+                  host: "resend._domainkey.elvoradigital.com",
                   value: "feedback-smtp.us-east-1.amazonses.com",
                   purpose: "DKIM (DomainKeys Identified Mail): Cryptographically signs outgoing emails.",
                 },
                 {
                   type: "TXT",
-                  host: "_dmarc.zenovavibe.com",
-                  value: "v=DMARC1; p=reject; rua=mailto:dmarc-reports@zenovavibe.com",
+                  host: "_dmarc.elvoradigital.com",
+                  value: "v=DMARC1; p=reject; rua=mailto:dmarc-reports@elvoradigital.com",
                   purpose: "DMARC Policy: Protects your domain from spoofing and phishing.",
                 },
                 {
                   type: "MX",
-                  host: "inbound.zenovavibe.com",
+                  host: "inbound.elvoradigital.com",
                   value: "feedback-smtp.us-east-1.amazonses.com (Priority 10)",
                   purpose: "Inbound MX: Handles bounce events and customer replies.",
                 },

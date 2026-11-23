@@ -23,6 +23,11 @@ import {
   Video,
   Globe,
   Loader2,
+  Megaphone,
+  Layout,
+  Target,
+  CheckSquare,
+  ShieldAlert,
 } from "lucide-react";
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import AdminCard from "@/components/admin/ui/AdminCard";
@@ -33,7 +38,7 @@ export default function CreateProductPage() {
   const { addProduct, addAuditLog } = useAdminData();
 
   const [activeTab, setActiveTab] = useState<
-    "basic" | "photos" | "access" | "deliverables" | "features" | "bonuses" | "faqs"
+    "basic" | "photos" | "access" | "deliverables" | "features" | "bonuses" | "faqs" | "ads" | "sections"
   >("basic");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,10 +73,10 @@ export default function CreateProductPage() {
       "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1000&q=80",
     ],
     thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1000&q=80",
-    googleDriveLink: "https://drive.google.com/drive/folders/1zenovavibe-meta-ads-2026-pro-master-vault",
-    accessFolderLink: "https://cloud.zenovavibe.com/folders/meta-ads-mastery",
+    googleDriveLink: "https://drive.google.com/drive/folders/1elvoradigital-meta-ads-2026-pro-master-vault",
+    accessFolderLink: "https://cloud.elvoradigital.com/folders/meta-ads-mastery",
     videoLink: "https://player.vimeo.com/video/849201940",
-    downloadFileUrl: "https://assets.zenovavibe.com/meta-ads-mastery-2026-pro-bundle.zip",
+    downloadFileUrl: "https://assets.elvoradigital.com/meta-ads-mastery-2026-pro-bundle.zip",
 
     // Point 6: Product Details Page Sections
     overviewText: "Complete practical masterclass and resource vault designed to scale your business with Meta Ads.",
@@ -118,6 +123,34 @@ export default function CreateProductPage() {
         answer: "Yes, every module and template reflects the latest 2026 AI targeting, Advantage+ campaign structures, and creative testing strategies.",
       },
     ],
+
+    // Point 2: Meta Ads & Marketing Copy
+    adCopy: {
+      headline: "Stop scrolling: The only Meta Ads system you need in 2026",
+      hook: "3-Second scroll stopper hook with viral UGC structure",
+      primaryText: "Tired of burning budget on bad creative? Get 50+ video lessons and 100+ proven ad copy frameworks.",
+      callToAction: "Get Instant Access",
+      targetAudience: "E-commerce Founders, Dropshippers & Agency Owners",
+      adMediaUrl: "",
+    },
+
+    // Point 2: Extended Sections
+    curriculum: [
+      { title: "Module 1: Strategy & Advantage+ Setup", duration: "45 mins" },
+      { title: "Module 2: High-CTR Creative Hooks & Swipe Files", duration: "60 mins" },
+      { title: "Module 3: Scaling Protocol & Budget Optimization", duration: "50 mins" },
+    ],
+    targetAudienceList: [
+      "Digital Product Creators, Marketers & Founders",
+      "Media Buyers looking for proven 2026 scaling protocols",
+      "Agencies managing client advertising campaigns",
+    ],
+    requirements: [
+      "Computer with internet access and basic social media knowledge",
+      "Active Meta Business Manager account (free setup covered in module 1)",
+    ],
+    guaranteeText: "100% Risk-Free Guarantee: Instant verified access granted upon payment.",
+    urgencyNotice: "⚡ Launch Discount Active: Save 54% today with bonus masterclass included.",
   });
 
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
@@ -128,7 +161,7 @@ export default function CreateProductPage() {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
-    const sku = `ZNV-${formData.category.substring(0, 3).toUpperCase()}-${Math.floor(Math.random() * 899 + 100)}`;
+    const sku = `ELV-${formData.category.substring(0, 3).toUpperCase()}-${Math.floor(Math.random() * 899 + 100)}`;
     setFormData((prev) => ({
       ...prev,
       name: val,
@@ -248,7 +281,7 @@ export default function CreateProductPage() {
 
     // 1. Post to MongoDB Atlas via Backend API
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("znv_admin_token") : null;
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : null;
       await fetch(`${API_BASE}/api/products`, {
         method: "POST",
         headers: {
@@ -328,6 +361,8 @@ export default function CreateProductPage() {
           { id: "features", label: "Preview & Features", icon: Sparkles },
           { id: "bonuses", label: "Comparison & Bonuses", icon: Gift },
           { id: "faqs", label: "Product FAQs", icon: HelpCircle },
+          { id: "ads", label: "Meta Ads & Copy", icon: Megaphone },
+          { id: "sections", label: "Curriculum & Sections", icon: Layout },
         ].map((tab) => {
           const Icon = tab.icon;
           return (
@@ -571,7 +606,7 @@ export default function CreateProductPage() {
                       type="url"
                       value={formData.accessFolderLink}
                       onChange={(e) => setFormData({ ...formData, accessFolderLink: e.target.value })}
-                      placeholder="https://cloud.zenovavibe.com/folders/..."
+                      placeholder="https://cloud.elvoradigital.com/folders/..."
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400 font-mono"
                     />
                   </div>
@@ -599,7 +634,7 @@ export default function CreateProductPage() {
                     type="url"
                     value={formData.downloadFileUrl}
                     onChange={(e) => setFormData({ ...formData, downloadFileUrl: e.target.value })}
-                    placeholder="https://assets.zenovavibe.com/package.zip"
+                    placeholder="https://assets.elvoradigital.com/package.zip"
                     className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400 font-mono"
                   />
                 </div>
@@ -881,6 +916,296 @@ export default function CreateProductPage() {
               </div>
             </div>
           </AdminCard>
+        )}
+
+        {/* TAB 8: META ADS & MARKETING COPY */}
+        {activeTab === "ads" && (
+          <div className="space-y-6">
+            <AdminCard title="Meta Ads & Promotion Campaign Copy">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#A7A3BC] mb-1.5">
+                    Primary Ad Headline
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.adCopy.headline}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        adCopy: { ...formData.adCopy, headline: e.target.value },
+                      })
+                    }
+                    placeholder="e.g. Stop scrolling: The only Meta Ads system you need in 2026"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#A7A3BC] mb-1.5">
+                    3-Second Hook / Ad Angle
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.adCopy.hook}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        adCopy: { ...formData.adCopy, hook: e.target.value },
+                      })
+                    }
+                    placeholder="e.g. Why 95% of Meta Ad creatives fail within 48 hours (and the fix)"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#A7A3BC] mb-1.5">
+                    Primary Ad Body Text / Caption (Facebook & Instagram)
+                  </label>
+                  <textarea
+                    rows={4}
+                    value={formData.adCopy.primaryText}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        adCopy: { ...formData.adCopy, primaryText: e.target.value },
+                      })
+                    }
+                    placeholder="Write the full persuasive copy for Facebook/Instagram feeds..."
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
+                  />
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-[#A7A3BC] mb-1.5">
+                      Call To Action (CTA)
+                    </label>
+                    <select
+                      value={formData.adCopy.callToAction}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          adCopy: { ...formData.adCopy, callToAction: e.target.value },
+                        })
+                      }
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
+                    >
+                      <option value="Get Instant Access">Get Instant Access</option>
+                      <option value="Download Now">Download Now</option>
+                      <option value="Learn More">Learn More</option>
+                      <option value="Shop Now">Shop Now</option>
+                      <option value="Claim Discount Offer">Claim Discount Offer</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-[#A7A3BC] mb-1.5">
+                      Target Audience / Niche Tags
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.adCopy.targetAudience}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          adCopy: { ...formData.adCopy, targetAudience: e.target.value },
+                        })
+                      }
+                      placeholder="e.g. Media Buyers, E-commerce, Creators"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#A7A3BC] mb-1.5">
+                    Ad Creative Media Banner / Video URL
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.adCopy.adMediaUrl}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        adCopy: { ...formData.adCopy, adMediaUrl: e.target.value },
+                      })
+                    }
+                    placeholder="https://images.unsplash.com/... or Vimeo/YouTube video preview"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
+                  />
+                </div>
+              </div>
+            </AdminCard>
+          </div>
+        )}
+
+        {/* TAB 9: CURRICULUM & EXTENDED SECTIONS */}
+        {activeTab === "sections" && (
+          <div className="space-y-6">
+            {/* Curriculum Breakdown */}
+            <AdminCard title="Course Modules & Curriculum Breakdown">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                  <span className="text-xs text-[#A7A3BC]">
+                    Add step-by-step module breakdown for the product details page.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        curriculum: [
+                          ...formData.curriculum,
+                          {
+                            title: `Module ${formData.curriculum.length + 1}: New Topic`,
+                            duration: "45 mins",
+                          },
+                        ],
+                      })
+                    }
+                    className="px-3 py-1.5 rounded-lg bg-purple-600/30 hover:bg-purple-600 border border-purple-500/40 text-xs font-semibold text-white transition-colors flex items-center gap-1"
+                  >
+                    <Plus size={13} />
+                    <span>Add Module</span>
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {formData.curriculum.map((mod, idx) => (
+                    <div key={idx} className="p-3.5 rounded-xl bg-[#0e0d22] border border-white/5 flex items-center gap-3">
+                      <div className="flex-1 grid sm:grid-cols-3 gap-2">
+                        <div className="sm:col-span-2">
+                          <input
+                            type="text"
+                            value={mod.title}
+                            onChange={(e) => {
+                              const updated = [...formData.curriculum];
+                              updated[idx].title = e.target.value;
+                              setFormData({ ...formData, curriculum: updated });
+                            }}
+                            placeholder="Module Title"
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white font-semibold"
+                          />
+                        </div>
+                        <div>
+                          <input
+                            type="text"
+                            value={mod.duration || ""}
+                            onChange={(e) => {
+                              const updated = [...formData.curriculum];
+                              updated[idx].duration = e.target.value;
+                              setFormData({ ...formData, curriculum: updated });
+                            }}
+                            placeholder="Duration (e.g. 45 mins)"
+                            className="w-full px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-300"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData({
+                            ...formData,
+                            curriculum: formData.curriculum.filter((_, i) => i !== idx),
+                          })
+                        }
+                        className="text-gray-500 hover:text-red-400 p-1"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </AdminCard>
+
+            {/* Target Audience ("Who This Is For") */}
+            <AdminCard title="Target Audience (Who This Is For)">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                  <span className="text-xs text-[#A7A3BC]">
+                    Help customers quickly identify if this product is made for them.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        targetAudienceList: [
+                          ...formData.targetAudienceList,
+                          "New customer persona or professional profile",
+                        ],
+                      })
+                    }
+                    className="px-3 py-1.5 rounded-lg bg-purple-600/30 hover:bg-purple-600 border border-purple-500/40 text-xs font-semibold text-white transition-colors flex items-center gap-1"
+                  >
+                    <Plus size={13} />
+                    <span>Add Persona</span>
+                  </button>
+                </div>
+
+                {formData.targetAudienceList.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={(e) => {
+                        const updated = [...formData.targetAudienceList];
+                        updated[idx] = e.target.value;
+                        setFormData({ ...formData, targetAudienceList: updated });
+                      }}
+                      className="flex-1 px-3 py-1.5 rounded-lg bg-[#0e0d22] border border-white/10 text-xs text-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData({
+                          ...formData,
+                          targetAudienceList: formData.targetAudienceList.filter((_, i) => i !== idx),
+                        })
+                      }
+                      className="text-gray-500 hover:text-red-400 p-1"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </AdminCard>
+
+            {/* Requirements & Policy */}
+            <AdminCard title="Requirements, Guarantee & Promotional Notice">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#A7A3BC] mb-1.5">
+                    Risk-Free Guarantee & Refund Policy Text
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.guaranteeText}
+                    onChange={(e) => setFormData({ ...formData, guaranteeText: e.target.value })}
+                    placeholder="100% Risk-Free Guarantee: Instant verified access granted upon payment."
+                    className="w-full px-3.5 py-2 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#A7A3BC] mb-1.5">
+                    Urgency Banner / Limited Offer Notice
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.urgencyNotice}
+                    onChange={(e) => setFormData({ ...formData, urgencyNotice: e.target.value })}
+                    placeholder="⚡ Special Launch Pricing: Available for a limited period only."
+                    className="w-full px-3.5 py-2 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
+                  />
+                </div>
+              </div>
+            </AdminCard>
+          </div>
         )}
       </form>
     </div>

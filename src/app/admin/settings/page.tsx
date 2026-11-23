@@ -487,7 +487,7 @@ export default function SettingsPage() {
                   <label className="text-xs font-semibold text-[#A7A3BC] uppercase">AWS S3 / Cloudflare R2 Asset Bucket</label>
                   <input
                     type="text"
-                    placeholder="s3://zenovavibe-secure-vault"
+                    placeholder="s3://elvoradigital-secure-vault"
                     value={formData.integrations.cloudStoragePlaceholder}
                     onChange={(e) =>
                       setFormData({
@@ -532,7 +532,7 @@ export default function SettingsPage() {
             {isSaved ? (
               <span className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold">
                 <CheckCircle className="w-4 h-4" />
-                Settings saved and persisted to LocalStorage!
+                Settings saved successfully!
               </span>
             ) : (
               <span className="text-xs text-[#A7A3BC]">Changes will be applied across your storefront.</span>

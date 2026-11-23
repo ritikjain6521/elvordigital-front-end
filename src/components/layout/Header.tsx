@@ -79,11 +79,11 @@ export default function Header() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Logo with custom abstract Z icon */}
+          {/* Logo with custom abstract E icon for ElvoraDigital */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#8B5CF6] via-[#A855F7] to-[#EC4899] p-[1.5px] shadow-lg shadow-purple-500/25 group-hover:shadow-purple-500/40 transition-shadow">
               <div className="h-full w-full rounded-[10px] bg-[#090816] flex items-center justify-center">
-                {/* Custom abstract Z glyph */}
+                {/* Custom abstract E glyph */}
                 <svg
                   width="22"
                   height="22"
@@ -93,16 +93,23 @@ export default function Header() {
                   className="group-hover:scale-110 transition-transform duration-300"
                 >
                   <path
-                    d="M4 6H19L8 18H20"
-                    stroke="url(#zGradient)"
-                    strokeWidth="3.2"
+                    d="M19 5H7C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19H19"
+                    stroke="url(#elvoraGradHeader)"
+                    strokeWidth="2.8"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                  <circle cx="19" cy="6" r="1.5" fill="#EC4899" />
-                  <circle cx="5" cy="18" r="1.5" fill="#6366F1" />
+                  <path
+                    d="M5 12H15.5"
+                    stroke="url(#elvoraGradHeader)"
+                    strokeWidth="2.8"
+                    strokeLinecap="round"
+                  />
+                  <circle cx="19" cy="5" r="1.5" fill="#EC4899" />
+                  <circle cx="15.5" cy="12" r="1.5" fill="#A855F7" />
+                  <circle cx="19" cy="19" r="1.5" fill="#22D3EE" />
                   <defs>
-                    <linearGradient id="zGradient" x1="4" y1="6" x2="20" y2="18" gradientUnits="userSpaceOnUse">
+                    <linearGradient id="elvoraGradHeader" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
                       <stop stopColor="#8B5CF6" />
                       <stop offset="0.5" stopColor="#A855F7" />
                       <stop offset="1" stopColor="#22D3EE" />
@@ -113,7 +120,7 @@ export default function Header() {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold tracking-tight text-white group-hover:text-purple-300 transition-colors">
-                Zenova<span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Vibe</span>
+                Elvora<span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Digital</span>
               </span>
               <span className="text-[10px] uppercase tracking-widest text-[#A7A3BC] -mt-1 hidden sm:block">
                 Digital Marketplace

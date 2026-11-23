@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ZenovaVibe | Discover. Download. Create. Grow. – Premium Digital Marketplace",
+  title: "ElvoraDigital | Discover. Download. Create. Grow. – Premium Digital Marketplace",
   description:
-    "Explore ZenovaVibe: The premier digital marketplace for AI prompt bundles, Meta advertising courses, Canva creator kits, business ebooks, and productivity software tools.",
+    "Explore ElvoraDigital: The premier digital marketplace for AI prompt bundles, Meta advertising courses, Canva creator kits, business ebooks, and productivity software tools.",
   keywords: [
     "digital marketplace",
     "ai prompt bundles",
@@ -29,19 +29,24 @@ export const metadata: Metadata = {
     "digital products",
     "business blueprints",
     "productivity tools",
-    "ZenovaVibe",
+    "ElvoraDigital",
   ],
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+  },
   openGraph: {
-    title: "ZenovaVibe – Premium Digital Marketplace",
+    title: "ElvoraDigital – Premium Digital Marketplace",
     description:
       "Unlock your digital potential with curated AI tools, masterclasses, creative templates, and business blueprints.",
     type: "website",
-    siteName: "ZenovaVibe",
+    siteName: "ElvoraDigital",
     locale: "en_IN",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ZenovaVibe – Premium Digital Marketplace",
+    title: "ElvoraDigital – Premium Digital Marketplace",
     description: "Discover curated digital products to create more, work smarter, and grow faster.",
   },
   robots: {
@@ -67,12 +72,12 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              name: "ZenovaVibe",
-              url: "https://zenovavibe.com",
+              name: "ElvoraDigital",
+              url: "https://elvoradigital.com",
               description: "Premium digital product marketplace for creators, founders, and marketers.",
               potentialAction: {
                 "@type": "SearchAction",
-                target: "https://zenovavibe.com/search?q={search_term_string}",
+                target: "https://elvoradigital.com/search?q={search_term_string}",
                 "query-input": "required name=search_term_string",
               },
             }),

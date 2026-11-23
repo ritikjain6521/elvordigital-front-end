@@ -37,26 +37,26 @@ export default function AdminLoginPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        localStorage.setItem("znv_admin_token", data.token);
-        localStorage.setItem("znv_admin_user", JSON.stringify(data.user));
+        sessionStorage.setItem("znv_admin_token", data.token);
+        sessionStorage.setItem("znv_admin_user", JSON.stringify(data.user));
         router.push("/admin");
         return;
       }
 
       // Fallback verification for demo credentials
       if (
-        (identifier === "admin" || identifier === "admin@zenovavibe.com") &&
+        (identifier === "admin" || identifier === "admin@elvoradigital.com") &&
         (password === "Admin@123456" || password === "admin")
       ) {
         const demoUser = {
           id: "usr-admin",
           username: "admin",
-          email: "admin@zenovavibe.com",
-          name: "ZenovaVibe Chief Admin",
+          email: "admin@elvoradigital.com",
+          name: "ElvoraDigital Chief Admin",
           role: "OWNER",
         };
-        localStorage.setItem("znv_admin_token", "demo_admin_token_2026");
-        localStorage.setItem("znv_admin_user", JSON.stringify(demoUser));
+        sessionStorage.setItem("znv_admin_token", "demo_admin_token_2026");
+        sessionStorage.setItem("znv_admin_user", JSON.stringify(demoUser));
         router.push("/admin");
         return;
       }
@@ -65,17 +65,17 @@ export default function AdminLoginPage() {
     } catch (err) {
       // If backend network error, fallback to demo check
       if (
-        (identifier === "admin" || identifier === "admin@zenovavibe.com") &&
+        (identifier === "admin" || identifier === "admin@elvoradigital.com") &&
         (password === "Admin@123456" || password === "admin")
       ) {
-        localStorage.setItem("znv_admin_token", "demo_admin_token_2026");
-        localStorage.setItem(
+        sessionStorage.setItem("znv_admin_token", "demo_admin_token_2026");
+        sessionStorage.setItem(
           "znv_admin_user",
           JSON.stringify({
             id: "usr-admin",
             username: "admin",
-            email: "admin@zenovavibe.com",
-            name: "ZenovaVibe Chief Admin",
+            email: "admin@elvoradigital.com",
+            name: "ElvoraDigital Chief Admin",
             role: "OWNER",
           })
         );
@@ -98,12 +98,42 @@ export default function AdminLoginPage() {
         {/* Brand Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#8B5CF6] via-[#A855F7] to-[#EC4899] p-0.5 shadow-2xl shadow-purple-500/30 mb-4">
-            <div className="w-full h-full rounded-[14px] bg-[#090816] flex items-center justify-center font-black text-xl text-white">
-              Z
+            <div className="w-full h-full rounded-[14px] bg-[#090816] flex items-center justify-center overflow-hidden">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M19 5H7C5.89543 5 5 5.89543 5 7V17C5 18.1046 5.89543 19 7 19H19"
+                  stroke="url(#loginElvGrad)"
+                  strokeWidth="2.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M5 12H15.5"
+                  stroke="url(#loginElvGrad)"
+                  strokeWidth="2.8"
+                  strokeLinecap="round"
+                />
+                <circle cx="19" cy="5" r="1.5" fill="#EC4899" />
+                <circle cx="15.5" cy="12" r="1.5" fill="#A855F7" />
+                <circle cx="19" cy="19" r="1.5" fill="#22D3EE" />
+                <defs>
+                  <linearGradient id="loginElvGrad" x1="5" y1="5" x2="19" y2="19" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#8B5CF6" />
+                    <stop offset="0.5" stopColor="#A855F7" />
+                    <stop offset="1" stopColor="#22D3EE" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
           </div>
           <h1 className="text-2xl font-black text-white tracking-tight">
-            Zenova<span className="text-[#8B5CF6]">Vibe</span> Admin
+            Elvora<span className="text-[#8B5CF6]">Digital</span> Admin
           </h1>
           <p className="text-xs text-[#A7A3BC] mt-1">
             Enter administrative credentials to access the control panel
@@ -129,7 +159,7 @@ export default function AdminLoginPage() {
                 <input
                   type="text"
                   required
-                  placeholder="admin or admin@zenovavibe.com"
+                  placeholder="admin or admin@elvoradigital.com"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-[#A7A3BC]/50 focus:outline-none focus:border-[#8B5CF6] transition-colors"

@@ -83,40 +83,47 @@ export default function CustomerProfilePage({ params }: { params: Promise<{ id: 
       </div>
 
       {/* Customer Header Dossier */}
-      <div className="p-6 rounded-3xl bg-[#17152E]/90 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-xl">
-        <div className="flex items-center gap-4">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-600 text-white font-black text-xl flex items-center justify-center shadow-lg">
-            {customer.avatar}
+      <div className="p-4 sm:p-6 rounded-3xl bg-[#17152E]/90 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+        <div className="flex items-center gap-4 min-w-0">
+          {/* Avatar — show image if URL, or initials */}
+          <div className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-600 text-white font-black text-xl flex items-center justify-center shadow-lg select-none uppercase overflow-hidden">
+            {customer.avatar && (customer.avatar.startsWith("http") || customer.avatar.startsWith("/")) ? (
+              <img src={customer.avatar} alt={customer.name} className="w-full h-full object-cover" />
+            ) : (
+              customer.avatar || (customer.name ? customer.name.charAt(0) : "?")
+            )}
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-white">{customer.name}</h1>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-bold text-white truncate">{customer.name}</h1>
               {customer.isEmailVerified && (
-                <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                <span className="shrink-0 flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                   <ShieldCheck size={11} />
                   <span>Verified Email</span>
                 </span>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-4 text-xs text-[#A7A3BC] mt-1">
-              <span className="flex items-center gap-1 text-purple-300">
-                <Mail size={13} />
-                <span>{customer.email}</span>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-[#A7A3BC] mt-1">
+              <span className="flex items-center gap-1 text-purple-300 min-w-0">
+                <Mail size={12} className="shrink-0" />
+                <span className="truncate max-w-[180px] sm:max-w-none">{customer.email}</span>
               </span>
-              <span className="flex items-center gap-1">
-                <Phone size={13} />
-                <span>{customer.phone}</span>
-              </span>
-              <span className="flex items-center gap-1">
-                <Calendar size={13} />
-                <span>Joined {customer.registeredDate}</span>
+              {customer.phone && (
+                <span className="flex items-center gap-1 shrink-0">
+                  <Phone size={12} />
+                  <span>{customer.phone}</span>
+                </span>
+              )}
+              <span className="flex items-center gap-1 shrink-0">
+                <Calendar size={12} />
+                <span>Joined {new Date(customer.registeredDate).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" })}</span>
               </span>
             </div>
           </div>
         </div>
 
         {/* Aggregate Stats */}
-        <div className="flex items-center gap-6 sm:border-l sm:border-white/10 sm:pl-6 text-right">
+        <div className="flex items-center gap-4 sm:gap-6 sm:border-l sm:border-white/10 sm:pl-6 text-right shrink-0">
           <div>
             <span className="text-[10px] uppercase font-bold text-gray-400 block">Total Orders</span>
             <span className="text-xl font-black text-white">{customer.totalOrders}</span>
@@ -159,7 +166,9 @@ export default function CustomerProfilePage({ params }: { params: Promise<{ id: 
                         {acc.productName}
                       </span>
                       <span className="text-[10px] text-[#A7A3BC]">
-                        Purchased {acc.purchaseDate} • {acc.downloadCount} of {acc.downloadLimit} downloads used
+                        Purchased {acc.purchaseDate && !isNaN(Date.parse(acc.purchaseDate))
+                          ? new Date(acc.purchaseDate).toLocaleDateString("en-IN", { year: "numeric", month: "short", day: "numeric" })
+                          : acc.purchaseDate} • {acc.downloadCount} of {acc.downloadLimit} downloads used
                       </span>
                     </div>
                     <span

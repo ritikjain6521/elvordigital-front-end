@@ -94,7 +94,7 @@ export default function AdminCategoriesPage() {
     };
 
     try {
-      const token = localStorage.getItem("znv_admin_token");
+      const token = sessionStorage.getItem("znv_admin_token");
       await fetch(`${API_BASE}/api/categories`, {
         method: "POST",
         headers: {

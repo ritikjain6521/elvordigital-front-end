@@ -231,8 +231,8 @@ export default function AdminNavbar({
           <button
             onClick={() => {
               if (typeof window !== "undefined") {
-                localStorage.removeItem("znv_admin_token");
-                localStorage.removeItem("znv_admin_user");
+                sessionStorage.removeItem("znv_admin_token");
+                sessionStorage.removeItem("znv_admin_user");
               }
               window.location.href = "/admin/login";
             }}

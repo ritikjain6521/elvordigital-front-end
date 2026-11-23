@@ -36,7 +36,7 @@ export default function AffiliatesPage() {
   );
 
   const handleCopyLink = (code: string) => {
-    navigator.clipboard.writeText(`https://zenovavibe.com/?ref=${code}`);
+    navigator.clipboard.writeText(`https://elvoradigital.com/?ref=${code}`);
     setCopiedCode(code);
     setTimeout(() => setCopiedCode(null), 2000);
   };

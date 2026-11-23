@@ -48,15 +48,9 @@ export default function CheckoutPage() {
           price: item.product.price,
           quantity: item.quantity,
           format: item.product.productFormat || "Digital Download",
-          googleDriveLink:
-            (item.product as any).googleDriveLink ||
-            `https://drive.google.com/drive/folders/1zenovavibe-${itemSlug}-master-vault`,
-          accessFolderLink:
-            (item.product as any).accessFolderLink ||
-            `http://localhost:3000/vault/${itemSlug}`,
-          downloadFileUrl:
-            (item.product as any).downloadFileUrl ||
-            `${API_BASE}/api/download/${itemSlug}`,
+          googleDriveLink: (item.product as any).googleDriveLink || "",
+          accessFolderLink: (item.product as any).accessFolderLink || `/vault/${itemSlug}`,
+          downloadFileUrl: (item.product as any).downloadFileUrl || "",
         };
       });
 
@@ -75,10 +69,15 @@ export default function CheckoutPage() {
         }),
       });
 
-      const orderData = await createOrderRes.json();
+      let orderData: any;
+      try {
+        orderData = await createOrderRes.json();
+      } catch (jsonErr) {
+        throw new Error("Payment server returned an invalid response. Please ensure backend is running.");
+      }
 
-      if (!orderData.success) {
-        throw new Error(orderData.message || "Failed to initialize payment gateway.");
+      if (!orderData || !orderData.success) {
+        throw new Error(orderData?.message || "Failed to initialize payment gateway.");
       }
 
       const { razorpayOrderId, orderNumber, amount, key } = orderData;
@@ -92,9 +91,9 @@ export default function CheckoutPage() {
           key: razorpayKey,
           amount: amount,
           currency: "INR",
-          name: "ZenovaVibe Digital Store",
+          name: "ElvoraDigital Digital Store",
           description: `Order ${orderNumber} - Instant Access Deliverables`,
-          image: "https://zenovavibe.com/logo.png",
+          image: "https://elvoradigital.com/logo.png",
           order_id: razorpayOrderId,
           prefill: {
             name: formData.name,
@@ -123,13 +122,17 @@ export default function CheckoutPage() {
                 }),
               });
 
-              const verifyData = await verifyRes.json();
+              let verifyData: any;
+              try {
+                verifyData = await verifyRes.json();
+              } catch (jsonErr) {
+                verifyData = { success: false, message: "Verification completed with status fallback" };
+              }
 
-              if (verifyData.success) {
+              if (verifyData && verifyData.success) {
                 // Store order in session and local storage
                 if (typeof window !== "undefined") {
                   sessionStorage.setItem("znv_recent_order", JSON.stringify(verifyData.order));
-                  localStorage.setItem("znv_recent_order", JSON.stringify(verifyData.order));
                 }
                 clearCart();
                 router.push(`/order-success/${orderNumber}`);
@@ -282,16 +285,15 @@ export default function CheckoutPage() {
                     Razorpay Official
                   </span>
                 </div>
-                
+
                 <div className="grid grid-cols-3 gap-3">
                   <button
                     type="button"
                     onClick={() => setPaymentMethod("razorpay")}
-                    className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center gap-2 ${
-                      paymentMethod === "razorpay"
-                        ? "bg-purple-600/20 border-purple-500 text-white shadow-lg shadow-purple-500/10"
-                        : "bg-[#0e0d22] border-white/10 text-[#A7A3BC]"
-                    }`}
+                    className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center gap-2 ${paymentMethod === "razorpay"
+                      ? "bg-purple-600/20 border-purple-500 text-white shadow-lg shadow-purple-500/10"
+                      : "bg-[#0e0d22] border-white/10 text-[#A7A3BC]"
+                      }`}
                   >
                     <Smartphone size={20} className={paymentMethod === "razorpay" ? "text-purple-400" : ""} />
                     <span className="text-xs font-bold">UPI / QR</span>
@@ -300,11 +302,10 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={() => setPaymentMethod("card")}
-                    className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center gap-2 ${
-                      paymentMethod === "card"
-                        ? "bg-purple-600/20 border-purple-500 text-white shadow-lg shadow-purple-500/10"
-                        : "bg-[#0e0d22] border-white/10 text-[#A7A3BC]"
-                    }`}
+                    className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center gap-2 ${paymentMethod === "card"
+                      ? "bg-purple-600/20 border-purple-500 text-white shadow-lg shadow-purple-500/10"
+                      : "bg-[#0e0d22] border-white/10 text-[#A7A3BC]"
+                      }`}
                   >
                     <CreditCard size={20} className={paymentMethod === "card" ? "text-purple-400" : ""} />
                     <span className="text-xs font-bold">Debit / Credit</span>
@@ -313,11 +314,10 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={() => setPaymentMethod("upi")}
-                    className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center gap-2 ${
-                      paymentMethod === "upi"
-                        ? "bg-purple-600/20 border-purple-500 text-white shadow-lg shadow-purple-500/10"
-                        : "bg-[#0e0d22] border-white/10 text-[#A7A3BC]"
-                    }`}
+                    className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center gap-2 ${paymentMethod === "upi"
+                      ? "bg-purple-600/20 border-purple-500 text-white shadow-lg shadow-purple-500/10"
+                      : "bg-[#0e0d22] border-white/10 text-[#A7A3BC]"
+                      }`}
                   >
                     <Building size={20} className={paymentMethod === "upi" ? "text-purple-400" : ""} />
                     <span className="text-xs font-bold">Netbanking</span>

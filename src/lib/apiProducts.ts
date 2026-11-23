@@ -97,16 +97,38 @@ function mapMongoToProduct(p: any): Product {
       "Master modern 2026 AI targeting algorithms and creative hooks",
     ],
     comparison: p.comparison || [
-      { feature: "2026 Algorithm Training", zenova: true, standard: false },
-      { feature: "Done-for-you Swipe Files", zenova: true, standard: false },
-      { feature: "Direct Google Drive Vault Access", zenova: true, standard: false },
+      { feature: "2026 Algorithm Training", elvora: true, standard: false },
+      { feature: "Done-for-you Swipe Files", elvora: true, standard: false },
+      { feature: "Direct Google Drive Vault Access", elvora: true, standard: false },
     ],
+    adCopy: p.adCopy || undefined,
+    curriculum: p.curriculum || undefined,
+    targetAudienceList: p.targetAudienceList || undefined,
+    requirements: p.requirements || undefined,
+    guaranteeText: p.guaranteeText || undefined,
+    urgencyNotice: p.urgencyNotice || undefined,
+    reviews: Array.isArray(p.reviews)
+      ? p.reviews.map((r: any) => ({
+          author: r.author,
+          rating: Number(r.rating || 5),
+          title: r.title || "",
+          comment: r.comment || "",
+          date: r.date
+            ? new Date(r.date).toLocaleDateString("en-IN", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
+            : "Recently",
+          verified: r.verified !== false,
+        }))
+      : [],
   };
 }
 
 export async function fetchLiveProducts(): Promise<Product[]> {
   try {
-    const res = await fetch(`${API_BASE}/products`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE}/api/products`, { cache: "no-store" });
     if (res.ok) {
       const data = await res.json();
       if (data.success && Array.isArray(data.products) && data.products.length > 0) {
@@ -124,7 +146,7 @@ export async function fetchLiveProducts(): Promise<Product[]> {
 
 export async function fetchLiveProductBySlug(slug: string): Promise<Product | null> {
   try {
-    const res = await fetch(`${API_BASE}/products/${slug}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE}/api/products/${slug}`, { cache: "no-store" });
     if (res.ok) {
       const data = await res.json();
       if (data.success && data.product) {

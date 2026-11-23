@@ -45,9 +45,9 @@ export default function OrderSuccessPage({
         // Fallback to local admin context
       }
 
-      // 2. Check local sessionStorage / localStorage for recently placed order
+      // 2. Check sessionStorage for recently placed order (from checkout redirect)
       if (typeof window !== "undefined") {
-        const cachedRaw = sessionStorage.getItem("znv_recent_order") || localStorage.getItem("znv_recent_order");
+        const cachedRaw = sessionStorage.getItem("znv_recent_order");
         if (cachedRaw) {
           try {
             const cached = JSON.parse(cachedRaw);
@@ -89,9 +89,9 @@ export default function OrderSuccessPage({
               price: 499,
               format: "PDF + Notion Playbook + Audio Summary",
               googleDriveLink:
-                "https://drive.google.com/drive/folders/1zenovavibe-digital-business-blueprint-vault",
-              accessFolderLink: "https://cloud.zenovavibe.com/folders/digital-business-blueprint",
-              downloadFileUrl: "https://assets.zenovavibe.com/digital-business-blueprint-bundle.zip",
+                "https://drive.google.com/drive/folders/1elvoradigital-digital-business-blueprint-vault",
+              accessFolderLink: "https://cloud.elvoradigital.com/folders/digital-business-blueprint",
+              downloadFileUrl: "https://assets.elvoradigital.com/digital-business-blueprint-bundle.zip",
             },
           ],
         });

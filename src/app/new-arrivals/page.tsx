@@ -3,9 +3,9 @@ import StoreView from "@/components/store/StoreView";
 import { fetchLiveProducts } from "@/lib/apiProducts";
 
 export const metadata: Metadata = {
-  title: "New Digital Product Releases | ZenovaVibe",
+  title: "New Digital Product Releases | ElvoraDigital",
   description:
-    "Discover the latest additions to the ZenovaVibe marketplace — fresh AI prompt vaults, UI kits, and marketing playbooks.",
+    "Discover the latest additions to the ElvoraDigital marketplace — fresh AI prompt vaults, UI kits, and marketing playbooks.",
 };
 
 export default async function NewArrivalsPage() {

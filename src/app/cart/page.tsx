@@ -203,7 +203,7 @@ export default function CartPage() {
                       <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                       <input
                         type="text"
-                        placeholder="Coupon code (e.g. ZENOVA10)"
+                        placeholder="Coupon code (e.g. ELVORA10)"
                         value={couponInput}
                         onChange={(e) => setCouponInput(e.target.value)}
                         className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white placeholder-gray-500 uppercase focus:outline-none focus:border-purple-400"

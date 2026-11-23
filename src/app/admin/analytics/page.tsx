@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `zenovavibe-analytics-orders-${timeRange}.csv`);
+    link.setAttribute("download", `elvoradigital-analytics-orders-${timeRange}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

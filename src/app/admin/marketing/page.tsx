@@ -40,7 +40,7 @@ export default function MarketingPage() {
 
   // Announcement bar state
   const [announcementActive, setAnnouncementActive] = useState(true);
-  const [announcementText, setAnnouncementText] = useState("⚡ FLASH LAUNCH SALE: Use code ZENOVA50 for 50% OFF all AI Prompts & Guides!");
+  const [announcementText, setAnnouncementText] = useState("⚡ FLASH LAUNCH SALE: Use code ELVORA50 for 50% OFF all AI Prompts & Guides!");
   const [announcementLink, setAnnouncementLink] = useState("/store");
 
   // Hero Promotional Banner state

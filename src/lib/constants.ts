@@ -1,5 +1,5 @@
 // ============================================================
-// ZenovaVibe – META ADS MASTERY 2026 PRO EDITION
+// ElvoraDigital – META ADS MASTERY 2026 PRO EDITION
 // Central constants file
 // ============================================================
 
@@ -7,7 +7,7 @@
 export const PURCHASE_URL = "";
 
 export const BRAND = {
-  name: "ZenovaVibe",
+  name: "ElvoraDigital",
   tagline: "Learn Smarter. Market Better. Grow Further.",
   product: "META ADS MASTERY 2026 – PRO EDITION",
   shortProduct: "Meta Ads Mastery 2026",

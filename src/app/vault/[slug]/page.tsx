@@ -127,7 +127,7 @@ export default function CloudVaultPage({
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white">{product.name}</h1>
               <p className="text-xs sm:text-sm text-[#A7A3BC]">
-                {product.productFormat} • Cloud Vault ID: <span className="text-purple-300 font-mono">ZNV-{slug.toUpperCase()}</span>
+                {product.productFormat} • Cloud Vault ID: <span className="text-purple-300 font-mono">ELV-{slug.toUpperCase()}</span>
               </p>
             </div>
 
@@ -169,11 +169,10 @@ export default function CloudVaultPage({
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`flex items-center gap-2 pb-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? "border-purple-500 text-white"
-                    : "border-transparent text-[#A7A3BC] hover:text-white"
-                }`}
+                className={`flex items-center gap-2 pb-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
+                  ? "border-purple-500 text-white"
+                  : "border-transparent text-[#A7A3BC] hover:text-white"
+                  }`}
               >
                 <Icon size={15} />
                 <span>{tab.label}</span>

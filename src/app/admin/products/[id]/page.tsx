@@ -107,8 +107,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         thumbnail: product.thumbnail || (product.photos && product.photos[0]) || "",
         googleDriveLink:
           product.googleDriveLink ||
-          "https://drive.google.com/drive/folders/1zenovavibe-meta-ads-2026-pro-master-vault",
-        accessFolderLink: product.accessFolderLink || "https://cloud.zenovavibe.com/folders/meta-ads-mastery",
+          "https://drive.google.com/drive/folders/1elvoradigital-meta-ads-2026-pro-master-vault",
+        accessFolderLink: product.accessFolderLink || "https://cloud.elvoradigital.com/folders/meta-ads-mastery",
         videoLink: product.videoLink || "https://player.vimeo.com/video/849201940",
         downloadFileUrl: product.downloadFileUrl || product.downloadUrl || "",
 
@@ -195,7 +195,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
     // Also sync to MongoDB backend
     try {
-      const token = localStorage.getItem("znv_admin_token");
+      const token = sessionStorage.getItem("znv_admin_token");
       await fetch(`${API_BASE}/api/products/${product.id}`, {
         method: "PUT",
         headers: {
@@ -317,11 +317,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           </Link>
           <button
             onClick={() => togglePublishProduct(product.id)}
-            className={`px-3 py-2 rounded-xl text-xs font-bold uppercase transition-all ${
-              product.status === "published"
-                ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-            }`}
+            className={`px-3 py-2 rounded-xl text-xs font-bold uppercase transition-all ${product.status === "published"
+              ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+              : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+              }`}
           >
             {product.status === "published" ? "Unpublish" : "Publish"}
           </button>
@@ -360,11 +359,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                activeTab === tab.id
-                  ? "bg-[#8B5CF6] text-white shadow-lg shadow-purple-500/20"
-                  : "bg-[#17152E] text-[#A7A3BC] hover:text-white border border-white/5"
-              }`}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${activeTab === tab.id
+                ? "bg-[#8B5CF6] text-white shadow-lg shadow-purple-500/20"
+                : "bg-[#17152E] text-[#A7A3BC] hover:text-white border border-white/5"
+                }`}
             >
               <Icon size={14} />
               {tab.label}
@@ -538,7 +536,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 </label>
                 <input
                   type="url"
-                  placeholder="https://cloud.zenovavibe.com/folders/..."
+                  placeholder="https://cloud.elvoradigital.com/folders/..."
                   value={formData.accessFolderLink}
                   onChange={(e) => setFormData({ ...formData, accessFolderLink: e.target.value })}
                   className="w-full mt-1.5 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-mono text-cyan-300 focus:outline-none focus:border-[#8B5CF6]"
@@ -566,7 +564,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 </label>
                 <input
                   type="url"
-                  placeholder="https://assets.zenovavibe.com/package.zip"
+                  placeholder="https://assets.elvoradigital.com/package.zip"
                   value={formData.downloadFileUrl}
                   onChange={(e) => setFormData({ ...formData, downloadFileUrl: e.target.value })}
                   className="w-full mt-1.5 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-mono text-emerald-300 focus:outline-none focus:border-[#8B5CF6]"

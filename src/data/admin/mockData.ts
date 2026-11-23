@@ -26,8 +26,8 @@ import { PRODUCTS } from "@/data/products";
 export const INITIAL_ADMIN_USERS: AdminUser[] = [
   {
     id: "usr-admin",
-    name: "ZenovaVibe Chief Admin",
-    email: "admin@zenovavibe.com",
+    name: "ElvoraDigital Chief Admin",
+    email: "admin@elvoradigital.com",
     role: "OWNER",
     status: "active",
     avatar: "ZA",
@@ -38,7 +38,7 @@ export const INITIAL_ADMIN_USERS: AdminUser[] = [
 // Product catalog preserved as requested
 export const INITIAL_ADMIN_PRODUCTS: AdminProduct[] = PRODUCTS.map((p, index) => ({
   ...p,
-  sku: `ZNV-${p.category.substring(0, 3).toUpperCase()}-${100 + index}`,
+  sku: `ELV-${p.category.substring(0, 3).toUpperCase()}-${100 + index}`,
   status: "published" as AdminProduct["status"],
   totalSales: 0,
   totalRevenue: 0,
@@ -70,9 +70,9 @@ export const INITIAL_EMAIL_LOGS: EmailLog[] = [];
 
 export const INITIAL_STORE_SETTINGS: StoreSettings = {
   general: {
-    storeName: "ZenovaVibe Marketplace",
+    storeName: "ElvoraDigital Marketplace",
     storeDescription: "Discover. Download. Create. Grow.",
-    supportEmail: "support@zenovavibe.com",
+    supportEmail: "support@elvoradigital.com",
     currency: "INR",
     currencySymbol: "₹",
     timeZone: "Asia/Kolkata",
@@ -89,9 +89,9 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
     taxPercentage: 0,
   },
   emailTemplates: {
-    orderConfirmationSubject: "⚡ Order Confirmed - ZenovaVibe",
+    orderConfirmationSubject: "⚡ Order Confirmed - ElvoraDigital",
     accessInvitationSubject: "⚡ Your Digital Access Is Ready",
-    refundNoticeSubject: "Refund Processed - ZenovaVibe",
+    refundNoticeSubject: "Refund Processed - ElvoraDigital",
   },
   integrations: {
     razorpayKeyPlaceholder: "rzp_test_U3IdhaFcjzNry8",
@@ -126,7 +126,7 @@ export const DEFAULT_EMAIL_SMTP_CONFIG: EmailSmtpConfig = {
   encryption: "ssl",
   username: "ritikjain6224@gmail.com",
   password: "ylvbepioygkccqta",
-  fromName: "ZenovaVibe Access",
+  fromName: "ElvoraDigital Access",
   fromEmail: "ritikjain6224@gmail.com",
   replyToEmail: "ritikjain6224@gmail.com",
   isVerified: true,
@@ -140,7 +140,7 @@ export const DEFAULT_EMAIL_TEMPLATES: EmailTemplateConfig[] = [
     subject: "⚡ Your Digital Access Is Ready: {{product_name}} [Order #{{order_number}}]",
     preheader: "Access your files, video lessons, and bonuses inside.",
     heading: "Your Digital Product Is Ready!",
-    body: "Hi {{customer_name}},\n\nThank you for choosing ZenovaVibe! Your order {{order_number}} has been verified.\n\nClick the links below to access your Google Drive folder and download your files.",
+    body: "Hi {{customer_name}},\n\nThank you for choosing ElvoraDigital! Your order {{order_number}} has been verified.\n\nClick the links below to access your Google Drive folder and download your files.",
     ctaText: "Open Google Drive Access",
     ctaUrl: "http://localhost:3000/vault/{{product_slug}}",
     ctaColor: "#8B5CF6",
@@ -149,7 +149,7 @@ export const DEFAULT_EMAIL_TEMPLATES: EmailTemplateConfig[] = [
     id: "order_confirmation",
     name: "Order Confirmation & Tax Invoice",
     description: "Official purchase receipt including itemized billing and transaction hash.",
-    subject: "Receipt for Order {{order_number}} [ZenovaVibe]",
+    subject: "Receipt for Order {{order_number}} [ElvoraDigital]",
     preheader: "Your payment of ₹{{amount}} has been confirmed.",
     heading: "Thank you for your purchase!",
     body: "Hi {{customer_name}},\n\nWe have received your payment of ₹{{amount}} for order {{order_number}}.\n\nA digital invoice is attached and your product files have been provisioned.",

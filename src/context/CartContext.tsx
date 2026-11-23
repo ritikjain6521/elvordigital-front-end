@@ -27,16 +27,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [discountPercent, setDiscountPercent] = useState<number>(0);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load from localStorage
+  // Load from sessionStorage (tab session only — no persistence)
   useEffect(() => {
     try {
-      const savedCart = localStorage.getItem("zenovavibe_cart");
+      const savedCart = sessionStorage.getItem("elvoradigital_cart");
       if (savedCart) {
         setCart(JSON.parse(savedCart));
       }
-      const savedCoupon = localStorage.getItem("zenovavibe_coupon");
-      if (savedCoupon === "ZENOVA10") {
-        setCouponCode("ZENOVA10");
+      const savedCoupon = sessionStorage.getItem("elvoradigital_coupon");
+      if (savedCoupon === "ELVORA10") {
+        setCouponCode("ELVORA10");
         setDiscountPercent(10);
       }
     } catch {
@@ -46,15 +46,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Save to localStorage
+  // Save to sessionStorage
   useEffect(() => {
     if (!isHydrated) return;
     try {
-      localStorage.setItem("zenovavibe_cart", JSON.stringify(cart));
+      sessionStorage.setItem("elvoradigital_cart", JSON.stringify(cart));
       if (couponCode) {
-        localStorage.setItem("zenovavibe_coupon", couponCode);
+        sessionStorage.setItem("elvoradigital_coupon", couponCode);
       } else {
-        localStorage.removeItem("zenovavibe_coupon");
+        sessionStorage.removeItem("elvoradigital_coupon");
       }
     } catch {
       // Ignore
@@ -65,7 +65,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCart((prev) => {
       const existing = prev.find((item) => item.product.id === product.id);
       if (existing) {
-        // Digital products are usually single quantity, but support up to 5
         return prev.map((item) =>
           item.product.id === product.id
             ? { ...item, quantity: Math.min(item.quantity + quantity, 5) }
@@ -96,16 +95,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     setCart([]);
+    sessionStorage.removeItem("elvoradigital_cart");
+    sessionStorage.removeItem("elvoradigital_coupon");
   };
 
   const applyCoupon = (code: string) => {
     const cleanCode = code.trim().toUpperCase();
-    if (cleanCode === "ZENOVA10") {
-      setCouponCode("ZENOVA10");
+    if (cleanCode === "ELVORA10") {
+      setCouponCode("ELVORA10");
       setDiscountPercent(10);
-      return { success: true, message: "Coupon ZENOVA10 applied! 10% discount added." };
+      return { success: true, message: "Coupon ELVORA10 applied! 10% discount added." };
     }
-    return { success: false, message: "Invalid coupon code. Try ZENOVA10" };
+    return { success: false, message: "Invalid coupon code. Try ELVORA10" };
   };
 
   const removeCoupon = () => {

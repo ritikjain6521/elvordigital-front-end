@@ -31,7 +31,7 @@ const INITIAL_NOTIFICATIONS: AdminNotificationItem[] = [
   {
     id: "notif-1",
     title: "New High-Value Order Received",
-    message: "Order #ZNV-9041 by Aarav Malhotra for ₹2,499 was successfully settled via UPI.",
+    message: "Order #ELV-9041 by Aarav Malhotra for ₹2,499 was successfully settled via UPI.",
     timestamp: "12 minutes ago",
     type: "order",
     isRead: false,
@@ -49,7 +49,7 @@ const INITIAL_NOTIFICATIONS: AdminNotificationItem[] = [
   {
     id: "notif-3",
     title: "New Refund Request Submitted",
-    message: "Customer Arjun Kapoor requested refund for Order #ZNV-8921. Reason: Accidental duplicate purchase.",
+    message: "Customer Arjun Kapoor requested refund for Order #ELV-8921. Reason: Accidental duplicate purchase.",
     timestamp: "2 hours ago",
     type: "order",
     isRead: false,

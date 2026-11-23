@@ -169,60 +169,9 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load from LocalStorage (Strictly filter out any legacy mock data)
+  // No localStorage — all data comes from MongoDB in real-time
   useEffect(() => {
-    try {
-      const storedProds = localStorage.getItem("znv_admin_products");
-      if (storedProds) setProducts(JSON.parse(storedProds));
-
-      const storedOrders = localStorage.getItem("znv_admin_orders");
-      if (storedOrders) {
-        const parsed = JSON.parse(storedOrders);
-        // Only keep genuine MongoDB orders with ZNV- prefix
-        const realOnly = Array.isArray(parsed) ? parsed.filter((o: any) => o.orderNumber?.startsWith("ZNV-")) : [];
-        setOrders(realOnly);
-      } else {
-        setOrders([]);
-      }
-
-      const storedAccess = localStorage.getItem("znv_admin_access");
-      if (storedAccess) {
-        const parsed = JSON.parse(storedAccess);
-        const realOnly = Array.isArray(parsed) ? parsed.filter((a: any) => a.orderId?.startsWith("ZNV-") || a.orderId?.startsWith("MANUAL-")) : [];
-        setAccessRecords(realOnly);
-      } else {
-        setAccessRecords([]);
-      }
-
-      const storedCustomers = localStorage.getItem("znv_admin_customers");
-      if (storedCustomers) {
-        const parsed = JSON.parse(storedCustomers);
-        // Clean out mock customer seed lists
-        const realOnly = Array.isArray(parsed) ? parsed.filter((c: any) => !c.id?.startsWith("CUST-00") && c.email) : [];
-        setCustomers(realOnly);
-      } else {
-        setCustomers([]);
-      }
-
-      const storedCoupons = localStorage.getItem("znv_admin_coupons");
-      if (storedCoupons) setCoupons(JSON.parse(storedCoupons));
-
-      const storedLp = localStorage.getItem("znv_admin_landing_pages");
-      if (storedLp) setLandingPages(JSON.parse(storedLp));
-
-      const storedSettings = localStorage.getItem("znv_admin_settings");
-      if (storedSettings) setSettings(JSON.parse(storedSettings));
-
-      const storedEmailConfig = localStorage.getItem("znv_admin_email_config");
-      if (storedEmailConfig) setEmailSmtpConfig(JSON.parse(storedEmailConfig));
-
-      const storedEmailTemplates = localStorage.getItem("znv_admin_email_templates");
-      if (storedEmailTemplates) setEmailTemplates(JSON.parse(storedEmailTemplates));
-    } catch {
-      // Ignore
-    } finally {
-      setIsHydrated(true);
-    }
+    setIsHydrated(true);
   }, []);
 
   // Fetch real-time data from MongoDB Atlas Backend
@@ -230,14 +179,14 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     const fetchMongoDatabase = async () => {
       // 1. Fetch real products
       try {
-        const res = await fetch("${API_BASE}/api/products");
+        const res = await fetch(`${API_BASE}/api/products`);
         const data = await res.json();
         if (data.success && Array.isArray(data.products) && data.products.length > 0) {
           setProducts(data.products.map((p: any) => ({
             id: p._id || p.id,
             name: p.name,
             slug: p.slug,
-            sku: p.sku || `ZNV-${(p.category || "PROD").substring(0, 3).toUpperCase()}-100`,
+            sku: p.sku || `ELV-${(p.category || "PROD").substring(0, 3).toUpperCase()}-100`,
             category: p.category,
             categoryName: p.categoryName || p.category,
             shortDescription: p.shortDescription || "",
@@ -276,7 +225,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
       // 2. Fetch real orders directly from MongoDB
       try {
-        const res = await fetch("${API_BASE}/api/orders");
+        const res = await fetch(`${API_BASE}/api/orders`);
         const data = await res.json();
         if (data.success && Array.isArray(data.orders)) {
           setOrders(data.orders.map((o: any) => ({
@@ -315,7 +264,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
       // 3. Fetch real customers aggregated from MongoDB
       try {
-        const res = await fetch("${API_BASE}/api/admin/customers");
+        const res = await fetch(`${API_BASE}/api/admin/customers`);
         const data = await res.json();
         if (data.success && Array.isArray(data.customers)) {
           setCustomers(data.customers.map((c: any) => ({
@@ -329,7 +278,9 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
             productsOwned: [],
             status: "active" as const,
             isEmailVerified: true,
-            avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop`,
+            avatar: ((c.name || "Customer").trim().split(/\s+/).length === 1
+              ? (c.name || "CU").trim().slice(0, 2).toUpperCase()
+              : ((c.name || "C").trim().split(/\s+/)[0][0] + (c.name || "U").trim().split(/\s+/).slice(-1)[0][0]).toUpperCase()),
             notes: [],
           })));
         }
@@ -339,7 +290,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
       // 4. Fetch real access records from MongoDB
       try {
-        const res = await fetch("${API_BASE}/api/access");
+        const res = await fetch(`${API_BASE}/api/access`);
         const data = await res.json();
         if (data.success && Array.isArray(data.accessRecords)) {
           setAccessRecords(data.accessRecords.map((a: any) => ({
@@ -364,7 +315,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
       // 5. Fetch real digital assets from MongoDB
       try {
-        const res = await fetch("${API_BASE}/api/assets");
+        const res = await fetch(`${API_BASE}/api/assets`);
         const data = await res.json();
         if (data.success && Array.isArray(data.assets)) {
           setDigitalAssets(data.assets.map((a: any) => ({
@@ -393,23 +344,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     fetchMongoDatabase();
   }, []);
 
-  // Sync to LocalStorage
-  useEffect(() => {
-    if (!isHydrated) return;
-    try {
-      localStorage.setItem("znv_admin_products", JSON.stringify(products));
-      localStorage.setItem("znv_admin_orders", JSON.stringify(orders));
-      localStorage.setItem("znv_admin_access", JSON.stringify(accessRecords));
-      localStorage.setItem("znv_admin_customers", JSON.stringify(customers));
-      localStorage.setItem("znv_admin_coupons", JSON.stringify(coupons));
-      localStorage.setItem("znv_admin_landing_pages", JSON.stringify(landingPages));
-      localStorage.setItem("znv_admin_settings", JSON.stringify(settings));
-      localStorage.setItem("znv_admin_email_config", JSON.stringify(emailSmtpConfig));
-      localStorage.setItem("znv_admin_email_templates", JSON.stringify(emailTemplates));
-    } catch {
-      // Ignore
-    }
-  }, [products, orders, accessRecords, customers, coupons, landingPages, settings, emailSmtpConfig, emailTemplates, isHydrated]);
+  // No localStorage sync — data is fetched live from MongoDB
 
   const addAuditLog = useCallback((action: string, module: string, details: string) => {
     const newLog: AuditLog = {
@@ -621,9 +556,13 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   // Digital Assets (Connected to MongoDB Atlas)
   const addDigitalAsset = async (assetData: Omit<DigitalAsset, "id" | "uploadDate" | "downloadCount">) => {
     try {
-      const res = await fetch("${API_BASE}/api/assets", {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : null;
+      const res = await fetch(`${API_BASE}/api/assets`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token || ""}`,
+        },
         body: JSON.stringify(assetData),
       });
       const data = await res.json();
@@ -654,7 +593,13 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
   const deleteDigitalAsset = async (id: string) => {
     try {
-      await fetch(`${API_BASE}/api/assets/${id}`, { method: "DELETE" });
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : null;
+      await fetch(`${API_BASE}/api/assets/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token || ""}`,
+        },
+      });
     } catch {
       // Fallback
     }
@@ -768,12 +713,12 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     const log: string[] = [
       `[${timestamp}] Initiating connection to ${emailSmtpConfig.host}:${emailSmtpConfig.port} via ${emailSmtpConfig.encryption.toUpperCase()}...`,
       `[${timestamp}] 220 ${emailSmtpConfig.host} ESMTP Service Ready`,
-      `[${timestamp}] EHLO mail.zenovavibe.com -> 250-SIZE 35882577, 250-AUTH LOGIN PLAIN`,
+      `[${timestamp}] EHLO mail.elvoradigital.com -> 250-SIZE 35882577, 250-AUTH LOGIN PLAIN`,
       `[${timestamp}] Authenticating as ${emailSmtpConfig.username}... -> 235 2.7.0 Authentication successful`,
       `[${timestamp}] MAIL FROM:<${emailSmtpConfig.fromEmail}> -> 250 2.1.0 Ok`,
       `[${timestamp}] RCPT TO:<${recipient}> -> 250 2.1.5 Ok`,
       `[${timestamp}] DATA -> 354 End data with <CR><LF>.<CR><LF>`,
-      `[${timestamp}] Subject: ⚡ Test Verification Dispatch from ZenovaVibe`,
+      `[${timestamp}] Subject: ⚡ Test Verification Dispatch from ElvoraDigital`,
       `[${timestamp}] 250 2.0.0 Ok: queued as msg_znv_${Date.now()}`,
       `[${timestamp}] Connection closed gracefully. Message dispatched successfully.`,
     ];
@@ -784,7 +729,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       recipientName: "Test Recipient",
       templateId: "test_verification",
       templateName: "SMTP Test Verification Dispatch",
-      subject: "⚡ Test Verification Dispatch from ZenovaVibe",
+      subject: "⚡ Test Verification Dispatch from ElvoraDigital",
       sentAt: timestamp,
       status: "delivered",
     };
@@ -820,7 +765,8 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     setEmailSmtpConfig(DEFAULT_EMAIL_SMTP_CONFIG);
     setEmailTemplates(DEFAULT_EMAIL_TEMPLATES);
     setEmailLogs(INITIAL_EMAIL_LOGS);
-    localStorage.clear();
+    // Clear any residual session data
+    if (typeof window !== "undefined") sessionStorage.clear();
     addAuditLog("Reset Demo State", "System", "Reset all data to default master state");
   };
 

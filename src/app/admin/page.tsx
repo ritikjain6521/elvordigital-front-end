@@ -404,7 +404,7 @@ export default function AdminOverviewDashboard() {
                     <tr key={ord.id} className="hover:bg-white/[0.02]">
                       <td className="py-3 font-mono font-bold text-white">
                         <Link href={`/admin/orders/${ord.id}`} className="hover:text-purple-300">
-                          {ord.orderNumber.replace("ZNV-ORD-2026-", "#")}
+                          {ord.orderNumber.replace("ELV-ORD-2026-", "#").replace("ZNV-ORD-2026-", "#")}
                         </Link>
                       </td>
                       <td className="py-3">
@@ -498,8 +498,12 @@ export default function AdminOverviewDashboard() {
                 className="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/5"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center">
-                    {c.avatar}
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+                    {c.avatar && (c.avatar.startsWith("http") || c.avatar.startsWith("/")) ? (
+                      <img src={c.avatar} alt={c.name} className="w-full h-full object-cover" />
+                    ) : (
+                      c.avatar || (c.name ? c.name.charAt(0) : "?")
+                    )}
                   </div>
                   <div className="truncate max-w-[150px]">
                     <span className="text-xs font-bold text-white block truncate">

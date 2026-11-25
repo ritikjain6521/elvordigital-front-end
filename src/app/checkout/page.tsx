@@ -131,6 +131,19 @@ export default function CheckoutPage() {
               }
 
               if (verifyData && verifyData.success) {
+                // Ensure order access email is dispatched via Vercel SMTP if backend hasn't sent it yet
+                const confirmedOrderNo = verifyData.order?.orderNumber || orderNumber;
+                if (!verifyData.order?.emailSent && confirmedOrderNo) {
+                  if (typeof window !== "undefined") {
+                    sessionStorage.setItem(`znv_email_triggered_${confirmedOrderNo}`, "1");
+                  }
+                  fetch("/api/send-order-email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ orderNumber: confirmedOrderNo }),
+                    keepalive: true,
+                  }).catch(() => {});
+                }
                 // Store order in session and local storage
                 if (typeof window !== "undefined") {
                   sessionStorage.setItem("znv_recent_order", JSON.stringify(verifyData.order));
@@ -181,8 +194,20 @@ export default function CheckoutPage() {
           }),
         });
         const fallbackData = await fallbackRes.json();
+        const confirmedOrderNo = fallbackData.order?.orderNumber || orderNumber;
+        if (!fallbackData.order?.emailSent && confirmedOrderNo) {
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem(`znv_email_triggered_${confirmedOrderNo}`, "1");
+          }
+          fetch("/api/send-order-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderNumber: confirmedOrderNo }),
+            keepalive: true,
+          }).catch(() => {});
+        }
         clearCart();
-        router.push(`/order-success/${fallbackData.order?.orderNumber || orderNumber}`);
+        router.push(`/order-success/${confirmedOrderNo}`);
       }
     } catch (err: any) {
       console.error("[Checkout] Error:", err);

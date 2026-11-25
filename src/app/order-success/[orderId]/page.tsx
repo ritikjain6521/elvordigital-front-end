@@ -39,6 +39,17 @@ export default function OrderSuccessPage({
         if (data.success && data.order) {
           setOrder(data.order);
           setLoading(false);
+          if (data.order.paymentStatus === "paid" && !data.order.emailSent) {
+            const triggerKey = `znv_email_triggered_${data.order.orderNumber}`;
+            if (typeof window !== "undefined" && !sessionStorage.getItem(triggerKey)) {
+              sessionStorage.setItem(triggerKey, "1");
+              fetch("/api/send-order-email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ orderNumber: data.order.orderNumber }),
+              }).catch(() => {});
+            }
+          }
           return;
         }
       } catch {

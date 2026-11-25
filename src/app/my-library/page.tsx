@@ -165,8 +165,13 @@ export default function MyLibraryPage() {
                 const folderLink =
                   item.accessFolderLink?.trim() || null;
                 const videoLink = item.videoLink?.trim() || null;
-                const downloadUrl =
-                  item.downloadFileUrl?.trim() || null;
+                const rawDownload = item.downloadFileUrl?.trim() || null;
+                const backendBase = process.env.NEXT_PUBLIC_API_URL || "https://elvordigital-back-end.onrender.com";
+                const downloadUrl = rawDownload
+                  ? rawDownload.startsWith("http")
+                    ? rawDownload
+                    : `${backendBase.replace(/\/+$/, "")}/${rawDownload.replace(/^\/+/, "")}`
+                  : null;
 
                 return (
                   <div

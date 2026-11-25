@@ -157,7 +157,13 @@ export default function OrderSuccessPage({
             const googleDrive = item.googleDriveLink && item.googleDriveLink.trim() ? item.googleDriveLink.trim() : null;
             const folderLink = item.accessFolderLink && item.accessFolderLink.trim() ? item.accessFolderLink.trim() : null;
             const videoLink = item.videoLink && item.videoLink.trim() ? item.videoLink.trim() : null;
-            const downloadUrl = item.downloadFileUrl && item.downloadFileUrl.trim() ? item.downloadFileUrl.trim() : null;
+            const rawDownload = item.downloadFileUrl && item.downloadFileUrl.trim() ? item.downloadFileUrl.trim() : null;
+            const backendBase = process.env.NEXT_PUBLIC_API_URL || "https://elvordigital-back-end.onrender.com";
+            const downloadUrl = rawDownload
+              ? rawDownload.startsWith("http")
+                ? rawDownload
+                : `${backendBase.replace(/\/+$/, "")}/${rawDownload.replace(/^\/+/, "")}`
+              : null;
 
             return (
               <div

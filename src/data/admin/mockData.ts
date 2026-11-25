@@ -102,22 +102,7 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
   },
 };
 
-export const INITIAL_LANDING_PAGES: LandingPageConfig[] = [
-  {
-    id: "lp-meta-ads",
-    productId: "meta-ads-mastery-2026",
-    productSlug: "meta-ads-mastery-2026",
-    productName: "META ADS MASTERY 2026 – PRO EDITION",
-    title: "META ADS MASTERY 2026 – PRO EDITION",
-    slug: "meta-ads-mastery-2026",
-    status: "published",
-    views: 0,
-    conversions: 0,
-    conversionRate: 0,
-    lastUpdated: new Date().toISOString().split("T")[0],
-    sections: [],
-  },
-];
+export const INITIAL_LANDING_PAGES: LandingPageConfig[] = [];
 
 export const DEFAULT_EMAIL_SMTP_CONFIG: EmailSmtpConfig = {
   provider: "smtp",

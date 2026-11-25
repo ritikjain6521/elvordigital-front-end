@@ -25,9 +25,9 @@ export default function CheckoutPage() {
 
   const [paymentMethod, setPaymentMethod] = useState<"razorpay" | "upi" | "card">("razorpay");
   const [formData, setFormData] = useState({
-    name: "Ritik Verma",
-    email: "ritikjain6224@gmail.com",
-    phone: "9876543210",
+    name: "",
+    email: "",
+    phone: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);

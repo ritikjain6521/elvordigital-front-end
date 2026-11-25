@@ -62,61 +62,19 @@ export default function EmailConfigPage() {
   const [inspectingLog, setInspectingLog] = useState<EmailLog | null>(null);
   const [copiedDns, setCopiedDns] = useState<string | null>(null);
 
-  // Quick provider preset definitions
-  const applyProviderPreset = (provider: EmailProviderType) => {
-    let host = "";
-    let port = 587;
-    let encryption: "tls" | "ssl" = "tls";
-    let username = "";
-
-    switch (provider) {
-      case "resend":
-        host = "smtp.resend.com";
-        port = 587;
-        encryption = "tls";
-        username = "resend";
-        break;
-      case "sendgrid":
-        host = "smtp.sendgrid.net";
-        port = 587;
-        encryption = "tls";
-        username = "apikey";
-        break;
-      case "ses":
-        host = "email-smtp.us-east-1.amazonaws.com";
-        port = 587;
-        encryption = "tls";
-        username = "AKIAIOSFODNN7EXAMPLE";
-        break;
-      case "mailgun":
-        host = "smtp.mailgun.org";
-        port = 587;
-        encryption = "tls";
-        username = "postmaster@elvoradigital.com";
-        break;
-      case "postmark":
-        host = "smtp.postmarkapp.com";
-        port = 587;
-        encryption = "tls";
-        username = "your-postmark-server-token";
-        break;
-      default:
-        host = "mail.yourdomain.com";
-        port = 587;
-        encryption = "tls";
-        username = "noreply@yourdomain.com";
-        break;
-    }
-
-    const updated = {
+  // Quick SMTP preset helper
+  const applySmtpDefaults = () => {
+    setSmtpForm({
       ...smtpForm,
-      provider,
-      host,
-      port,
-      encryption,
-      username,
-    };
-    setSmtpForm(updated);
+      provider: "smtp",
+      host: "smtp.hostinger.com",
+      port: 465,
+      encryption: "ssl",
+      username: "info@elvordigital.com",
+      fromName: "ElvoraDigital",
+      fromEmail: "info@elvordigital.com",
+      replyToEmail: "support@elvordigital.com",
+    });
   };
 
   const handleSaveSmtp = (e: React.FormEvent) => {
@@ -241,27 +199,23 @@ export default function EmailConfigPage() {
               title="Mail Transfer Protocol (SMTP) Settings"
               subtitle="Configure your sending infrastructure for customer product invitations and receipts"
             >
-              {/* Cloud Provider Quick Presets */}
-              <div className="mb-6">
-                <label className="text-xs font-semibold text-[#A7A3BC] uppercase block mb-2">
-                  Select Provider Preset
-                </label>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                  {(["resend", "sendgrid", "ses", "postmark", "mailgun", "smtp"] as const).map((prov) => (
-                    <button
-                      key={prov}
-                      type="button"
-                      onClick={() => applyProviderPreset(prov)}
-                      className={`px-3 py-2 rounded-xl text-xs font-semibold capitalize border transition-all text-center ${
-                        smtpForm.provider === prov
-                          ? "bg-purple-600/20 border-purple-500 text-purple-300 shadow-md"
-                          : "bg-white/5 border-white/10 text-[#A7A3BC] hover:text-white hover:bg-white/10"
-                      }`}
-                    >
-                      {prov}
-                    </button>
-                  ))}
+              {/* Direct SMTP Mode */}
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-purple-600/10 border border-purple-500/30">
+                <div>
+                  <span className="text-xs font-bold text-purple-300 uppercase block">
+                    Active Transport: Direct SMTP Only
+                  </span>
+                  <span className="text-[11px] text-[#A7A3BC]">
+                    Configured for Hostinger / Custom SMTP (Port 465 SSL or 587 TLS)
+                  </span>
                 </div>
+                <button
+                  type="button"
+                  onClick={applySmtpDefaults}
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-purple-600/20 border border-purple-500/40 text-purple-200 hover:bg-purple-600/30 transition-all shrink-0"
+                >
+                  Load Hostinger SMTP Defaults
+                </button>
               </div>
 
               <form onSubmit={handleSaveSmtp} className="space-y-4">

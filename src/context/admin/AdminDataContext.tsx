@@ -696,9 +696,23 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Email Config Handlers
-  const updateEmailSmtpConfig = (updates: Partial<EmailSmtpConfig>) => {
-    setEmailSmtpConfig((prev) => ({ ...prev, ...updates }));
-    addAuditLog("Updated SMTP Config", "Email", `Updated email service configuration (${updates.provider || emailSmtpConfig.provider})`);
+  const updateEmailSmtpConfig = async (updates: Partial<EmailSmtpConfig>) => {
+    const merged = { ...emailSmtpConfig, ...updates, provider: "smtp" as const };
+    setEmailSmtpConfig(merged);
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : null;
+      await fetch(`${API_BASE}/api/email/config`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token || ""}`,
+        },
+        body: JSON.stringify(merged),
+      });
+    } catch {
+      // Local state updated
+    }
+    addAuditLog("Updated SMTP Config", "Email", `Updated SMTP email configuration (${merged.host}:${merged.port})`);
   };
 
   const updateEmailTemplate = (id: string, updates: Partial<EmailTemplateConfig>) => {
@@ -710,34 +724,54 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
   const sendTestEmail = async (recipient: string): Promise<{ success: boolean; log: string[] }> => {
     const timestamp = new Date().toISOString().replace("T", " ").substring(0, 16);
-    const log: string[] = [
-      `[${timestamp}] Initiating connection to ${emailSmtpConfig.host}:${emailSmtpConfig.port} via ${emailSmtpConfig.encryption.toUpperCase()}...`,
-      `[${timestamp}] 220 ${emailSmtpConfig.host} ESMTP Service Ready`,
-      `[${timestamp}] EHLO mail.elvoradigital.com -> 250-SIZE 35882577, 250-AUTH LOGIN PLAIN`,
-      `[${timestamp}] Authenticating as ${emailSmtpConfig.username}... -> 235 2.7.0 Authentication successful`,
-      `[${timestamp}] MAIL FROM:<${emailSmtpConfig.fromEmail}> -> 250 2.1.0 Ok`,
-      `[${timestamp}] RCPT TO:<${recipient}> -> 250 2.1.5 Ok`,
-      `[${timestamp}] DATA -> 354 End data with <CR><LF>.<CR><LF>`,
-      `[${timestamp}] Subject: ⚡ Test Verification Dispatch from ElvoraDigital`,
-      `[${timestamp}] 250 2.0.0 Ok: queued as msg_znv_${Date.now()}`,
-      `[${timestamp}] Connection closed gracefully. Message dispatched successfully.`,
-    ];
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : null;
+      const res = await fetch(`${API_BASE}/api/email/test`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token || ""}`,
+        },
+        body: JSON.stringify({
+          toEmail: recipient,
+          testConfig: emailSmtpConfig.password ? emailSmtpConfig : undefined,
+        }),
+      });
+      const data = await res.json();
 
-    const newLog: EmailLog = {
-      id: `elog-${Date.now()}`,
-      recipient,
-      recipientName: "Test Recipient",
-      templateId: "test_verification",
-      templateName: "SMTP Test Verification Dispatch",
-      subject: "⚡ Test Verification Dispatch from ElvoraDigital",
-      sentAt: timestamp,
-      status: "delivered",
-    };
+      if (res.ok && data.success) {
+        const log: string[] = [
+          `[${timestamp}] Connecting to ${emailSmtpConfig.host}:${emailSmtpConfig.port} (${emailSmtpConfig.encryption.toUpperCase()})...`,
+          `[${timestamp}] ${data.message || "Diagnostic SMTP email dispatched!"}`,
+          `[${timestamp}] Response: ${data.response || "250 OK"}`,
+        ];
 
-    setEmailLogs((prev) => [newLog, ...prev]);
-    setEmailSmtpConfig((prev) => ({ ...prev, isVerified: true }));
-    addAuditLog("Dispatched SMTP Test Email", "Email", `Delivered diagnostic email to ${recipient}`);
-    return { success: true, log };
+        const newLog: EmailLog = {
+          id: `elog-${Date.now()}`,
+          recipient,
+          recipientName: "Test Recipient",
+          templateId: "test_verification",
+          templateName: "SMTP Test Verification Dispatch",
+          subject: "⚡ ElvoraDigital SMTP Email Connection Verified",
+          sentAt: timestamp,
+          status: "delivered",
+        };
+        setEmailLogs((prev) => [newLog, ...prev]);
+        setEmailSmtpConfig((prev) => ({ ...prev, isVerified: true }));
+        addAuditLog("Dispatched SMTP Test Email", "Email", `Delivered diagnostic email to ${recipient}`);
+        return { success: true, log };
+      }
+
+      const failLog = [
+        `[${timestamp}] SMTP Error: ${data.message || "Failed to dispatch SMTP email"}`,
+      ];
+      return { success: false, log: failLog };
+    } catch (err: any) {
+      return {
+        success: false,
+        log: [`[${timestamp}] Network/Server Error: ${err?.message || "Could not reach backend SMTP endpoint"}`],
+      };
+    }
   };
 
   const resendEmail = (logId: string) => {

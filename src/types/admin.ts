@@ -317,7 +317,7 @@ export interface StoreSettings {
   };
 }
 
-export type EmailProviderType = "smtp" | "resend" | "sendgrid" | "ses" | "mailgun" | "postmark";
+export type EmailProviderType = "smtp";
 
 export interface EmailSmtpConfig {
   provider: EmailProviderType;

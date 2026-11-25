@@ -121,15 +121,15 @@ export const INITIAL_LANDING_PAGES: LandingPageConfig[] = [
 
 export const DEFAULT_EMAIL_SMTP_CONFIG: EmailSmtpConfig = {
   provider: "smtp",
-  host: "smtp.gmail.com",
+  host: "smtp.hostinger.com",
   port: 465,
   encryption: "ssl",
-  username: "ritikjain6224@gmail.com",
-  password: "ylvbepioygkccqta",
-  fromName: "ElvoraDigital Access",
-  fromEmail: "ritikjain6224@gmail.com",
-  replyToEmail: "ritikjain6224@gmail.com",
-  isVerified: true,
+  username: "info@elvordigital.com",
+  password: "",
+  fromName: "ElvoraDigital",
+  fromEmail: "info@elvordigital.com",
+  replyToEmail: "support@elvordigital.com",
+  isVerified: false,
 };
 
 export const DEFAULT_EMAIL_TEMPLATES: EmailTemplateConfig[] = [

@@ -38,7 +38,7 @@ export default function CreateProductPage() {
   const { addProduct, addAuditLog } = useAdminData();
 
   const [activeTab, setActiveTab] = useState<
-    "basic" | "photos" | "access" | "deliverables" | "features" | "bonuses" | "faqs" | "ads" | "sections"
+    "basic" | "photos" | "access" | "deliverables" | "features" | "bonuses" | "faqs" | "ads" | "sections" | "custom"
   >("basic");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -132,7 +132,18 @@ export default function CreateProductPage() {
       callToAction: "Get Instant Access",
       targetAudience: "E-commerce Founders, Dropshippers & Agency Owners",
       adMediaUrl: "",
+      adImages: [] as string[],
     },
+
+    // Custom Admin-Defined Product Fields & Sections
+    customSections: [] as Array<{
+      id: string;
+      title: string;
+      fieldType: "text" | "image" | "video" | "link";
+      content: string;
+      mediaUrl: string;
+      buttonLabel: string;
+    }>,
 
     // Point 2: Extended Sections
     curriculum: [
@@ -154,6 +165,7 @@ export default function CreateProductPage() {
   });
 
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
+  const [newAdImageUrl, setNewAdImageUrl] = useState("");
   const [newDeliverable, setNewDeliverable] = useState("");
 
   const handleTitleChange = (val: string) => {
@@ -361,8 +373,9 @@ export default function CreateProductPage() {
           { id: "features", label: "Preview & Features", icon: Sparkles },
           { id: "bonuses", label: "Comparison & Bonuses", icon: Gift },
           { id: "faqs", label: "Product FAQs", icon: HelpCircle },
-          { id: "ads", label: "Meta Ads & Copy", icon: Megaphone },
+          { id: "ads", label: "Ads & Marketing", icon: Megaphone },
           { id: "sections", label: "Curriculum & Sections", icon: Layout },
+          { id: "custom", label: "Custom Fields & Media", icon: Plus },
         ].map((tab) => {
           const Icon = tab.icon;
           return (
@@ -524,8 +537,21 @@ export default function CreateProductPage() {
           <AdminCard title="Product Photos & Visual Assets">
             <div className="space-y-4">
               <p className="text-xs text-gray-400">
-                Add high-resolution product mockup images, course covers, and preview screenshots. The first image is used as the primary storefront thumbnail.
+                Add high-resolution product mockup images, course covers, and preview screenshots. The primary thumbnail is displayed on store cards and the product hero.
               </p>
+
+              <div>
+                <label className="block text-xs font-semibold text-purple-300 mb-1.5">
+                  Primary Thumbnail Image URL (Shown on Storefront Cards)
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://images.unsplash.com/..."
+                  value={formData.thumbnail}
+                  onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-purple-500/30 text-xs text-white focus:outline-none focus:border-purple-400"
+                />
+              </div>
 
               <div className="flex gap-2">
                 <input
@@ -552,10 +578,14 @@ export default function CreateProductPage() {
                     className="relative group rounded-xl overflow-hidden border border-white/10 bg-[#0e0d22] aspect-video"
                   >
                     <img src={photo} alt={`Product ${idx + 1}`} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between p-3">
-                      <span className="text-[10px] font-bold text-purple-300 bg-purple-950/80 px-2 py-0.5 rounded border border-purple-500/30">
-                        {idx === 0 ? "Primary Thumbnail" : `Photo #${idx + 1}`}
-                      </span>
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-between p-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, thumbnail: photo })}
+                        className="text-[10px] font-bold text-purple-200 bg-purple-950/90 hover:bg-purple-600 px-2.5 py-1 rounded border border-purple-500/40"
+                      >
+                        {formData.thumbnail === photo ? "✓ Primary Thumbnail" : "Set as Thumbnail"}
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleRemovePhoto(idx)}
@@ -1036,6 +1066,65 @@ export default function CreateProductPage() {
                     className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
                   />
                 </div>
+
+                {/* Additional Ad Banner Images */}
+                <div className="pt-3 border-t border-white/5 space-y-3">
+                  <label className="block text-xs font-semibold text-white">
+                    Additional Ad Banner Images (Shown in Ad Spotlight)
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      placeholder="Paste Ad Banner Image URL (https://...)"
+                      value={newAdImageUrl}
+                      onChange={(e) => setNewAdImageUrl(e.target.value)}
+                      className="flex-1 px-3.5 py-2 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!newAdImageUrl.trim()) return;
+                        setFormData((prev) => ({
+                          ...prev,
+                          adCopy: {
+                            ...prev.adCopy,
+                            adImages: [...(prev.adCopy.adImages || []), newAdImageUrl.trim()],
+                          },
+                        }));
+                        setNewAdImageUrl("");
+                      }}
+                      className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white flex items-center gap-1.5 shrink-0"
+                    >
+                      <Plus size={14} />
+                      <span>Add Ad Image</span>
+                    </button>
+                  </div>
+
+                  {(formData.adCopy.adImages || []).length > 0 && (
+                    <div className="grid sm:grid-cols-3 gap-3 pt-1">
+                      {(formData.adCopy.adImages || []).map((imgUrl, idx) => (
+                        <div key={idx} className="relative group rounded-xl overflow-hidden border border-white/10 bg-[#0e0d22] aspect-video">
+                          <img src={imgUrl} alt={`Ad Banner ${idx + 1}`} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                adCopy: {
+                                  ...prev.adCopy,
+                                  adImages: (prev.adCopy.adImages || []).filter((_, i) => i !== idx),
+                                },
+                              }))
+                            }
+                            className="absolute top-2 right-2 p-1 rounded bg-red-600/80 hover:bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X size={13} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </AdminCard>
           </div>
@@ -1202,6 +1291,175 @@ export default function CreateProductPage() {
                     placeholder="⚡ Special Launch Pricing: Available for a limited period only."
                     className="w-full px-3.5 py-2 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400"
                   />
+                </div>
+              </div>
+            </AdminCard>
+          </div>
+        )}
+
+        {/* TAB 10: CUSTOM FIELDS & MEDIA SECTIONS */}
+        {activeTab === "custom" && (
+          <div className="space-y-6">
+            <AdminCard title="Custom Product Fields & Media Sections">
+              <div className="space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/5">
+                  <p className="text-xs text-[#A7A3BC]">
+                    Create custom sections tailored to this product — add demo images, walkthrough videos, text blocks, or resource links shown directly on the product page.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        customSections: [
+                          ...prev.customSections,
+                          {
+                            id: `sec-${Date.now()}`,
+                            title: "Product Showcase / Custom Field",
+                            fieldType: "image",
+                            content: "",
+                            mediaUrl: "",
+                            buttonLabel: "Open Resource",
+                          },
+                        ],
+                      }))
+                    }
+                    className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white flex items-center gap-1.5 shrink-0"
+                  >
+                    <Plus size={14} />
+                    <span>Add Custom Field</span>
+                  </button>
+                </div>
+
+                {formData.customSections.length === 0 && (
+                  <div className="p-6 rounded-xl bg-[#0e0d22] border border-dashed border-white/10 text-center text-xs text-gray-400">
+                    No custom fields added yet. Click &quot;Add Custom Field&quot; to attach product-specific images, videos, or info blocks.
+                  </div>
+                )}
+
+                <div className="space-y-4">
+                  {formData.customSections.map((sec, idx) => (
+                    <div key={sec.id || idx} className="p-4 rounded-xl bg-[#0e0d22] border border-white/10 space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-bold text-cyan-400">Custom Section #{idx + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              customSections: prev.customSections.filter((_, i) => i !== idx),
+                            }))
+                          }
+                          className="text-gray-400 hover:text-red-400 p-1"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+
+                      <div className="grid sm:grid-cols-3 gap-3">
+                        <div className="sm:col-span-2">
+                          <label className="block text-[11px] font-semibold text-[#A7A3BC] mb-1">
+                            Section / Field Title *
+                          </label>
+                          <input
+                            type="text"
+                            value={sec.title}
+                            onChange={(e) => {
+                              const updated = [...formData.customSections];
+                              updated[idx] = { ...updated[idx], title: e.target.value };
+                              setFormData({ ...formData, customSections: updated });
+                            }}
+                            placeholder="e.g. Course Walkthrough Video or Bonus Template Preview"
+                            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white font-semibold"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-semibold text-[#A7A3BC] mb-1">
+                            Field Type
+                          </label>
+                          <select
+                            value={sec.fieldType}
+                            onChange={(e) => {
+                              const updated = [...formData.customSections];
+                              updated[idx] = {
+                                ...updated[idx],
+                                fieldType: e.target.value as "text" | "image" | "video" | "link",
+                              };
+                              setFormData({ ...formData, customSections: updated });
+                            }}
+                            className="w-full px-3 py-2 rounded-lg bg-[#17152E] border border-white/10 text-xs text-white"
+                          >
+                            <option value="image">Image Showcase</option>
+                            <option value="video">Video (YouTube / Vimeo / MP4)</option>
+                            <option value="text">Text / Details Block</option>
+                            <option value="link">External Link / Button</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-semibold text-[#A7A3BC] mb-1">
+                          Description / Content
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={sec.content}
+                          onChange={(e) => {
+                            const updated = [...formData.customSections];
+                            updated[idx] = { ...updated[idx], content: e.target.value };
+                            setFormData({ ...formData, customSections: updated });
+                          }}
+                          placeholder="Explain what this section shows or add detailed notes..."
+                          className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-200"
+                        />
+                      </div>
+
+                      {sec.fieldType !== "text" && (
+                        <div className="grid sm:grid-cols-2 gap-3">
+                          <div className={sec.fieldType === "link" ? "" : "sm:col-span-2"}>
+                            <label className="block text-[11px] font-semibold text-[#A7A3BC] mb-1">
+                              {sec.fieldType === "image"
+                                ? "Image URL (https://...)"
+                                : sec.fieldType === "video"
+                                ? "Video URL (YouTube, Vimeo, or MP4)"
+                                : "Target Link URL (https://...)"}
+                            </label>
+                            <input
+                              type="url"
+                              value={sec.mediaUrl}
+                              onChange={(e) => {
+                                const updated = [...formData.customSections];
+                                updated[idx] = { ...updated[idx], mediaUrl: e.target.value };
+                                setFormData({ ...formData, customSections: updated });
+                              }}
+                              placeholder="https://..."
+                              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-cyan-300 font-mono"
+                            />
+                          </div>
+
+                          {sec.fieldType === "link" && (
+                            <div>
+                              <label className="block text-[11px] font-semibold text-[#A7A3BC] mb-1">
+                                Button Label
+                              </label>
+                              <input
+                                type="text"
+                                value={sec.buttonLabel}
+                                onChange={(e) => {
+                                  const updated = [...formData.customSections];
+                                  updated[idx] = { ...updated[idx], buttonLabel: e.target.value };
+                                  setFormData({ ...formData, customSections: updated });
+                                }}
+                                placeholder="Open Live Demo"
+                                className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             </AdminCard>

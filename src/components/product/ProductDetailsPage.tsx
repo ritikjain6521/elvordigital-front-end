@@ -51,6 +51,28 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
   >("overview");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
+  const galleryImages = Array.from(
+    new Set(
+      [product.thumbnail, ...(product.photos || [])].filter(
+        (u): u is string => Boolean(u && u.trim())
+      )
+    )
+  );
+  const [selectedHeroImage, setSelectedHeroImage] = useState<string>(
+    galleryImages[0] || ""
+  );
+
+  const getVideoEmbedUrl = (url: string): string | null => {
+    const clean = url.trim();
+    const ytMatch = clean.match(
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{6,})/
+    );
+    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+    const vimeoMatch = clean.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    return null;
+  };
+
   // Point 3: Customer Reviews & Ratings state
   const [reviews, setReviews] = useState<any[]>(
     product.reviews && product.reviews.length > 0
@@ -384,48 +406,104 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                     </span>
                   </div>
 
-                  {/* Center Cover Art Mockup */}
-                  <div className="relative aspect-[4/3] rounded-2xl bg-gradient-to-br from-[#251e50] via-[#1b1540] to-[#0e0a24] border border-white/10 p-6 flex flex-col justify-between overflow-hidden shadow-inner group">
-                    <div
-                      className={`absolute inset-0 opacity-30 bg-gradient-to-tr ${product.accentGradient}`}
-                    />
+                  {/* Center Cover Art / Product Thumbnail */}
+                  {selectedHeroImage ? (
+                    <div className="space-y-3">
+                      <div className="relative aspect-[4/3] rounded-2xl bg-[#0e0a24] border border-white/10 overflow-hidden shadow-inner group">
+                        <img
+                          src={selectedHeroImage}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#090816]/85 via-transparent to-[#090816]/40" />
 
-                    {/* Badge */}
-                    <div className="relative z-10 flex items-center justify-between">
-                      <span className="px-3 py-1 rounded-lg bg-black/40 border border-white/10 text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-md">
-                        {product.categoryName}
-                      </span>
-                      {product.bonuses.length > 0 && (
-                        <span className="flex items-center gap-1 text-[10px] font-bold text-yellow-300 bg-yellow-500/10 border border-yellow-500/20 px-2 py-0.5 rounded-full">
-                          <Gift size={11} />
-                          <span>+{product.bonuses.length} Free Bonuses</span>
-                        </span>
+                        {/* Top Badge */}
+                        <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
+                          <span className="px-3 py-1 rounded-lg bg-black/60 border border-white/15 text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-md">
+                            {product.categoryName}
+                          </span>
+                          {product.bonuses.length > 0 && (
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-yellow-300 bg-black/60 border border-yellow-500/30 px-2.5 py-1 rounded-full backdrop-blur-md">
+                              <Gift size={11} />
+                              <span>+{product.bonuses.length} Free Bonuses</span>
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Bottom Specs */}
+                        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-gray-200 bg-black/55 px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/10">
+                          <span>{product.fileSize || "Instant Download"}</span>
+                          <span className="text-white font-semibold">ElvoraDigital Certified</span>
+                        </div>
+                      </div>
+
+                      {/* Thumbnail Switcher if multiple photos */}
+                      {galleryImages.length > 1 && (
+                        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                          {galleryImages.map((imgUrl, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => setSelectedHeroImage(imgUrl)}
+                              className={`relative w-16 h-12 rounded-lg overflow-hidden border transition-all shrink-0 ${
+                                selectedHeroImage === imgUrl
+                                  ? "border-purple-400 ring-2 ring-purple-500/40"
+                                  : "border-white/10 opacity-60 hover:opacity-100"
+                              }`}
+                            >
+                              <img
+                                src={imgUrl}
+                                alt={`${product.name} preview ${idx + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </button>
+                          ))}
+                        </div>
                       )}
                     </div>
+                  ) : (
+                    <div className="relative aspect-[4/3] rounded-2xl bg-gradient-to-br from-[#251e50] via-[#1b1540] to-[#0e0a24] border border-white/10 p-6 flex flex-col justify-between overflow-hidden shadow-inner group">
+                      <div
+                        className={`absolute inset-0 opacity-30 bg-gradient-to-tr ${product.accentGradient}`}
+                      />
 
-                    {/* Center Icon Graphic */}
-                    <div className="relative z-10 text-center my-auto py-4">
-                      <div className="h-14 w-14 rounded-2xl bg-purple-500/20 border border-purple-400/30 mx-auto flex items-center justify-center text-purple-300 mb-3 shadow-lg group-hover:scale-110 transition-transform">
-                        {product.category === "meta-ads-courses" ? (
-                          <Play size={26} fill="currentColor" className="ml-1" />
-                        ) : (
-                          <Sparkles size={26} />
+                      {/* Badge */}
+                      <div className="relative z-10 flex items-center justify-between">
+                        <span className="px-3 py-1 rounded-lg bg-black/40 border border-white/10 text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-md">
+                          {product.categoryName}
+                        </span>
+                        {product.bonuses.length > 0 && (
+                          <span className="flex items-center gap-1 text-[10px] font-bold text-yellow-300 bg-yellow-500/10 border border-yellow-500/20 px-2 py-0.5 rounded-full">
+                            <Gift size={11} />
+                            <span>+{product.bonuses.length} Free Bonuses</span>
+                          </span>
                         )}
                       </div>
-                      <h3 className="text-lg font-black text-white px-2">
-                        {product.name}
-                      </h3>
-                      <p className="text-xs text-[#A7A3BC] mt-1">
-                        {product.compatibility}
-                      </p>
-                    </div>
 
-                    {/* Bottom Specs */}
-                    <div className="relative z-10 flex items-center justify-between pt-3 border-t border-white/10 text-[11px] text-gray-400">
-                      <span>{product.fileSize || "Instant Download"}</span>
-                      <span className="text-white font-semibold">ElvoraDigital Certified</span>
+                      {/* Center Icon Graphic */}
+                      <div className="relative z-10 text-center my-auto py-4">
+                        <div className="h-14 w-14 rounded-2xl bg-purple-500/20 border border-purple-400/30 mx-auto flex items-center justify-center text-purple-300 mb-3 shadow-lg group-hover:scale-110 transition-transform">
+                          {product.category === "meta-ads-courses" ? (
+                            <Play size={26} fill="currentColor" className="ml-1" />
+                          ) : (
+                            <Sparkles size={26} />
+                          )}
+                        </div>
+                        <h3 className="text-lg font-black text-white px-2">
+                          {product.name}
+                        </h3>
+                        <p className="text-xs text-[#A7A3BC] mt-1">
+                          {product.compatibility}
+                        </p>
+                      </div>
+
+                      {/* Bottom Specs */}
+                      <div className="relative z-10 flex items-center justify-between pt-3 border-t border-white/10 text-[11px] text-gray-400">
+                        <span>{product.fileSize || "Instant Download"}</span>
+                        <span className="text-white font-semibold">ElvoraDigital Certified</span>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Deliverables summary below cover */}
                   <div className="mt-5 space-y-2">
@@ -1085,6 +1163,173 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
             </div>
           </div>
         </section>
+
+        {/* SECTION J2: PROMOTIONAL AD & CREATIVE SHOWCASE */}
+        {(product.adCopy?.adMediaUrl ||
+          (product.adCopy?.adImages && product.adCopy.adImages.length > 0) ||
+          product.adCopy?.headline) && (
+          <section className="mb-16">
+            <div className="rounded-3xl bg-gradient-to-br from-[#1b163a] via-[#14122d] to-[#0c0a1f] border border-purple-500/30 p-6 sm:p-8 shadow-2xl">
+              <div className="grid lg:grid-cols-12 gap-8 items-center">
+                <div className="lg:col-span-6 space-y-4">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-pink-300 text-[11px] font-bold uppercase tracking-wider">
+                    <Sparkles size={12} />
+                    <span>Featured Campaign &amp; Ad Spotlight</span>
+                  </span>
+                  {product.adCopy?.headline && (
+                    <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                      {product.adCopy.headline}
+                    </h3>
+                  )}
+                  {product.adCopy?.hook && (
+                    <p className="text-sm font-semibold text-cyan-300">
+                      {product.adCopy.hook}
+                    </p>
+                  )}
+                  {product.adCopy?.primaryText && (
+                    <p className="text-sm text-[#A7A3BC] leading-relaxed">
+                      {product.adCopy.primaryText}
+                    </p>
+                  )}
+                  <div className="pt-2">
+                    <button
+                      onClick={handleBuyNow}
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-purple-600/30 transition-all"
+                    >
+                      <span>{product.adCopy?.callToAction || "Get Instant Access"}</span>
+                      <ArrowRight size={15} />
+                    </button>
+                  </div>
+                </div>
+
+                {(product.adCopy?.adMediaUrl ||
+                  (product.adCopy?.adImages && product.adCopy.adImages.length > 0)) && (
+                  <div className="lg:col-span-6 space-y-3">
+                    {product.adCopy?.adMediaUrl && (
+                      <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#090816] aspect-video">
+                        {getVideoEmbedUrl(product.adCopy.adMediaUrl) ? (
+                          <iframe
+                            src={getVideoEmbedUrl(product.adCopy.adMediaUrl)!}
+                            className="w-full h-full"
+                            allowFullScreen
+                            title={`${product.name} Ad Preview`}
+                          />
+                        ) : /\.(mp4|webm|ogg)(\?|$)/i.test(product.adCopy.adMediaUrl) ? (
+                          <video
+                            src={product.adCopy.adMediaUrl}
+                            controls
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <img
+                            src={product.adCopy.adMediaUrl}
+                            alt={product.adCopy.headline || product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                    )}
+
+                    {product.adCopy?.adImages && product.adCopy.adImages.length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {product.adCopy.adImages.map((img, i) => (
+                          <div
+                            key={i}
+                            className="rounded-xl overflow-hidden border border-white/10 bg-[#090816] aspect-video"
+                          >
+                            <img
+                              src={img}
+                              alt={`Ad Creative ${i + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* SECTION J3: CUSTOM PRODUCT SECTIONS (ADMIN-CONFIGURED) */}
+        {product.customSections && product.customSections.length > 0 && (
+          <section className="mb-16 space-y-6">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
+                Additional Product Showcase
+              </span>
+              <h3 className="text-2xl font-bold text-white mt-1">
+                In-Depth Preview &amp; Custom Resources
+              </h3>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {product.customSections.map((sec, idx) => {
+                const embedUrl = sec.mediaUrl ? getVideoEmbedUrl(sec.mediaUrl) : null;
+                return (
+                  <div
+                    key={sec.id || idx}
+                    className="p-6 rounded-2xl bg-[#17152E]/90 border border-white/10 space-y-4 flex flex-col justify-between"
+                  >
+                    <div className="space-y-3">
+                      <h4 className="text-lg font-bold text-white">{sec.title}</h4>
+                      {sec.content && (
+                        <p className="text-sm text-[#A7A3BC] leading-relaxed whitespace-pre-line">
+                          {sec.content}
+                        </p>
+                      )}
+
+                      {sec.fieldType === "image" && sec.mediaUrl && (
+                        <div className="rounded-xl overflow-hidden border border-white/10 bg-[#090816] aspect-video">
+                          <img
+                            src={sec.mediaUrl}
+                            alt={sec.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+
+                      {sec.fieldType === "video" && sec.mediaUrl && (
+                        <div className="rounded-xl overflow-hidden border border-white/10 bg-[#090816] aspect-video">
+                          {embedUrl ? (
+                            <iframe
+                              src={embedUrl}
+                              className="w-full h-full"
+                              allowFullScreen
+                              title={sec.title}
+                            />
+                          ) : (
+                            <video
+                              src={sec.mediaUrl}
+                              controls
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {sec.fieldType === "link" && sec.mediaUrl && (
+                      <div className="pt-2">
+                        <a
+                          href={sec.mediaUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600 border border-purple-500/40 text-purple-200 hover:text-white text-xs font-bold transition-all"
+                        >
+                          <span>{sec.buttonLabel || "Open Resource"}</span>
+                          <ArrowRight size={14} />
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* SECTION L: RELATED PRODUCTS */}
         {relatedProducts.length > 0 && (

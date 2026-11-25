@@ -102,6 +102,7 @@ function mapMongoToProduct(p: any): Product {
       { feature: "Direct Google Drive Vault Access", elvora: true, standard: false },
     ],
     adCopy: p.adCopy || undefined,
+    customSections: Array.isArray(p.customSections) ? p.customSections : [],
     curriculum: p.curriculum || undefined,
     targetAudienceList: p.targetAudienceList || undefined,
     requirements: p.requirements || undefined,

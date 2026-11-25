@@ -84,7 +84,16 @@ export interface Product {
     callToAction?: string;
     targetAudience?: string;
     adMediaUrl?: string;
+    adImages?: string[];
   };
+  customSections?: Array<{
+    id?: string;
+    title: string;
+    fieldType: "text" | "image" | "video" | "link";
+    content?: string;
+    mediaUrl?: string;
+    buttonLabel?: string;
+  }>;
   curriculum?: Array<{
     title: string;
     duration?: string;

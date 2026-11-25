@@ -101,10 +101,29 @@ export default function CloudVaultPage({
     );
   }
 
-  const downloadApiUrl = `${API_BASE}/api/download/${slug}`;
-  const driveUrl = product?.googleDriveLink && !product.googleDriveLink.includes("1zenovavibe")
-    ? product.googleDriveLink
-    : `https://drive.google.com/drive/u/0/my-drive`;
+  const rawDownloadUrl = product?.downloadFileUrl?.trim() || "";
+  const downloadApiUrl =
+    rawDownloadUrl &&
+    !rawDownloadUrl.includes("assets.elvoradigital.com") &&
+    !rawDownloadUrl.includes("/api/download/")
+      ? rawDownloadUrl
+      : "";
+
+  const rawDriveUrl = product?.googleDriveLink?.trim() || "";
+  const driveUrl =
+    rawDriveUrl &&
+    !rawDriveUrl.includes("1zenovavibe") &&
+    !rawDriveUrl.includes("1elvoradigital")
+      ? rawDriveUrl
+      : "";
+
+  const rawFolderUrl = product?.accessFolderLink?.trim() || "";
+  const folderUrl =
+    rawFolderUrl && !rawFolderUrl.includes("cloud.elvoradigital.com")
+      ? rawFolderUrl
+      : "";
+
+  const videoUrl = product?.videoLink?.trim() || "";
 
   return (
     <div className="min-h-screen py-10 lg:py-16">
@@ -131,27 +150,56 @@ export default function CloudVaultPage({
               </p>
             </div>
 
-            {/* Direct Instant Action Buttons */}
+            {/* Direct Instant Action Buttons (Strictly Admin-Configured) */}
             <div className="flex flex-wrap gap-2.5">
-              <a
-                href={downloadApiUrl}
-                download
-                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-purple-600/30 transition-all hover:scale-[1.02]"
-              >
-                <Download size={16} />
-                <span>Download Master ZIP</span>
-              </a>
+              {downloadApiUrl && (
+                <a
+                  href={downloadApiUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-purple-600/30 transition-all hover:scale-[1.02]"
+                >
+                  <Download size={16} />
+                  <span>Download Master ZIP</span>
+                </a>
+              )}
 
-              <a
-                href={driveUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 transition-colors"
-              >
-                <Globe size={15} className="text-cyan-400" />
-                <span>Google Drive Vault</span>
-                <ExternalLink size={12} />
-              </a>
+              {driveUrl && (
+                <a
+                  href={driveUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 transition-colors"
+                >
+                  <Globe size={15} className="text-cyan-400" />
+                  <span>Google Drive Vault</span>
+                  <ExternalLink size={12} />
+                </a>
+              )}
+
+              {folderUrl && (
+                <a
+                  href={folderUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-xs border border-white/10 transition-colors"
+                >
+                  <ExternalLink size={14} className="text-emerald-400" />
+                  <span>Cloud Folder Access</span>
+                </a>
+              )}
+
+              {videoUrl && (
+                <a
+                  href={videoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl bg-pink-600/20 hover:bg-pink-600/30 text-pink-300 font-semibold text-xs border border-pink-500/30 transition-colors"
+                >
+                  <ExternalLink size={14} className="text-pink-400" />
+                  <span>Watch Video Lessons</span>
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -185,53 +233,58 @@ export default function CloudVaultPage({
         {activeTab === "overview" && (
           <div className="mt-8 space-y-6">
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-6 rounded-2xl bg-[#17152E] border border-white/10 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="p-2 rounded-xl bg-purple-500/20 text-purple-300">
-                    <Download size={18} />
-                  </span>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                    Ready to Save
-                  </span>
+              {downloadApiUrl && (
+                <div className="p-6 rounded-2xl bg-[#17152E] border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="p-2 rounded-xl bg-purple-500/20 text-purple-300">
+                      <Download size={18} />
+                    </span>
+                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      Ready to Save
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-bold text-white">Full Master Bundle Archive</h3>
+                  <p className="text-xs text-[#A7A3BC]">
+                    Direct master archive configured for this product.
+                  </p>
+                  <a
+                    href={downloadApiUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-colors"
+                  >
+                    <Download size={14} />
+                    <span>Download File</span>
+                  </a>
                 </div>
-                <h3 className="text-sm font-bold text-white">Full Master Bundle Archive</h3>
-                <p className="text-xs text-[#A7A3BC]">
-                  Includes the complete high-resolution playbook, Notion workspace shortcut, and swipe files.
-                </p>
-                <a
-                  href={downloadApiUrl}
-                  download
-                  className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-colors"
-                >
-                  <Download size={14} />
-                  <span>Download .ZIP</span>
-                </a>
-              </div>
+              )}
 
-              <div className="p-6 rounded-2xl bg-[#17152E] border border-white/10 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="p-2 rounded-xl bg-cyan-500/20 text-cyan-300">
-                    <Globe size={18} />
-                  </span>
-                  <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
-                    Cloud Synced
-                  </span>
-                </div>
-                <h3 className="text-sm font-bold text-white">Google Drive Cloud Mirror</h3>
-                <p className="text-xs text-[#A7A3BC]">
-                  Instant cloud drive storage sync for team sharing and mobile access on Google Workspace.
-                </p>
-                <a
-                  href={driveUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-colors"
-                >
-                  <Globe size={14} className="text-cyan-400" />
+              {driveUrl && (
+                <div className="p-6 rounded-2xl bg-[#17152E] border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="p-2 rounded-xl bg-cyan-500/20 text-cyan-300">
+                      <Globe size={18} />
+                    </span>
+                    <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+                      Cloud Synced
+                    </span>
+                  </div>
+                  <h3 className="text-sm font-bold text-white">Google Drive Cloud Mirror</h3>
+                  <p className="text-xs text-[#A7A3BC]">
+                    Instant cloud drive storage sync for team sharing and mobile access on Google Workspace.
+                  </p>
+                  <a
+                    href={driveUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold transition-colors"
+                  >
+                    <Globe size={14} className="text-cyan-400" />
                   <span>Open Drive</span>
                   <ExternalLink size={12} />
                 </a>
               </div>
+              )}
 
               <div className="p-6 rounded-2xl bg-[#17152E] border border-white/10 space-y-3">
                 <div className="flex items-center justify-between">

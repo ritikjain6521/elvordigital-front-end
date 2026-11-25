@@ -49,7 +49,8 @@ export default function CheckoutPage() {
           quantity: item.quantity,
           format: item.product.productFormat || "Digital Download",
           googleDriveLink: (item.product as any).googleDriveLink || "",
-          accessFolderLink: (item.product as any).accessFolderLink || `/vault/${itemSlug}`,
+          accessFolderLink: (item.product as any).accessFolderLink || "",
+          videoLink: (item.product as any).videoLink || "",
           downloadFileUrl: (item.product as any).downloadFileUrl || "",
         };
       });

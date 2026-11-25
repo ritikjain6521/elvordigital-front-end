@@ -133,7 +133,7 @@ export default function AdminLoginPage() {
             </div>
           </div>
           <h1 className="text-2xl font-black text-white tracking-tight">
-            Elvora<span className="text-[#8B5CF6]">Digital</span> Admin
+            Elvor<span className="text-[#8B5CF6]">Digital</span> Admin
           </h1>
           <p className="text-xs text-[#A7A3BC] mt-1">
             Enter administrative credentials to access the control panel

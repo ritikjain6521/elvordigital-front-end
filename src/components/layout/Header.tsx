@@ -120,7 +120,7 @@ export default function Header() {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-bold tracking-tight text-white group-hover:text-purple-300 transition-colors">
-                Elvora<span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Digital</span>
+                Elvor<span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Digital</span>
               </span>
               <span className="text-[10px] uppercase tracking-widest text-[#A7A3BC] -mt-1 hidden sm:block">
                 Digital Marketplace

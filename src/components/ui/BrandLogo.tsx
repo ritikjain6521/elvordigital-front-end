@@ -97,7 +97,7 @@ export default function BrandLogo({
           <span
             className={`${textSizes[size]} tracking-tight text-white group-hover:text-purple-300 transition-colors leading-tight`}
           >
-            Elvora<span className="text-[#8B5CF6]">Digital</span>
+            Elvor<span className="text-[#8B5CF6]">Digital</span>
           </span>
           {subtitle && (
             <span className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold -mt-0.5">

@@ -646,7 +646,7 @@ export default function EmailConfigPage() {
                           Z
                         </div>
                         <span className="font-bold text-sm tracking-tight text-white">
-                          Elvora<span>Digital</span>
+                          Elvor<span>Digital</span>
                         </span>
                       </div>
                       <span className="text-[10px] uppercase font-bold tracking-widest text-[#22D3EE] bg-cyan-950/40 px-2 py-0.5 rounded border border-cyan-500/20">

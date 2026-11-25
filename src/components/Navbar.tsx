@@ -76,7 +76,7 @@ export default function Navbar() {
             <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-purple-400/20 to-cyan-300/20 opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <span className="text-lg font-bold text-white tracking-tight">
-            Elvora<span className="text-[#8B5CF6]">Digital</span>
+            Elvor<span className="text-[#8B5CF6]">Digital</span>
           </span>
         </button>
 

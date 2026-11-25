@@ -54,7 +54,7 @@ export default function Footer() {
                 </div>
               </div>
               <span className="text-lg font-bold text-white">
-                Elvora<span className="text-[#8B5CF6]">Digital</span>
+                Elvor<span className="text-[#8B5CF6]">Digital</span>
               </span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">

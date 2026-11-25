@@ -163,7 +163,7 @@ export default function AdminSidebar({
           {!collapsed && (
             <div className="flex flex-col truncate">
               <span className="font-bold text-sm tracking-tight text-white leading-none">
-                Elvora<span>Digital</span>
+                Elvor<span>Digital</span>
               </span>
               <span className="text-[10px] uppercase font-semibold tracking-wider text-purple-300/80 mt-1">
                 Admin Console

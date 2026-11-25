@@ -79,7 +79,7 @@ export default function Header() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          {/* Logo with custom abstract E icon for ElvoraDigital */}
+          {/* Logo with custom abstract E icon for ElvorDigital */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#8B5CF6] via-[#A855F7] to-[#EC4899] p-[1.5px] shadow-lg shadow-purple-500/25 group-hover:shadow-purple-500/40 transition-shadow">
               <div className="h-full w-full rounded-[10px] bg-[#090816] flex items-center justify-center">

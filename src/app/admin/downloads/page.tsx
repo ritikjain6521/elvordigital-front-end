@@ -368,7 +368,7 @@ export default function DigitalAssetsPage() {
             </label>
             <input
               type="url"
-              placeholder="https://cloud.elvoradigital.com/folders/..."
+              placeholder="https://cloud.ElvorDigital.com/folders/..."
               value={form.accessFolderLink}
               onChange={(e) => setForm({ ...form, accessFolderLink: e.target.value })}
               className="w-full mt-1 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-mono text-cyan-300 focus:outline-none focus:border-[#8B5CF6]"

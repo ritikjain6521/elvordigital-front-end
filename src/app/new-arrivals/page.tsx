@@ -3,9 +3,9 @@ import StoreView from "@/components/store/StoreView";
 import { fetchLiveProducts } from "@/lib/apiProducts";
 
 export const metadata: Metadata = {
-  title: "New Digital Product Releases | ElvoraDigital",
+  title: "New Digital Product Releases | ElvorDigital",
   description:
-    "Discover the latest additions to the ElvoraDigital marketplace — fresh AI prompt vaults, UI kits, and marketing playbooks.",
+    "Discover the latest additions to the ElvorDigital marketplace — fresh AI prompt vaults, UI kits, and marketing playbooks.",
 };
 
 export default async function NewArrivalsPage() {

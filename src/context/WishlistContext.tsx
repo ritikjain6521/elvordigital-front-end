@@ -20,7 +20,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   // sessionStorage only — no cross-session persistence
   useEffect(() => {
     try {
-      const saved = sessionStorage.getItem("elvoradigital_wishlist");
+      const saved = sessionStorage.getItem("ElvorDigital_wishlist");
       if (saved) {
         setWishlist(JSON.parse(saved));
       }
@@ -34,7 +34,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isHydrated) return;
     try {
-      sessionStorage.setItem("elvoradigital_wishlist", JSON.stringify(wishlist));
+      sessionStorage.setItem("ElvorDigital_wishlist", JSON.stringify(wishlist));
     } catch {
       // Ignore
     }

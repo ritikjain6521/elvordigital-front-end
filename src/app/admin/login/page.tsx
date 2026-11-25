@@ -45,14 +45,14 @@ export default function AdminLoginPage() {
 
       // Fallback verification for demo credentials
       if (
-        (identifier === "admin" || identifier === "admin@elvoradigital.com") &&
+        (identifier === "admin" || identifier === "admin@ElvorDigital.com") &&
         (password === "Admin@123456" || password === "admin")
       ) {
         const demoUser = {
           id: "usr-admin",
           username: "admin",
-          email: "admin@elvoradigital.com",
-          name: "ElvoraDigital Chief Admin",
+          email: "admin@ElvorDigital.com",
+          name: "ElvorDigital Chief Admin",
           role: "OWNER",
         };
         sessionStorage.setItem("znv_admin_token", "demo_admin_token_2026");
@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
     } catch (err) {
       // If backend network error, fallback to demo check
       if (
-        (identifier === "admin" || identifier === "admin@elvoradigital.com") &&
+        (identifier === "admin" || identifier === "admin@ElvorDigital.com") &&
         (password === "Admin@123456" || password === "admin")
       ) {
         sessionStorage.setItem("znv_admin_token", "demo_admin_token_2026");
@@ -74,8 +74,8 @@ export default function AdminLoginPage() {
           JSON.stringify({
             id: "usr-admin",
             username: "admin",
-            email: "admin@elvoradigital.com",
-            name: "ElvoraDigital Chief Admin",
+            email: "admin@ElvorDigital.com",
+            name: "ElvorDigital Chief Admin",
             role: "OWNER",
           })
         );
@@ -159,7 +159,7 @@ export default function AdminLoginPage() {
                 <input
                   type="text"
                   required
-                  placeholder="admin or admin@elvoradigital.com"
+                  placeholder="admin or admin@ElvorDigital.com"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-[#A7A3BC]/50 focus:outline-none focus:border-[#8B5CF6] transition-colors"
@@ -222,7 +222,7 @@ export default function AdminLoginPage() {
             Ritik Jain
           </p>
           <p className="text-[10px] text-purple-400/80 font-medium tracking-wide">
-            Full-Stack Developer · ElvoraDigital Platform
+            Full-Stack Developer · ElvorDigital Platform
           </p>
           <a
             href="https://mahaveerweb.in"

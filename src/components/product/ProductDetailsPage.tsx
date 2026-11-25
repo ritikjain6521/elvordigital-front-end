@@ -433,7 +433,7 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                         {/* Bottom Specs */}
                         <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-gray-200 bg-black/55 px-3 py-1.5 rounded-xl backdrop-blur-md border border-white/10">
                           <span>{product.fileSize || "Instant Download"}</span>
-                          <span className="text-white font-semibold">ElvoraDigital Certified</span>
+                          <span className="text-white font-semibold">ElvorDigital Certified</span>
                         </div>
                       </div>
 
@@ -500,7 +500,7 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
                       {/* Bottom Specs */}
                       <div className="relative z-10 flex items-center justify-between pt-3 border-t border-white/10 text-[11px] text-gray-400">
                         <span>{product.fileSize || "Instant Download"}</span>
-                        <span className="text-white font-semibold">ElvoraDigital Certified</span>
+                        <span className="text-white font-semibold">ElvorDigital Certified</span>
                       </div>
                     </div>
                   )}
@@ -816,7 +816,7 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
             {product.comparison && product.comparison.length > 0 && (
               <div>
                 <h3 className="text-xl font-bold text-white mb-6">
-                  Why ElvoraDigital Beats Basic Alternatives
+                  Why ElvorDigital Beats Basic Alternatives
                 </h3>
                 <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#17152E]/70">
                   <table className="w-full text-left text-xs">

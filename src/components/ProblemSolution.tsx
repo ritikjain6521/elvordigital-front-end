@@ -79,7 +79,7 @@ export default function ProblemSolution() {
               <Lightbulb size={32} className="text-purple-400" />
             </div>
             <h3 className="text-2xl sm:text-3xl font-black text-white mb-4">
-              ElvoraDigital Helps You{" "}
+              ElvorDigital Helps You{" "}
               <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
                 Advertise Smarter.
               </span>

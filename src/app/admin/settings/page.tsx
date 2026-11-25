@@ -487,7 +487,7 @@ export default function SettingsPage() {
                   <label className="text-xs font-semibold text-[#A7A3BC] uppercase">AWS S3 / Cloudflare R2 Asset Bucket</label>
                   <input
                     type="text"
-                    placeholder="s3://elvoradigital-secure-vault"
+                    placeholder="s3://ElvorDigital-secure-vault"
                     value={formData.integrations.cloudStoragePlaceholder}
                     onChange={(e) =>
                       setFormData({

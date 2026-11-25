@@ -24,7 +24,7 @@ export default function HomeFAQ() {
             </span>
           </h2>
           <p className="mt-3 text-sm text-[#A7A3BC]">
-            Everything you need to know about purchasing, accessing, and using digital assets on ElvoraDigital.
+            Everything you need to know about purchasing, accessing, and using digital assets on ElvorDigital.
           </p>
         </div>
 

@@ -47,7 +47,7 @@ export default function EmailConfigPage() {
   const [isSavedSmtp, setIsSavedSmtp] = useState(false);
 
   // Test email state
-  const [testRecipient, setTestRecipient] = useState("admin@elvoradigital.com");
+  const [testRecipient, setTestRecipient] = useState("admin@ElvorDigital.com");
   const [isTesting, setIsTesting] = useState(false);
   const [testOutput, setTestOutput] = useState<string[] | null>(null);
 
@@ -71,7 +71,7 @@ export default function EmailConfigPage() {
       port: 587,
       encryption: "tls",
       username: "info@elvordigital.com",
-      fromName: "ElvoraDigital",
+      fromName: "ElvorDigital",
       fromEmail: "info@elvordigital.com",
       replyToEmail: "support@elvordigital.com",
     });
@@ -681,12 +681,12 @@ export default function EmailConfigPage() {
                     <div className="pt-6 border-t border-white/10 text-center text-[11px] text-[#A7A3BC] space-y-1">
                       <p>
                         Need assistance with your files? Reach us at{" "}
-                        <a href="mailto:support@elvoradigital.com" className="text-[#8B5CF6] underline">
+                        <a href="mailto:support@ElvorDigital.com" className="text-[#8B5CF6] underline">
                           {smtpForm.replyToEmail}
                         </a>
                       </p>
                       <p className="text-[10px] text-gray-500">
-                        © 2026 ElvoraDigital Marketplace Inc. • Encrypted Digital License Assurance
+                        © 2026 ElvorDigital Marketplace Inc. • Encrypted Digital License Assurance
                       </p>
                     </div>
                   </div>
@@ -783,24 +783,24 @@ export default function EmailConfigPage() {
                 {
                   type: "TXT",
                   host: "@",
-                  value: "v=spf1 include:_spf.elvoradigital.com ~all",
+                  value: "v=spf1 include:_spf.ElvorDigital.com ~all",
                   purpose: "SPF (Sender Policy Framework): Authorizes your SMTP servers to send email.",
                 },
                 {
                   type: "CNAME",
-                  host: "resend._domainkey.elvoradigital.com",
+                  host: "resend._domainkey.ElvorDigital.com",
                   value: "feedback-smtp.us-east-1.amazonses.com",
                   purpose: "DKIM (DomainKeys Identified Mail): Cryptographically signs outgoing emails.",
                 },
                 {
                   type: "TXT",
-                  host: "_dmarc.elvoradigital.com",
-                  value: "v=DMARC1; p=reject; rua=mailto:dmarc-reports@elvoradigital.com",
+                  host: "_dmarc.ElvorDigital.com",
+                  value: "v=DMARC1; p=reject; rua=mailto:dmarc-reports@ElvorDigital.com",
                   purpose: "DMARC Policy: Protects your domain from spoofing and phishing.",
                 },
                 {
                   type: "MX",
-                  host: "inbound.elvoradigital.com",
+                  host: "inbound.ElvorDigital.com",
                   value: "feedback-smtp.us-east-1.amazonses.com (Priority 10)",
                   purpose: "Inbound MX: Handles bounce events and customer replies.",
                 },

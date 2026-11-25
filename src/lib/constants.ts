@@ -1,5 +1,5 @@
 // ============================================================
-// ElvoraDigital – META ADS MASTERY 2026 PRO EDITION
+// ElvorDigital – META ADS MASTERY 2026 PRO EDITION
 // Central constants file
 // ============================================================
 
@@ -7,7 +7,7 @@
 export const PURCHASE_URL = "";
 
 export const BRAND = {
-  name: "ElvoraDigital",
+  name: "ElvorDigital",
   tagline: "Learn Smarter. Market Better. Grow Further.",
   product: "META ADS MASTERY 2026 – PRO EDITION",
   shortProduct: "Meta Ads Mastery 2026",

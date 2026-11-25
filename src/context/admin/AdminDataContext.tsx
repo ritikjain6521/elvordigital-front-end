@@ -752,7 +752,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
           recipientName: "Test Recipient",
           templateId: "test_verification",
           templateName: "SMTP Test Verification Dispatch",
-          subject: "⚡ ElvoraDigital SMTP Email Connection Verified",
+          subject: "⚡ ElvorDigital SMTP Email Connection Verified",
           sentAt: timestamp,
           status: "delivered",
         };

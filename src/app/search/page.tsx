@@ -3,7 +3,7 @@ import StoreView from "@/components/store/StoreView";
 import { PRODUCTS } from "@/data/products";
 
 export const metadata: Metadata = {
-  title: "Search Digital Products | ElvoraDigital",
+  title: "Search Digital Products | ElvorDigital",
   description: "Search across our entire digital catalogue of tools, prompts, templates, and courses.",
 };
 

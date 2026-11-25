@@ -73,10 +73,10 @@ export default function CreateProductPage() {
       "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1000&q=80",
     ],
     thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1000&q=80",
-    googleDriveLink: "https://drive.google.com/drive/folders/1elvoradigital-meta-ads-2026-pro-master-vault",
-    accessFolderLink: "https://cloud.elvoradigital.com/folders/meta-ads-mastery",
+    googleDriveLink: "https://drive.google.com/drive/folders/1ElvorDigital-meta-ads-2026-pro-master-vault",
+    accessFolderLink: "https://cloud.ElvorDigital.com/folders/meta-ads-mastery",
     videoLink: "https://player.vimeo.com/video/849201940",
-    downloadFileUrl: "https://assets.elvoradigital.com/meta-ads-mastery-2026-pro-bundle.zip",
+    downloadFileUrl: "https://assets.ElvorDigital.com/meta-ads-mastery-2026-pro-bundle.zip",
 
     // Point 6: Product Details Page Sections
     overviewText: "Complete practical masterclass and resource vault designed to scale your business with Meta Ads.",
@@ -636,7 +636,7 @@ export default function CreateProductPage() {
                       type="url"
                       value={formData.accessFolderLink}
                       onChange={(e) => setFormData({ ...formData, accessFolderLink: e.target.value })}
-                      placeholder="https://cloud.elvoradigital.com/folders/..."
+                      placeholder="https://cloud.ElvorDigital.com/folders/..."
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400 font-mono"
                     />
                   </div>
@@ -664,7 +664,7 @@ export default function CreateProductPage() {
                     type="url"
                     value={formData.downloadFileUrl}
                     onChange={(e) => setFormData({ ...formData, downloadFileUrl: e.target.value })}
-                    placeholder="https://assets.elvoradigital.com/package.zip"
+                    placeholder="https://assets.ElvorDigital.com/package.zip"
                     className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-white focus:outline-none focus:border-purple-400 font-mono"
                   />
                 </div>

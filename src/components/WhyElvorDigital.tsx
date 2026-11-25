@@ -21,7 +21,7 @@ const iconMap: Record<string, React.ComponentType<{ size?: number; className?: s
   Clock,
 };
 
-export default function WhyElvoraDigital() {
+export default function WhyElvorDigital() {
   return (
     <section id="features" className="relative z-10 py-20 lg:py-28">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/5 to-transparent" />
@@ -37,7 +37,7 @@ export default function WhyElvoraDigital() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6">
             <Zap size={14} className="text-purple-400" />
             <span className="text-sm font-medium text-purple-300">
-              Why ElvoraDigital
+              Why ElvorDigital
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">

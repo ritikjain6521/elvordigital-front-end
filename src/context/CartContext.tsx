@@ -30,11 +30,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Load from sessionStorage (tab session only — no persistence)
   useEffect(() => {
     try {
-      const savedCart = sessionStorage.getItem("elvoradigital_cart");
+      const savedCart = sessionStorage.getItem("ElvorDigital_cart");
       if (savedCart) {
         setCart(JSON.parse(savedCart));
       }
-      const savedCoupon = sessionStorage.getItem("elvoradigital_coupon");
+      const savedCoupon = sessionStorage.getItem("ElvorDigital_coupon");
       if (savedCoupon === "ELVORA10") {
         setCouponCode("ELVORA10");
         setDiscountPercent(10);
@@ -50,11 +50,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isHydrated) return;
     try {
-      sessionStorage.setItem("elvoradigital_cart", JSON.stringify(cart));
+      sessionStorage.setItem("ElvorDigital_cart", JSON.stringify(cart));
       if (couponCode) {
-        sessionStorage.setItem("elvoradigital_coupon", couponCode);
+        sessionStorage.setItem("ElvorDigital_coupon", couponCode);
       } else {
-        sessionStorage.removeItem("elvoradigital_coupon");
+        sessionStorage.removeItem("ElvorDigital_coupon");
       }
     } catch {
       // Ignore
@@ -95,8 +95,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     setCart([]);
-    sessionStorage.removeItem("elvoradigital_cart");
-    sessionStorage.removeItem("elvoradigital_coupon");
+    sessionStorage.removeItem("ElvorDigital_cart");
+    sessionStorage.removeItem("ElvorDigital_coupon");
   };
 
   const applyCoupon = (code: string) => {

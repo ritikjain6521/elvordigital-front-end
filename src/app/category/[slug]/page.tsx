@@ -17,11 +17,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const category = CATEGORIES.find((c) => c.slug === slug);
   if (!category) {
-    return { title: "Category Not Found | ElvoraDigital" };
+    return { title: "Category Not Found | ElvorDigital" };
   }
 
   return {
-    title: `${category.name} | ElvoraDigital Marketplace`,
+    title: `${category.name} | ElvorDigital Marketplace`,
     description: category.description,
   };
 }

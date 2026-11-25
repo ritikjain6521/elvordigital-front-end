@@ -121,7 +121,7 @@ export default function Footer() {
             </Link>
 
             <p className="text-sm text-[#A7A3BC] leading-relaxed max-w-sm">
-              Discover. Download. Create. Grow. ElvoraDigital is a premium marketplace for ambitious founders, creators, and marketers seeking world-class digital assets and knowledge.
+              Discover. Download. Create. Grow. ElvorDigital is a premium marketplace for ambitious founders, creators, and marketers seeking world-class digital assets and knowledge.
             </p>
 
             {/* Newsletter */}
@@ -219,7 +219,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               <li>
                 <Link href="/about" className="text-xs text-[#A7A3BC] hover:text-white transition-colors">
-                  About ElvoraDigital
+                  About ElvorDigital
                 </Link>
               </li>
               <li>
@@ -249,7 +249,7 @@ export default function Footer() {
         {/* Bottom copyright */}
         <div className="mt-12 pt-8 border-t border-white/5 space-y-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#A7A3BC]">
-            <p>© 2026 ElvoraDigital. All Rights Reserved. Crafted for digital creators worldwide.</p>
+            <p>© 2026 ElvorDigital. All Rights Reserved. Crafted for digital creators worldwide.</p>
             <div className="flex items-center gap-6">
               <span className="hover:text-white cursor-pointer transition-colors">Privacy Policy</span>
               <span className="hover:text-white cursor-pointer transition-colors">Terms of Service</span>

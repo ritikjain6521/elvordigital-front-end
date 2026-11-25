@@ -43,7 +43,7 @@ const reasons = [
   },
 ];
 
-export default function WhyElvoraDigital() {
+export default function WhyElvorDigital() {
   return (
     <section className="relative z-10 py-20 lg:py-24 bg-[#0e0d22]/50 border-y border-white/5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -55,7 +55,7 @@ export default function WhyElvoraDigital() {
           <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
             Why Creators &amp; Founders{" "}
             <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-              Choose ElvoraDigital
+              Choose ElvorDigital
             </span>
           </h2>
           <p className="mt-3 text-sm text-[#A7A3BC]">

@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ElvoraDigital | Discover. Download. Create. Grow. – Premium Digital Marketplace",
+  title: "ElvorDigital | Discover. Download. Create. Grow. – Premium Digital Marketplace",
   description:
-    "Explore ElvoraDigital: The premier digital marketplace for AI prompt bundles, Meta advertising courses, Canva creator kits, business ebooks, and productivity software tools.",
+    "Explore ElvorDigital: The premier digital marketplace for AI prompt bundles, Meta advertising courses, Canva creator kits, business ebooks, and productivity software tools.",
   keywords: [
     "digital marketplace",
     "ai prompt bundles",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     "digital products",
     "business blueprints",
     "productivity tools",
-    "ElvoraDigital",
+    "ElvorDigital",
   ],
   viewport: {
     width: "device-width",
@@ -37,16 +37,16 @@ export const metadata: Metadata = {
     maximumScale: 5,
   },
   openGraph: {
-    title: "ElvoraDigital – Premium Digital Marketplace",
+    title: "ElvorDigital – Premium Digital Marketplace",
     description:
       "Unlock your digital potential with curated AI tools, masterclasses, creative templates, and business blueprints.",
     type: "website",
-    siteName: "ElvoraDigital",
+    siteName: "ElvorDigital",
     locale: "en_IN",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ElvoraDigital – Premium Digital Marketplace",
+    title: "ElvorDigital – Premium Digital Marketplace",
     description: "Discover curated digital products to create more, work smarter, and grow faster.",
   },
   robots: {
@@ -72,12 +72,12 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              name: "ElvoraDigital",
-              url: "https://elvoradigital.com",
+              name: "ElvorDigital",
+              url: "https://ElvorDigital.com",
               description: "Premium digital product marketplace for creators, founders, and marketers.",
               potentialAction: {
                 "@type": "SearchAction",
-                target: "https://elvoradigital.com/search?q={search_term_string}",
+                target: "https://ElvorDigital.com/search?q={search_term_string}",
                 "query-input": "required name=search_term_string",
               },
             }),

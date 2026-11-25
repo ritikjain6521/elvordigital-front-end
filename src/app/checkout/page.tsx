@@ -92,9 +92,9 @@ export default function CheckoutPage() {
           key: razorpayKey,
           amount: amount,
           currency: "INR",
-          name: "ElvoraDigital Digital Store",
+          name: "ElvorDigital Digital Store",
           description: `Order ${orderNumber} - Instant Access Deliverables`,
-          image: "https://elvoradigital.com/logo.png",
+          image: "https://ElvorDigital.com/logo.png",
           order_id: razorpayOrderId,
           prefill: {
             name: formData.name,

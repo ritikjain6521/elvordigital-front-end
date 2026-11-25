@@ -111,7 +111,7 @@ export default function BrandLogo({
 
   if (withLink) {
     return (
-      <Link href={href} aria-label="ElvoraDigital Home">
+      <Link href={href} aria-label="ElvorDigital Home">
         {content}
       </Link>
     );

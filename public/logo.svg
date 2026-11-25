@@ -1,7 +1,7 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect width="64" height="64" rx="18" fill="#090816"/>
   <rect x="1" y="1" width="62" height="62" rx="17" stroke="url(#borderGrad)" stroke-width="2"/>
-  <!-- Modern Stylized E for ElvoraDigital -->
+  <!-- Modern Stylized E for ElvorDigital -->
   <path d="M48 16H20C17.7909 16 16 17.7909 16 20V44C16 46.2091 17.7909 48 20 48H48" stroke="url(#eGradient)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M16 32H40" stroke="url(#eGradient)" stroke-width="6.5" stroke-linecap="round"/>
   <!-- Glowing Tech Nodes -->

@@ -33,7 +33,7 @@ export default function AuditLogsPage() {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(auditLogs, null, 2));
     const dlAnchorElem = document.createElement("a");
     dlAnchorElem.setAttribute("href", dataStr);
-    dlAnchorElem.setAttribute("download", `elvoradigital-audit-trail-${Date.now()}.json`);
+    dlAnchorElem.setAttribute("download", `ElvorDigital-audit-trail-${Date.now()}.json`);
     dlAnchorElem.click();
   };
 

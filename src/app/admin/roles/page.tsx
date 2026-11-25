@@ -165,7 +165,7 @@ export default function RolesPage() {
             Role-Based Access Control (RBAC) Matrix
           </h1>
           <p className="text-sm text-[#A7A3BC] mt-1">
-            Enterprise permission levels governing operations across the ElvoraDigital marketplace dashboard.
+            Enterprise permission levels governing operations across the ElvorDigital marketplace dashboard.
           </p>
         </div>
 

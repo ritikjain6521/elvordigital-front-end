@@ -207,7 +207,7 @@ export default function TeamPage() {
             <input
               type="email"
               required
-              placeholder="sanya@elvoradigital.com"
+              placeholder="sanya@ElvorDigital.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full mt-1.5 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:border-[#8B5CF6]"

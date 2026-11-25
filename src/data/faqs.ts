@@ -1,8 +1,8 @@
 export const GLOBAL_FAQS = [
   {
-    question: "What is ElvoraDigital?",
+    question: "What is ElvorDigital?",
     answer:
-      "ElvoraDigital is a curated digital marketplace offering battle-tested resources, video courses, AI prompt engines, design systems, and business automation tools designed to empower creators, founders, and digital marketers.",
+      "ElvorDigital is a curated digital marketplace offering battle-tested resources, video courses, AI prompt engines, design systems, and business automation tools designed to empower creators, founders, and digital marketers.",
   },
   {
     question: "How do digital downloads work?",
@@ -27,6 +27,6 @@ export const GLOBAL_FAQS = [
   {
     question: "How can I contact customer support?",
     answer:
-      "You can reach our dedicated digital support desk anytime through our Contact page, or by emailing support@elvoradigital.com. We typically respond within 24 hours.",
+      "You can reach our dedicated digital support desk anytime through our Contact page, or by emailing support@ElvorDigital.com. We typically respond within 24 hours.",
   },
 ];

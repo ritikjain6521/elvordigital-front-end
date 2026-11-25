@@ -3,9 +3,9 @@ import StoreView from "@/components/store/StoreView";
 import { fetchLiveProducts } from "@/lib/apiProducts";
 
 export const metadata: Metadata = {
-  title: "Free Digital Resources & Downloads | ElvoraDigital",
+  title: "Free Digital Resources & Downloads | ElvorDigital",
   description:
-    "Download complimentary digital checklists, frameworks, and marketing cheat sheets courtesy of ElvoraDigital.",
+    "Download complimentary digital checklists, frameworks, and marketing cheat sheets courtesy of ElvorDigital.",
 };
 
 export default async function FreeResourcesPage() {

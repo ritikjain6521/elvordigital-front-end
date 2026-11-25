@@ -15,14 +15,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await fetchLiveProductBySlug(slug);
   if (!product) {
-    return { title: "Product Not Found | ElvoraDigital" };
+    return { title: "Product Not Found | ElvorDigital" };
   }
 
   return {
-    title: `${product.name} | ElvoraDigital – ₹${product.price.toLocaleString("en-IN")}`,
+    title: `${product.name} | ElvorDigital – ₹${product.price.toLocaleString("en-IN")}`,
     description: product.shortDescription,
     openGraph: {
-      title: `${product.name} | ElvoraDigital`,
+      title: `${product.name} | ElvorDigital`,
       description: product.shortDescription,
       type: "website",
     },

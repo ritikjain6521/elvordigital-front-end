@@ -122,8 +122,8 @@ export const INITIAL_LANDING_PAGES: LandingPageConfig[] = [
 export const DEFAULT_EMAIL_SMTP_CONFIG: EmailSmtpConfig = {
   provider: "smtp",
   host: "smtp.hostinger.com",
-  port: 465,
-  encryption: "ssl",
+  port: 587,
+  encryption: "tls",
   username: "info@elvordigital.com",
   password: "",
   fromName: "ElvoraDigital",

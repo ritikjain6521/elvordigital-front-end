@@ -1,5 +1,4 @@
 import { Product, ProductCategory, CategoryInfo } from "@/types";
-import { PRODUCTS } from "@/data/products";
 import { CATEGORIES } from "@/data/categories";
 
 import { API_BASE as _API_BASE } from "@/lib/api";
@@ -36,7 +35,15 @@ function mapMongoToProduct(p: any): Product {
 
   const features =
     Array.isArray(p.features) && p.features.length > 0
-      ? p.features.map((f: any) => (typeof f === "string" ? f : f.title || ""))
+      ? p.features.map((f: any) =>
+          typeof f === "string"
+            ? f
+            : {
+                title: f.title || "",
+                description: f.description || "",
+                icon: f.icon || "",
+              }
+        )
       : ["Instant Digital Access", "Step-by-Step Training", "Lifetime Cloud Updates"];
 
   const faqs =
@@ -53,12 +60,7 @@ function mapMongoToProduct(p: any): Product {
           },
         ];
 
-  const photos =
-    Array.isArray(p.photos) && p.photos.length > 0
-      ? p.photos
-      : [
-          "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1000&q=80",
-        ];
+  const photos = Array.isArray(p.photos) ? p.photos : [];
 
   return {
     id: String(p._id || p.id),
@@ -66,6 +68,7 @@ function mapMongoToProduct(p: any): Product {
     name: p.name,
     category: (p.category || "meta-ads-courses") as ProductCategory,
     categoryName: p.categoryName || p.category,
+    tagline: p.tagline || "",
     shortDescription: p.shortDescription || "",
     fullDescription: p.fullDescription || "",
     price: Number(p.price || 499),
@@ -82,6 +85,7 @@ function mapMongoToProduct(p: any): Product {
     fileSize: p.fileSize || "Cloud Vault",
     features,
     whatsIncluded,
+    deliverablesText: Array.isArray(p.deliverables) ? p.deliverables : [],
     bonuses,
     faqs,
     photos,
@@ -132,17 +136,16 @@ export async function fetchLiveProducts(): Promise<Product[]> {
     const res = await fetch(`${API_BASE}/api/products`, { cache: "no-store" });
     if (res.ok) {
       const data = await res.json();
-      if (data.success && Array.isArray(data.products) && data.products.length > 0) {
-        const mongoProducts = data.products.map(mapMongoToProduct);
-        const mongoSlugs = new Set(mongoProducts.map((p: Product) => p.slug));
-        const extraStatic = PRODUCTS.filter((p) => !mongoSlugs.has(p.slug));
-        return [...mongoProducts, ...extraStatic];
+      if (data.success && Array.isArray(data.products)) {
+        return data.products
+          .filter((p: any) => !p.status || p.status === "published")
+          .map(mapMongoToProduct);
       }
     }
-  } catch (err) {
-    // If backend offline, fallback
+  } catch {
+    // Backend unreachable
   }
-  return PRODUCTS;
+  return [];
 }
 
 export async function fetchLiveProductBySlug(slug: string): Promise<Product | null> {
@@ -154,8 +157,8 @@ export async function fetchLiveProductBySlug(slug: string): Promise<Product | nu
         return mapMongoToProduct(data.product);
       }
     }
-  } catch (err) {
-    // Fallback
+  } catch {
+    // Backend unreachable
   }
-  return PRODUCTS.find((p) => p.slug === slug) || null;
+  return null;
 }

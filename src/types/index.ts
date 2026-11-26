@@ -61,7 +61,7 @@ export interface Product {
   productFormat: string;
   compatibility: string;
   fileSize?: string;
-  features: string[];
+  features: Array<string | { title: string; description?: string; icon?: string }>;
   whatsIncluded: ProductDeliverable[];
   bonuses: ProductBonus[];
   learningOutcomes?: string[];
@@ -90,8 +90,10 @@ export interface Product {
     id?: string;
     title: string;
     fieldType: "text" | "image" | "video" | "link";
+    layout?: "card" | "split-left" | "split-right" | "banner" | "gallery";
     content?: string;
     mediaUrl?: string;
+    images?: string[];
     buttonLabel?: string;
   }>;
   curriculum?: Array<{

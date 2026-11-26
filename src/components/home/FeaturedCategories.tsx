@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { BookOpen, Sparkles, Target, Layout, Cpu, ArrowRight } from "lucide-react";
 import { CATEGORIES } from "@/data/categories";
-import { PRODUCTS } from "@/data/products";
+import { API_BASE } from "@/lib/api";
 
 const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   BookOpen,
@@ -16,6 +16,19 @@ const iconMap: Record<string, React.ComponentType<{ size?: number; className?: s
 };
 
 export default function FeaturedCategories() {
+  const [liveProducts, setLiveProducts] = useState<Array<{ category: string }>>([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/products`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.products)) {
+          setLiveProducts(data.products);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section className="relative z-10 py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -50,7 +63,7 @@ export default function FeaturedCategories() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
           {CATEGORIES.map((cat, index) => {
             const Icon = iconMap[cat.iconName] || Sparkles;
-            const productCount = PRODUCTS.filter((p) => p.category === cat.id).length;
+            const productCount = liveProducts.filter((p) => p.category === cat.id).length;
 
             return (
               <motion.div

@@ -146,26 +146,26 @@ const AdminDataContext = createContext<AdminDataContextType | undefined>(undefin
 export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<AdminUser>(INITIAL_ADMIN_USERS[0]);
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>(INITIAL_ADMIN_USERS);
-  const [products, setProducts] = useState<AdminProduct[]>(INITIAL_ADMIN_PRODUCTS);
-  const [landingPages, setLandingPages] = useState<LandingPageConfig[]>(INITIAL_LANDING_PAGES);
-  const [customers, setCustomers] = useState<Customer[]>(INITIAL_CUSTOMERS);
-  const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
-  const [accessRecords, setAccessRecords] = useState<AccessRecord[]>(INITIAL_ACCESS_RECORDS);
-  const [digitalAssets, setDigitalAssets] = useState<DigitalAsset[]>(INITIAL_DIGITAL_ASSETS);
-  const [payments, setPayments] = useState<PaymentRecord[]>(INITIAL_PAYMENTS);
-  const [refunds, setRefunds] = useState<RefundRecord[]>(INITIAL_REFUNDS);
-  const [coupons, setCoupons] = useState<Coupon[]>(INITIAL_COUPONS);
-  const [reviews, setReviews] = useState<AdminReview[]>(INITIAL_REVIEWS);
-  const [tickets, setTickets] = useState<SupportTicket[]>(INITIAL_SUPPORT_TICKETS);
-  const [affiliates, setAffiliates] = useState<Affiliate[]>(INITIAL_AFFILIATES);
-  const [abandonedCarts, setAbandonedCarts] = useState<AbandonedCart[]>(INITIAL_ABANDONED_CARTS);
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>(INITIAL_SUBSCRIPTIONS);
-  const [licenses, setLicenses] = useState<SoftwareLicense[]>(INITIAL_LICENSES);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(INITIAL_AUDIT_LOGS);
+  const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [landingPages, setLandingPages] = useState<LandingPageConfig[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [accessRecords, setAccessRecords] = useState<AccessRecord[]>([]);
+  const [digitalAssets, setDigitalAssets] = useState<DigitalAsset[]>([]);
+  const [payments, setPayments] = useState<PaymentRecord[]>([]);
+  const [refunds, setRefunds] = useState<RefundRecord[]>([]);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [reviews, setReviews] = useState<AdminReview[]>([]);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
+  const [abandonedCarts, setAbandonedCarts] = useState<AbandonedCart[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [licenses, setLicenses] = useState<SoftwareLicense[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [settings, setSettings] = useState<StoreSettings>(INITIAL_STORE_SETTINGS);
   const [emailSmtpConfig, setEmailSmtpConfig] = useState<EmailSmtpConfig>(DEFAULT_EMAIL_SMTP_CONFIG);
   const [emailTemplates, setEmailTemplates] = useState<EmailTemplateConfig[]>(DEFAULT_EMAIL_TEMPLATES);
-  const [emailLogs, setEmailLogs] = useState<EmailLog[]>(INITIAL_EMAIL_LOGS);
+  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
 
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -181,7 +181,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       try {
         const res = await fetch(`${API_BASE}/api/products`);
         const data = await res.json();
-        if (data.success && Array.isArray(data.products) && data.products.length > 0) {
+        if (data.success && Array.isArray(data.products)) {
           setProducts(data.products.map((p: any) => ({
             id: p._id || p.id,
             name: p.name,

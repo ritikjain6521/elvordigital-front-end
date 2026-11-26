@@ -4,54 +4,55 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Flame } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
-import { PRODUCTS } from "@/data/products";
 import { Product } from "@/types";
 import { API_BASE } from "@/lib/api";
 
 export default function BestSellersSection() {
-  const [products, setProducts] = useState<Product[]>(PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/products`)
       .then((r) => r.json())
       .then((data) => {
-        if (data.success && Array.isArray(data.products) && data.products.length > 0) {
-          const mongoList: Product[] = data.products.map((p: any) => ({
-            id: p._id || p.id,
-            name: p.name,
-            slug: p.slug,
-            category: p.category,
-            categoryName: p.categoryName || p.category,
-            shortDescription: p.shortDescription || "",
-            fullDescription: p.fullDescription || "",
-            price: p.price,
-            originalPrice: p.originalPrice || p.price,
-            rating: p.rating || 5.0,
-            reviewsCount: p.reviewsCount || 1,
-            badge: p.badge || "Featured",
-            isBestSeller: p.isBestSeller,
-            isNewArrival: p.isNewArrival,
-            isFeatured: p.isFeatured,
-            isFree: p.isFree,
-            productFormat: p.productFormat || "Digital Download",
-            compatibility: p.compatibility || "Web & Mobile",
-            features: p.features || [],
-            whatsIncluded: p.whatsIncluded || [],
-            bonuses: p.bonuses || [],
-            faqs: p.faqs || [],
-            photos: p.photos || [],
-            thumbnail: p.thumbnail || p.photos?.[0] || "",
-            accentGradient: p.accentGradient || "from-pink-500 to-purple-600",
-          }));
-          const mongoSlugs = new Set(mongoList.map((p) => p.slug));
-          const extra = PRODUCTS.filter((p) => !mongoSlugs.has(p.slug));
-          setProducts([...mongoList, ...extra]);
+        if (data.success && Array.isArray(data.products)) {
+          const mongoList: Product[] = data.products
+            .filter((p: any) => !p.status || p.status === "published")
+            .map((p: any) => ({
+              id: p._id || p.id,
+              name: p.name,
+              slug: p.slug,
+              category: p.category,
+              categoryName: p.categoryName || p.category,
+              shortDescription: p.shortDescription || "",
+              fullDescription: p.fullDescription || "",
+              price: p.price,
+              originalPrice: p.originalPrice || p.price,
+              rating: p.rating || 5.0,
+              reviewsCount: p.reviewsCount || 1,
+              badge: p.badge || "Featured",
+              isBestSeller: p.isBestSeller,
+              isNewArrival: p.isNewArrival,
+              isFeatured: p.isFeatured,
+              isFree: p.isFree,
+              productFormat: p.productFormat || "Digital Download",
+              compatibility: p.compatibility || "Web & Mobile",
+              features: p.features || [],
+              whatsIncluded: p.whatsIncluded || [],
+              bonuses: p.bonuses || [],
+              faqs: p.faqs || [],
+              photos: p.photos || [],
+              thumbnail: p.thumbnail || p.photos?.[0] || "",
+              accentGradient: p.accentGradient || "from-pink-500 to-purple-600",
+            }));
+          setProducts(mongoList);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const bestSellers = products.filter((p) => p.isBestSeller).slice(0, 6);
+  const displayProducts = bestSellers.length > 0 ? bestSellers : products.slice(0, 6);
+  if (displayProducts.length === 0) return null;
 
   return (
     <section className="relative z-10 py-20 lg:py-24 bg-[#0e0d22]/40">
@@ -85,7 +86,7 @@ export default function BestSellersSection() {
 
         {/* 6 Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {bestSellers.map((product, index) => (
+          {displayProducts.map((product, index) => (
             <ProductCard key={product.id} product={product} index={index} />
           ))}
         </div>

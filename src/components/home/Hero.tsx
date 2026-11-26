@@ -3,192 +3,203 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  Sparkles,
-  ArrowRight,
-  Zap,
-  Download,
-  ShieldCheck,
-  Star,
-  CheckCircle,
-  Play
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
+
+const heroBenefits = [
+  "11,000+ Printable Worksheets",
+  "Learning Through Fun Activities",
+  "Preschool to Primary Learning",
+  "Creative & Educational Activities",
+  "Perfect for Home & Classroom",
+  "Instant Digital Access",
+  "Multiple Learning Categories",
+];
 
 export default function Hero() {
   return (
-    <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden py-16 lg:py-24">
-      {/* Background radial glow spots */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[550px] bg-gradient-to-tr from-purple-600/20 via-pink-600/15 to-indigo-600/10 blur-[130px] rounded-full pointer-events-none" />
-      <div className="absolute top-1/3 left-10 w-96 h-96 bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-pink-600/15 blur-[120px] rounded-full pointer-events-none" />
+    <section className="relative pt-14 pb-20 px-4 overflow-hidden">
+      {/* Ambient background glows matching Kids Worksheets aesthetic */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-0 w-72 h-72 bg-pink-500/15 rounded-full blur-3xl" />
+      </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Text Column (7 cols) */}
+      <div className="relative z-10 max-w-6xl mx-auto">
+        {/* LIMITED TIME BADGE */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="flex justify-center mb-6"
+        >
+          <span className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-yellow-400 text-black text-xs font-black px-5 py-2 rounded-full uppercase tracking-widest shadow-lg animate-pulse">
+            🔥 LIMITED-TIME SPECIAL OFFER
+          </span>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* LEFT: Headline, Benefits & Pricing Card */}
           <motion.div
-            initial={{ opacity: 0, y: 25 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="lg:col-span-7 text-center lg:text-left"
+            transition={{ duration: 0.6 }}
+            className="text-center lg:text-left"
           >
-            {/* Top Badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold tracking-wide mb-6 shadow-sm shadow-purple-500/10"
-            >
-              <Sparkles size={14} className="text-pink-400" />
-              <span>THE 2026 DIGITAL CREATOR MARKETPLACE</span>
-            </motion.div>
-
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.12]">
-              Unlock Your{" "}
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-                Digital Potential.
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-4">
+              <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-400 bg-clip-text text-transparent drop-shadow-lg">
+                11,000+
+              </span>
+              <br />
+              <span className="text-white">KIDS</span>
+              <br />
+              <span className="bg-gradient-to-r from-sky-300 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                WORKSHEETS
               </span>
             </h1>
 
-            {/* Supporting Text */}
-            <p className="mt-6 text-base sm:text-lg text-[#A7A3BC] leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              Discover premium digital products, powerful AI resources, creative
-              templates, and expert knowledge designed to help you create more,
-              work smarter, and grow faster.
+            <p className="text-xl sm:text-2xl font-bold text-white/90 mb-3">
+              The Ultimate All-in-One Learning &amp; Activity Bundle for Kids!
+            </p>
+            <p className="text-base text-purple-300 font-semibold mb-7">
+              Make Learning Fun, Creative, Interactive &amp; Enjoyable!
             </p>
 
-            {/* CTAs */}
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-              <Link
-                href="/store"
-                className="group relative flex items-center justify-center gap-2.5 w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 hover:scale-[1.02] transition-all duration-200"
-              >
-                <span>Explore Products</span>
-                <ArrowRight size={17} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
+            {/* Quick benefits list */}
+            <ul className="mb-8 space-y-2 inline-block text-left">
+              {heroBenefits.map((b, i) => (
+                <li key={i} className="flex items-center gap-2 text-sm font-semibold text-white/85">
+                  <span className="text-green-400 text-base">✓</span> {b}
+                </li>
+              ))}
+            </ul>
 
-              <Link
-                href="/new-arrivals"
-                className="flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-4 rounded-xl bg-white/5 hover:bg-white/10 text-white font-semibold text-sm border border-white/10 hover:border-white/20 transition-all duration-200"
-              >
-                <Zap size={16} className="text-yellow-400" />
-                <span>Discover What&apos;s New</span>
-              </Link>
-            </div>
+            {/* PRICING & CTA CARD */}
+            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 block w-full lg:max-w-lg">
+              <div className="flex items-center gap-4 justify-center lg:justify-start mb-3">
+                <span className="text-white/40 line-through text-2xl font-bold">₹999</span>
+                <span className="text-5xl font-black bg-gradient-to-r from-green-300 to-emerald-400 bg-clip-text text-transparent">
+                  ₹199
+                </span>
+                <span className="bg-red-500 text-white text-xs font-black px-2.5 py-1 rounded-lg">
+                  80% OFF
+                </span>
+              </div>
+              <p className="text-xs text-white/50 mb-4 text-center lg:text-left">
+                One-time payment • Lifetime access • Instant download
+              </p>
 
-            {/* Trust indicators */}
-            <div className="mt-10 pt-8 border-t border-white/10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-[#A7A3BC]">
-              <div className="flex items-center gap-2">
-                <CheckCircle size={15} className="text-emerald-400" />
-                <span>Premium Digital Resources</span>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/checkout?product=11000-kids-worksheets-bundle"
+                  className="flex-1 text-center bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 hover:from-orange-400 hover:via-pink-400 hover:to-purple-500 text-white font-black text-base px-6 py-4 rounded-xl shadow-2xl shadow-purple-500/40 transition-all duration-300 hover:scale-[1.03]"
+                >
+                  🛒 BUY NOW — Only ₹199
+                </Link>
+                <Link
+                  href="/store"
+                  className="inline-flex items-center justify-center gap-1.5 px-5 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/15 text-white font-bold text-sm transition-all"
+                >
+                  <span>Browse Store</span>
+                  <ArrowRight size={15} />
+                </Link>
               </div>
-              <div className="flex items-center gap-2">
-                <Download size={15} className="text-cyan-400" />
-                <span>Instant Download Experience</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ShieldCheck size={15} className="text-purple-400" />
-                <span>Creator-Focused Products</span>
-              </div>
+              <p className="text-xs text-white/40 text-center lg:text-left mt-3">
+                🔒 Secure Payment • 100% Safe Checkout
+              </p>
             </div>
           </motion.div>
 
-          {/* Right Hero Visual Column (5 cols) */}
+          {/* RIGHT: 3D Product Box Visual & Floating Worksheet Cards */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.92 }}
+            initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.25, duration: 0.8 }}
-            className="lg:col-span-5 relative"
+            transition={{ delay: 0.15, duration: 0.7 }}
+            className="relative flex justify-center items-center py-6"
           >
-            {/* Multi-layered 3D Card Stack */}
-            <div className="relative mx-auto max-w-md w-full">
-              {/* Back Card 1: AI Prompt Bundle Preview */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -top-6 -right-4 sm:-right-8 w-64 rounded-2xl bg-[#1d193d]/90 border border-pink-500/30 p-4 shadow-2xl backdrop-blur-xl z-10"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="px-2 py-0.5 rounded-full bg-pink-500/20 text-[10px] font-bold text-pink-300">
-                    AI PROMPTS
-                  </span>
-                  <div className="flex items-center text-amber-300 text-xs">
-                    <Star size={12} fill="currentColor" />
-                    <span className="ml-1 text-[11px] font-bold">4.9</span>
-                  </div>
-                </div>
-                <h5 className="text-xs font-bold text-white">2,500+ Engineered Prompts</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5">Few-shot chains for GPT & Claude</p>
-                <div className="mt-2 text-xs font-black text-white">₹399</div>
-              </motion.div>
+            <div className="relative w-80 h-80 sm:w-96 sm:h-96">
+              {/* Glow behind product */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/40 via-blue-500/30 to-pink-500/40 rounded-3xl blur-2xl scale-110" />
 
-              {/* Back Card 2: Canva Kit Floating */}
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute -bottom-6 -left-4 sm:-left-8 w-60 rounded-2xl bg-[#15122e]/95 border border-purple-500/30 p-3.5 shadow-2xl backdrop-blur-xl z-20"
-              >
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="h-6 w-6 rounded-md bg-purple-500/20 flex items-center justify-center text-purple-300 text-xs font-bold">
-                    1K+
-                  </div>
-                  <div>
-                    <h5 className="text-xs font-bold text-white">Canva Creator Kit</h5>
-                    <p className="text-[9px] text-[#A7A3BC]">1,200+ Luxury Assets</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-white/5">
-                  <span className="text-[10px] text-emerald-400 font-semibold">1-Click Import</span>
-                  <span className="text-xs font-bold text-white">₹499</span>
-                </div>
-              </motion.div>
+              {/* Product Box */}
+              <div className="relative bg-gradient-to-br from-purple-700 via-blue-700 to-indigo-800 rounded-3xl p-6 shadow-2xl border border-white/20 w-full h-full flex flex-col justify-between overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-white/15 to-transparent rounded-t-3xl" />
 
-              {/* Main Center Spotlight Card: Meta Ads Course Preview */}
-              <div className="relative rounded-3xl bg-gradient-to-b from-[#1b173a] to-[#110e26] border border-purple-500/40 p-6 shadow-2xl shadow-purple-950/60 z-15">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-                    <span className="text-xs font-bold uppercase tracking-widest text-purple-300">
-                      FLAGSHIP MASTERCLASS
-                    </span>
-                  </div>
-                  <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-[10px] font-bold">
-                    PRO 2026
-                  </span>
+                <div className="relative z-10">
+                  <div className="text-5xl mb-2">📚</div>
+                  <div className="text-yellow-300 font-black text-4xl leading-none">11,000+</div>
+                  <div className="text-white font-black text-xl">KIDS</div>
+                  <div className="text-sky-200 font-black text-2xl">WORKSHEETS</div>
+                  <div className="text-white/70 text-xs mt-1 font-semibold">MEGA BUNDLE</div>
                 </div>
 
-                {/* Video/Course mockup visual */}
-                <div className="relative aspect-video rounded-xl bg-gradient-to-br from-[#241c49] to-[#0c091f] border border-white/10 flex flex-col items-center justify-center overflow-hidden p-4 group cursor-pointer mb-4">
-                  <div className="absolute inset-0 opacity-30 bg-gradient-to-tr from-purple-600 via-pink-600 to-blue-600" />
-                  <div className="relative z-10 flex flex-col items-center">
-                    <div className="h-12 w-12 rounded-full bg-purple-600/90 text-white flex items-center justify-center shadow-lg shadow-purple-600/40 mb-2 group-hover:scale-110 transition-transform">
-                      <Play size={20} fill="currentColor" className="ml-0.5" />
-                    </div>
-                    <span className="text-xs font-bold text-white">Meta Ads Mastery 2026</span>
-                    <span className="text-[10px] text-[#A7A3BC]">50+ HD Lessons • 8 Modules</span>
-                  </div>
-                </div>
+                {/* Floating decorative icons */}
+                <div className="absolute bottom-6 right-4 opacity-60 text-3xl">🎨</div>
+                <div className="absolute top-24 right-6 opacity-50 text-2xl">✏️</div>
+                <div className="absolute bottom-14 left-4 opacity-50 text-2xl">🔢</div>
+                <div className="absolute top-20 left-4 opacity-40 text-xl">🔤</div>
 
-                <div className="space-y-1 mb-4">
-                  <h4 className="text-base font-bold text-white">Meta Ads Mastery – Pro Edition</h4>
-                  <p className="text-xs text-[#A7A3BC]">
-                    Complete advertising framework to scale profitable campaigns in 2026.
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-xl font-black text-white">₹1,499</span>
-                    <span className="text-xs text-gray-500 line-through">₹2,999</span>
+                <div className="relative z-10">
+                  <div className="flex flex-wrap gap-1">
+                    {["ABC", "123", "Art", "Math", "GK", "Fun"].map((tag) => (
+                      <span
+                        key={tag}
+                        className="bg-white/15 backdrop-blur text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-white/20"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
-                  <Link
-                    href="/product/meta-ads-mastery-2026"
-                    className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white transition-colors"
-                  >
-                    View Details
-                  </Link>
                 </div>
               </div>
+
+              {/* Floating worksheet cards */}
+              <motion.div
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-8 -right-6 sm:-right-8 bg-white rounded-xl p-3 shadow-xl rotate-12 w-24 h-28 flex flex-col items-center justify-center border border-gray-100"
+              >
+                <div className="text-2xl mb-1">🔤</div>
+                <div className="text-gray-700 text-[9px] font-bold text-center">ABC Tracing</div>
+                <div className="mt-1 space-y-1 w-full">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-1 bg-gray-200 rounded w-full" />
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div
+                animate={{ y: [0, 6, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                className="absolute -bottom-6 -left-6 sm:-left-8 bg-white rounded-xl p-3 shadow-xl -rotate-6 w-24 h-28 flex flex-col items-center justify-center border border-gray-100"
+              >
+                <div className="text-2xl mb-1">🔢</div>
+                <div className="text-gray-700 text-[9px] font-bold text-center">Numbers</div>
+                <div className="mt-1 flex gap-1 justify-center">
+                  {["1", "2", "3"].map((n) => (
+                    <div
+                      key={n}
+                      className="w-5 h-5 bg-blue-100 rounded text-[10px] font-bold text-blue-700 flex items-center justify-center"
+                    >
+                      {n}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              <motion.div
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute top-1/2 -left-8 sm:-left-10 -translate-y-1/2 bg-white rounded-xl p-3 shadow-xl -rotate-3 w-20 h-24 flex flex-col items-center justify-center border border-gray-100"
+              >
+                <div className="text-xl mb-1">🎨</div>
+                <div className="text-gray-700 text-[9px] font-bold text-center">Coloring</div>
+                <div className="mt-1 flex gap-0.5">
+                  {["bg-red-300", "bg-yellow-300", "bg-blue-300"].map((c) => (
+                    <div key={c} className={`w-3 h-3 rounded-full ${c}`} />
+                  ))}
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </div>

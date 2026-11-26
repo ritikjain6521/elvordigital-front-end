@@ -72,9 +72,14 @@ export default function ImageDropzone({
       }
     } catch (err: any) {
       console.error("[ImageDropzone] Upload error:", err);
+      const rawMsg = err?.message || "";
+      const friendlyMsg =
+        rawMsg === "Failed to fetch"
+          ? `Cannot reach upload server (${API_BASE}). Please make sure the backend server is running.`
+          : rawMsg || "Image upload failed. Please try again.";
       setUploadStatus({
         type: "error",
-        message: err?.message || "Image upload failed. Please try again.",
+        message: friendlyMsg,
       });
     } finally {
       setIsUploading(false);

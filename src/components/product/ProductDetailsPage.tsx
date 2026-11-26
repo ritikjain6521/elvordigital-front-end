@@ -27,6 +27,7 @@ import { autoGenerateIcon } from "@/lib/autoIcon";
 
 interface ProductDetailsPageProps {
   product: Product;
+  relatedProducts?: Product[];
 }
 
 const DEFAULT_FEATURE_ICONS = [
@@ -43,7 +44,7 @@ const DEFAULT_AUDIENCE = [
   { emoji: "🎓", label: "Educators" },
 ];
 
-export default function ProductDetailsPage({ product }: ProductDetailsPageProps) {
+export default function ProductDetailsPage({ product, relatedProducts = [] }: ProductDetailsPageProps) {
   const router = useRouter();
   const { addToCart, cart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -226,7 +227,6 @@ export default function ProductDetailsPage({ product }: ProductDetailsPageProps)
         }))
       : DEFAULT_AUDIENCE;
 
-  const relatedProducts: Product[] = [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0820] via-[#0d0b2a] to-[#120a35] text-white overflow-x-hidden pb-24">

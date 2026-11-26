@@ -1,14 +1,43 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Play, CheckCircle2, ArrowRight, Star, ShieldCheck, Zap } from "lucide-react";
-import { PRODUCTS } from "@/data/products";
+import { ArrowRight, Star, ShieldCheck, Zap, Package } from "lucide-react";
+import { API_BASE } from "@/lib/api";
+import { Product } from "@/types";
 
 export default function ProductSpotlight() {
-  const metaCourse = PRODUCTS.find((p) => p.slug === "meta-ads-mastery-2026");
-  if (!metaCourse) return null;
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchSpotlight() {
+      try {
+        const res = await fetch(`${API_BASE}/api/products?limit=1&sort=createdAt`, {
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.products && data.products.length > 0) {
+            setProduct(data.products[0]);
+          }
+        }
+      } catch {
+        // silently ignore — ProductSpotlight is optional
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchSpotlight();
+  }, []);
+
+  if (loading || !product) return null;
+
+  const savings =
+    product.originalPrice && product.originalPrice > product.price
+      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+      : null;
 
   return (
     <section className="relative z-10 py-20 lg:py-28 overflow-hidden">
@@ -27,89 +56,96 @@ export default function ProductSpotlight() {
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-                Meta Ads Mastery 2026 –{" "}
-                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-                  Pro Edition
-                </span>
+                {product.name}
               </h2>
 
-              <p className="mt-4 text-sm sm:text-base text-[#A7A3BC] leading-relaxed">
-                The masterclass built for the new era of Meta advertising. Master Advantage+ campaigns, server-side CAPI tracking, creative testing matrices, and scaling strategies to turn clicks into predictable customers.
+              {product.tagline && (
+                <p className="mt-3 text-base font-semibold text-purple-300">{product.tagline}</p>
+              )}
+
+              <p className="mt-4 text-sm sm:text-base text-[#A7A3BC] leading-relaxed line-clamp-3">
+                {product.shortDescription || product.fullDescription}
               </p>
 
-              {/* Learning Outcomes List */}
-              <div className="mt-6 grid sm:grid-cols-2 gap-3">
-                {metaCourse.learningOutcomes?.map((outcome) => (
-                  <div key={outcome} className="flex items-start gap-2.5">
-                    <CheckCircle2 size={16} className="text-purple-400 mt-0.5 shrink-0" />
-                    <span className="text-xs text-gray-300 leading-normal">{outcome}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* What's Included Preview */}
-              <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center gap-4 text-xs text-[#A7A3BC]">
-                <div className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-white font-bold">50+ HD</span> Video Lessons
+              {/* Key Points from features */}
+              {product.features && product.features.length > 0 && (
+                <div className="mt-6 grid sm:grid-cols-2 gap-3">
+                  {product.features.slice(0, 4).map((feat, idx: number) => {
+                    const label = typeof feat === "string" ? feat : feat.title;
+                    return (
+                      <div key={idx} className="flex items-start gap-2.5">
+                        <span className="text-purple-400 mt-0.5 shrink-0">✓</span>
+                        <span className="text-xs text-gray-300 leading-normal">{label}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-white font-bold">8 Master</span> Modules
-                </div>
-                <div className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-white font-bold">7 Premium</span> Bonuses Included
-                </div>
-                <div className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
-                  <span className="text-white font-bold">500+ Ad</span> Templates
-                </div>
-              </div>
+              )}
 
               {/* Price & CTA */}
               <div className="mt-8 flex flex-col sm:flex-row items-center gap-5">
                 <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-black text-white">₹1,499</span>
-                  <span className="text-base text-gray-500 line-through">₹2,999</span>
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">
-                    Save 50%
+                  <span className="text-3xl font-black text-white">
+                    ₹{product.price.toLocaleString("en-IN")}
                   </span>
+                  {product.originalPrice && product.originalPrice > product.price && (
+                    <span className="text-base text-gray-500 line-through">
+                      ₹{product.originalPrice.toLocaleString("en-IN")}
+                    </span>
+                  )}
+                  {savings && (
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">
+                      Save {savings}%
+                    </span>
+                  )}
                 </div>
 
                 <Link
-                  href="/product/meta-ads-mastery-2026"
+                  href={`/product/${product.slug}`}
                   className="group flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm shadow-xl shadow-purple-600/30 hover:scale-[1.02] transition-all w-full sm:w-auto"
                 >
-                  <span>Explore Course &amp; Enroll</span>
+                  <span>View Product</span>
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
 
-            {/* Right Course Visual Mockup (5 cols) */}
+            {/* Right Visual Mockup (5 cols) */}
             <div className="lg:col-span-5 relative">
               <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#211a47] to-[#100d28] border border-purple-500/40 p-6 shadow-2xl">
-                {/* Visual player simulation */}
-                <div className="relative aspect-video rounded-xl bg-gradient-to-tr from-[#2f1b63] to-[#0c0a20] border border-white/10 flex flex-col items-center justify-center p-6 text-center group cursor-pointer">
-                  <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    className="h-16 w-16 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-xl shadow-purple-600/50 mb-3"
-                  >
-                    <Play size={26} fill="currentColor" className="ml-1" />
-                  </motion.div>
-                  <span className="text-sm font-bold text-white">Course Video Preview</span>
-                  <span className="text-[11px] text-[#A7A3BC] mt-1">
-                    Watch the Module 01 Overview Walkthrough
-                  </span>
-                </div>
+                {product.thumbnail ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={product.thumbnail}
+                    alt={product.name}
+                    className="w-full aspect-video object-cover rounded-xl"
+                  />
+                ) : (
+                  <div className="relative aspect-video rounded-xl bg-gradient-to-tr from-[#2f1b63] to-[#0c0a20] border border-white/10 flex flex-col items-center justify-center p-6 text-center">
+                    <motion.div
+                      animate={{ y: [0, -8, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="h-16 w-16 rounded-full bg-purple-600/20 border border-purple-500/40 flex items-center justify-center mb-3"
+                    >
+                      <Package size={28} className="text-purple-300" />
+                    </motion.div>
+                    <span className="text-sm font-bold text-white">{product.productFormat || "Digital Bundle"}</span>
+                    <span className="text-[11px] text-[#A7A3BC] mt-1">
+                      {product.categoryName || "Digital Product"}
+                    </span>
+                  </div>
+                )}
 
                 {/* Rating badge */}
                 <div className="mt-4 flex items-center justify-between text-xs text-[#A7A3BC]">
                   <div className="flex items-center gap-1.5 text-amber-300">
                     <Star size={15} fill="currentColor" />
                     <span className="font-bold text-white">5.0 / 5.0</span>
-                    <span className="text-gray-400">(642 reviews)</span>
+                    <span className="text-gray-400">Premium</span>
                   </div>
                   <div className="flex items-center gap-1 text-purple-300 font-semibold">
                     <ShieldCheck size={14} />
-                    <span>Verified Masterclass</span>
+                    <span>Verified Product</span>
                   </div>
                 </div>
               </div>

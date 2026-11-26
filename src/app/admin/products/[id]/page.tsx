@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import AdminCard from "@/components/admin/ui/AdminCard";
+import ImageDropzone from "@/components/admin/ui/ImageDropzone";
 import { ProductCategory, ProductDeliverable, ProductBonus, ProductFAQ } from "@/types";
 import { API_BASE } from "@/lib/api";
 
@@ -504,6 +505,16 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                   className="w-full px-3 py-2 bg-white/5 border border-purple-500/30 rounded-xl text-sm text-white focus:outline-none focus:border-[#8B5CF6]"
                 />
               </div>
+
+              <ImageDropzone
+                onUploadComplete={(urls) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    photos: [...prev.photos, ...urls],
+                    thumbnail: prev.thumbnail || urls[0] || "",
+                  }));
+                }}
+              />
 
               <div className="flex gap-2">
                 <input
@@ -995,7 +1006,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 <label className="text-xs font-semibold text-white uppercase block">
                   Additional Ad Banner Images
                 </label>
-                <div className="flex gap-2">
+
+              <div className="flex gap-2">
                   <input
                     type="url"
                     placeholder="Paste Ad Image URL (https://...)"

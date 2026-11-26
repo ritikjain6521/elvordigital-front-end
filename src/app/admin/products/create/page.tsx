@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import AdminCard from "@/components/admin/ui/AdminCard";
+import ImageDropzone from "@/components/admin/ui/ImageDropzone";
 import { ProductCategory } from "@/types";
 
 export default function CreateProductPage() {
@@ -553,6 +554,16 @@ export default function CreateProductPage() {
                 />
               </div>
 
+              <ImageDropzone
+                onUploadComplete={(urls) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    photos: [...prev.photos, ...urls],
+                    thumbnail: prev.thumbnail || urls[0] || "",
+                  }));
+                }}
+              />
+
               <div className="flex gap-2">
                 <input
                   type="url"
@@ -695,7 +706,8 @@ export default function CreateProductPage() {
                   <label className="block text-xs font-bold text-white">
                     Deliverables Checklist ("What's Included")
                   </label>
-                  <div className="flex gap-2">
+
+              <div className="flex gap-2">
                     <input
                       type="text"
                       placeholder="e.g. 50+ HD Video Lessons (Lifetime Access)"
@@ -1072,7 +1084,8 @@ export default function CreateProductPage() {
                   <label className="block text-xs font-semibold text-white">
                     Additional Ad Banner Images (Shown in Ad Spotlight)
                   </label>
-                  <div className="flex gap-2">
+
+              <div className="flex gap-2">
                     <input
                       type="url"
                       placeholder="Paste Ad Banner Image URL (https://...)"

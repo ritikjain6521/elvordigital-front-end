@@ -136,24 +136,37 @@ export default function AdminOrdersPage() {
 
                   {/* Payment Status Dropdown Selector */}
                   <td className="py-3 px-3">
-                    <select
-                      value={ord.paymentStatus}
-                      onChange={(e) =>
-                        updateOrderStatus(ord.id, e.target.value as PaymentStatus)
-                      }
-                      className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase border cursor-pointer ${
-                        ord.paymentStatus === "paid"
-                          ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                          : ord.paymentStatus === "refunded"
-                          ? "bg-pink-500/20 text-pink-300 border-pink-500/30"
-                          : "bg-amber-500/20 text-amber-300 border-amber-500/30"
-                      }`}
-                    >
-                      <option value="paid" className="bg-[#17152E] text-white">PAID</option>
-                      <option value="pending" className="bg-[#17152E] text-white">PENDING</option>
-                      <option value="failed" className="bg-[#17152E] text-white">FAILED</option>
-                      <option value="refunded" className="bg-[#17152E] text-white">REFUNDED</option>
-                    </select>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <select
+                        value={ord.paymentStatus}
+                        onChange={(e) =>
+                          updateOrderStatus(ord.id, e.target.value as PaymentStatus)
+                        }
+                        className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase border cursor-pointer ${
+                          ord.paymentStatus === "paid"
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                            : ord.paymentStatus === "refunded"
+                            ? "bg-pink-500/20 text-pink-300 border-pink-500/30"
+                            : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                        }`}
+                      >
+                        <option value="paid" className="bg-[#17152E] text-white">PAID</option>
+                        <option value="pending" className="bg-[#17152E] text-white">PENDING</option>
+                        <option value="failed" className="bg-[#17152E] text-white">FAILED</option>
+                        <option value="refunded" className="bg-[#17152E] text-white">REFUNDED</option>
+                      </select>
+                      {ord.paymentStatus === "pending" && (
+                        <button
+                          type="button"
+                          onClick={() => updateOrderStatus(ord.id, "paid")}
+                          title="Verify payment and send access email"
+                          className="px-2 py-1 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold flex items-center gap-1 cursor-pointer"
+                        >
+                          <CheckCircle size={11} />
+                          <span>Approve</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
 
                   {/* Access Status */}

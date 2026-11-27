@@ -53,6 +53,7 @@ function CheckoutContent() {
 
       if (data.success && data.verified && data.order) {
         if (typeof window !== "undefined") {
+          sessionStorage.removeItem("elvora_pending_sp_order");
           localStorage.setItem(
             `elvora_order_${data.orderNumber}`,
             JSON.stringify(data.order)
@@ -64,6 +65,9 @@ function CheckoutContent() {
       }
 
       if (data.paymentStatus === "failed") {
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem("elvora_pending_sp_order");
+        }
         setPaymentCancelled(true);
         setPendingOrder(null);
         setVerificationError("Payment was cancelled or failed. No access granted and no email sent.");
@@ -72,7 +76,7 @@ function CheckoutContent() {
 
       if (manualClick) {
         setVerificationError(
-          "Payment is not verified yet! Please complete the payment on SuperProfile first. If you cancelled, click 'Cancel Payment'."
+          `Order ${orderNumber} is still waiting for confirmation from SuperProfile. If you completed payment, please wait a few seconds for the SuperProfile webhook/redirect, or share Order ID ${orderNumber} with Admin to approve.`
         );
       }
       return false;
@@ -86,6 +90,29 @@ function CheckoutContent() {
     }
   };
 
+  // Restore pending SuperProfile order across refreshes/redirects
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = sessionStorage.getItem("elvora_pending_sp_order");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed?.orderNumber && !pendingOrder) {
+          setPendingOrder({
+            orderNumber: parsed.orderNumber,
+            superProfileUrl: parsed.superProfileUrl || "",
+          });
+          if (parsed.email && !formData.email) {
+            setFormData((prev) => ({ ...prev, email: parsed.email }));
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Auto-poll payment verification every 3 seconds while waiting on SuperProfile
   useEffect(() => {
     if (!pendingOrder?.orderNumber) return;
@@ -96,9 +123,47 @@ function CheckoutContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingOrder?.orderNumber]);
 
-  // If SuperProfile redirects back with ?confirmOrder=ELV-XXXX, strictly verify payment first
+  // Handle SuperProfile Redirect URL (?sp_secret=...&confirmOrder=ELV-XXXX or restored pendingOrder)
   useEffect(() => {
     const confirmOrderParam = searchParams.get("confirmOrder");
+    const spSecret = searchParams.get("sp_secret");
+    const spPaid = searchParams.get("sp_paid");
+
+    let targetOrder = confirmOrderParam || pendingOrder?.orderNumber || "";
+    if (!targetOrder && typeof window !== "undefined") {
+      try {
+        const saved = sessionStorage.getItem("elvora_pending_sp_order");
+        targetOrder = saved ? JSON.parse(saved)?.orderNumber || "" : "";
+      } catch {
+        // ignore
+      }
+    }
+
+    if (spSecret && targetOrder && (spPaid === "1" || confirmOrderParam || spSecret)) {
+      setIsCheckingStatus(true);
+      fetch(`${API_BASE}/api/payment/superprofile-redirect-verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderNumber: targetOrder, spSecret }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.success && data.verified && data.order) {
+            if (typeof window !== "undefined") {
+              sessionStorage.removeItem("elvora_pending_sp_order");
+              localStorage.setItem(`elvora_order_${data.orderNumber}`, JSON.stringify(data.order));
+            }
+            clearCart();
+            router.push(`/order-success/${data.orderNumber}`);
+          } else {
+            setVerificationError(data.message || "Payment verification failed.");
+          }
+        })
+        .catch(() => setVerificationError("Could not verify SuperProfile redirect."))
+        .finally(() => setIsCheckingStatus(false));
+      return;
+    }
+
     if (confirmOrderParam) {
       checkPaymentVerified(confirmOrderParam, true);
     }
@@ -156,10 +221,17 @@ function CheckoutContent() {
         window.open(spUrl, "_blank", "noopener,noreferrer");
       }
 
-      setPendingOrder({
+      const nextPending = {
         orderNumber: data.orderNumber,
         superProfileUrl: spUrl,
-      });
+      };
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(
+          "elvora_pending_sp_order",
+          JSON.stringify({ ...nextPending, email: formData.email })
+        );
+      }
+      setPendingOrder(nextPending);
       setStatusMessage(null);
       setIsSubmitting(false);
     } catch (err: any) {
@@ -179,6 +251,9 @@ function CheckoutContent() {
       });
     } catch {
       // non-blocking
+    }
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("elvora_pending_sp_order");
     }
     setPendingOrder(null);
     setPaymentCancelled(true);

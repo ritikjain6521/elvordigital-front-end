@@ -232,7 +232,13 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
 
       // 2. Fetch real orders directly from MongoDB
       try {
-        const res = await fetch(`${API_BASE}/api/orders`);
+        const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
+        const res = await fetch(`${API_BASE}/api/orders`, {
+          cache: "no-store",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
         const data = await res.json();
         if (data.success && Array.isArray(data.orders)) {
           setOrders(data.orders.map((o: any) => ({
@@ -649,7 +655,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   const updateOrderStatus = async (id: string, status: Order["paymentStatus"]) => {
     try {
       const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
-      await fetch(`${API_BASE}/api/orders/${id}/status`, {
+      const res = await fetch(`${API_BASE}/api/orders/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -657,8 +663,14 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
         },
         body: JSON.stringify({ paymentStatus: status }),
       });
-    } catch {
-      // non-blocking
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        alert(`Failed to update order status: ${data.message || res.statusText}`);
+        return;
+      }
+    } catch (err) {
+      alert(`Error updating order status: ${err instanceof Error ? err.message : "Network error"}`);
+      return;
     }
     setOrders((prev) =>
       prev.map((o) => {

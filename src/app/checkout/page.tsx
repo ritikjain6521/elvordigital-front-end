@@ -90,30 +90,7 @@ function CheckoutContent() {
     }
   };
 
-  // Restore pending SuperProfile order across refreshes/redirects
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const saved = sessionStorage.getItem("elvora_pending_sp_order");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed?.orderNumber && !pendingOrder) {
-          setPendingOrder({
-            orderNumber: parsed.orderNumber,
-            superProfileUrl: parsed.superProfileUrl || "",
-          });
-          if (parsed.email && !formData.email) {
-            setFormData((prev) => ({ ...prev, email: parsed.email }));
-          }
-        }
-      } catch {
-        // ignore
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Auto-poll payment verification every 3 seconds while waiting on SuperProfile
+  // Auto-poll payment verification every 3 seconds ONLY for the active pendingOrder created in this checkout session
   useEffect(() => {
     if (!pendingOrder?.orderNumber) return;
     const interval = setInterval(() => {
@@ -123,44 +100,47 @@ function CheckoutContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingOrder?.orderNumber]);
 
-  // Handle SuperProfile Redirect URL (?sp_secret=...&confirmOrder=ELV-XXXX or restored pendingOrder)
+  // Handle SuperProfile Redirect URL (?sp_secret=...&confirmOrder=ELV-XXXX or sessionStorage pending order)
   useEffect(() => {
     const confirmOrderParam = searchParams.get("confirmOrder");
     const spSecret = searchParams.get("sp_secret");
     const spPaid = searchParams.get("sp_paid");
 
-    let targetOrder = confirmOrderParam || pendingOrder?.orderNumber || "";
-    if (!targetOrder && typeof window !== "undefined") {
-      try {
-        const saved = sessionStorage.getItem("elvora_pending_sp_order");
-        targetOrder = saved ? JSON.parse(saved)?.orderNumber || "" : "";
-      } catch {
-        // ignore
+    // Only read sessionStorage if the URL actually came back from a SuperProfile redirect
+    if (spSecret && (spPaid === "1" || confirmOrderParam || spSecret)) {
+      let targetOrder = confirmOrderParam || pendingOrder?.orderNumber || "";
+      if (!targetOrder && typeof window !== "undefined") {
+        try {
+          const saved = sessionStorage.getItem("elvora_pending_sp_order");
+          targetOrder = saved ? JSON.parse(saved)?.orderNumber || "" : "";
+        } catch {
+          // ignore
+        }
       }
-    }
 
-    if (spSecret && targetOrder && (spPaid === "1" || confirmOrderParam || spSecret)) {
-      setIsCheckingStatus(true);
-      fetch(`${API_BASE}/api/payment/superprofile-redirect-verify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderNumber: targetOrder, spSecret }),
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.success && data.verified && data.order) {
-            if (typeof window !== "undefined") {
-              sessionStorage.removeItem("elvora_pending_sp_order");
-              localStorage.setItem(`elvora_order_${data.orderNumber}`, JSON.stringify(data.order));
-            }
-            clearCart();
-            router.push(`/order-success/${data.orderNumber}`);
-          } else {
-            setVerificationError(data.message || "Payment verification failed.");
-          }
+      if (targetOrder) {
+        setIsCheckingStatus(true);
+        fetch(`${API_BASE}/api/payment/superprofile-redirect-verify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderNumber: targetOrder, spSecret }),
         })
-        .catch(() => setVerificationError("Could not verify SuperProfile redirect."))
-        .finally(() => setIsCheckingStatus(false));
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.success && data.verified && data.order) {
+              if (typeof window !== "undefined") {
+                sessionStorage.removeItem("elvora_pending_sp_order");
+                localStorage.setItem(`elvora_order_${data.orderNumber}`, JSON.stringify(data.order));
+              }
+              clearCart();
+              router.push(`/order-success/${data.orderNumber}`);
+            } else {
+              setVerificationError(data.message || "Payment verification failed.");
+            }
+          })
+          .catch(() => setVerificationError("Could not verify SuperProfile redirect."))
+          .finally(() => setIsCheckingStatus(false));
+      }
       return;
     }
 

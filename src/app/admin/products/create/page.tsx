@@ -18,7 +18,8 @@ import {
   Layers,
   Star,
   Megaphone,
-  Wand2,
+  Wand2
+  ,
   Share2,
   Copy,
 } from "lucide-react";

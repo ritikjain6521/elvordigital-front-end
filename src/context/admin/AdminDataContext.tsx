@@ -416,8 +416,9 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Products CRUD
-  const addProduct = (prodData: Omit<AdminProduct, "id" | "totalSales" | "totalRevenue" | "createdAt" | "updatedAt">) => {
-    const id = `prod-custom-${Date.now()}`;
+  const addProduct = (prodData: Omit<AdminProduct, "id" | "totalSales" | "totalRevenue" | "createdAt" | "updatedAt"> & { id?: string }) => {
+    // Use the real MongoDB _id passed from the create page; fall back to a temp id only if missing
+    const id = (prodData as any).id || `prod-custom-${Date.now()}`;
     const newProduct: AdminProduct = {
       ...prodData,
       id,

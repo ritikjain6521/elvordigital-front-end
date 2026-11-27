@@ -13,13 +13,14 @@ import {
   Mail,
   Phone,
   ShieldAlert,
-  ArrowRight
+  ArrowRight,
+  Trash2
 } from "lucide-react";
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import AdminCard from "@/components/admin/ui/AdminCard";
 
 export default function AdminCustomersPage() {
-  const { customers, toggleBlockCustomer } = useAdminData();
+  const { customers, toggleBlockCustomer, deleteCustomer } = useAdminData();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -173,6 +174,18 @@ export default function AdminCustomersPage() {
                         title={c.status === "active" ? "Block Customer" : "Unblock Customer"}
                       >
                         <Ban size={14} />
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete customer "${c.name}" (${c.email}) and all their orders/access records?`)) {
+                            deleteCustomer(c.id, c.email);
+                          }
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/5"
+                        title="Delete Customer"
+                      >
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </td>

@@ -76,11 +76,13 @@ interface AdminDataContextType {
   updateCustomer: (id: string, updates: Partial<Customer>) => void;
   toggleBlockCustomer: (id: string) => void;
   addCustomerNote: (id: string, note: string) => void;
+  deleteCustomer: (id: string, email: string) => Promise<void>;
 
   // Orders
   orders: Order[];
   updateOrderStatus: (id: string, status: Order["paymentStatus"]) => void;
   recordOrderRefund: (orderId: string, amount: number, reason: string) => void;
+  deleteOrder: (id: string) => Promise<void>;
 
   // Access / Entitlements
   accessRecords: AccessRecord[];
@@ -88,6 +90,7 @@ interface AdminDataContextType {
   revokeAccess: (id: string, reason?: string) => void;
   restoreAccess: (id: string) => void;
   extendAccess: (id: string, newDate: string) => void;
+  deleteAccessRecord: (id: string) => Promise<void>;
 
   // Digital Assets
   digitalAssets: DigitalAsset[];
@@ -109,11 +112,13 @@ interface AdminDataContextType {
   reviews: AdminReview[];
   updateReviewStatus: (id: string, status: "approved" | "rejected") => void;
   toggleFeaturedReview: (id: string) => void;
+  deleteReview: (id: string) => void;
 
   // Support Tickets
   tickets: SupportTicket[];
   updateTicketStatus: (id: string, status: SupportTicket["status"]) => void;
   addTicketResponse: (id: string, message: string) => void;
+  deleteTicket: (id: string) => void;
 
   // Marketing & Affiliates
   affiliates: Affiliate[];
@@ -615,17 +620,83 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     addAuditLog("Added Customer Note", "Customers", `Added internal note to customer ${id}`);
   };
 
+  const deleteCustomer = async (id: string, email: string) => {
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
+      const res = await fetch(`${API_BASE}/api/admin/customers/${encodeURIComponent(email)}`, {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(`Failed to delete customer: ${data.message || res.statusText}`);
+        return;
+      }
+      const normEmail = email.toLowerCase().trim();
+      setCustomers((prev) => prev.filter((c) => c.id !== id && c.email.toLowerCase() !== normEmail));
+      setOrders((prev) => prev.filter((o) => o.customerEmail.toLowerCase() !== normEmail));
+      setAccessRecords((prev) => prev.filter((a) => a.customerEmail.toLowerCase() !== normEmail));
+      addAuditLog("Deleted Customer", "Customers", `Deleted customer ${email} and their orders/access`);
+    } catch (err) {
+      alert(`Error deleting customer: ${err instanceof Error ? err.message : "Network error"}`);
+    }
+  };
+
   // Orders
-  const updateOrderStatus = (id: string, status: Order["paymentStatus"]) => {
+  const updateOrderStatus = async (id: string, status: Order["paymentStatus"]) => {
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
+      await fetch(`${API_BASE}/api/orders/${id}/status`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ paymentStatus: status }),
+      });
+    } catch {
+      // non-blocking
+    }
     setOrders((prev) =>
       prev.map((o) => {
         if (o.id === id) {
           addAuditLog("Updated Order Status", "Orders", `Order ${o.orderNumber} changed to ${status}`);
-          return { ...o, paymentStatus: status };
+          return {
+            ...o,
+            paymentStatus: status,
+            accessStatus: status === "paid" ? "granted" : status === "refunded" ? "revoked" : o.accessStatus,
+          };
         }
         return o;
       })
     );
+  };
+
+  const deleteOrder = async (id: string) => {
+    const target = orders.find((o) => o.id === id);
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
+      const res = await fetch(`${API_BASE}/api/orders/${id}`, {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(`Failed to delete order: ${data.message || res.statusText}`);
+        return;
+      }
+      setOrders((prev) => prev.filter((o) => o.id !== id));
+      if (target?.orderNumber) {
+        setAccessRecords((prev) => prev.filter((a) => a.orderId !== target.orderNumber));
+      }
+      addAuditLog("Deleted Order", "Orders", `Deleted order "${target?.orderNumber || id}" from MongoDB`);
+    } catch (err) {
+      alert(`Error deleting order: ${err instanceof Error ? err.message : "Network error"}`);
+    }
   };
 
   const recordOrderRefund = (orderId: string, amount: number, reason: string) => {
@@ -694,6 +765,27 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       prev.map((a) => (a.id === id ? { ...a, expiryDate: newDate, status: "active" } : a))
     );
     addAuditLog("Extended Access Expiry", "Customer Access", `Extended expiry to ${newDate} for record ${id}`);
+  };
+
+  const deleteAccessRecord = async (id: string) => {
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
+      const res = await fetch(`${API_BASE}/api/access/${id}`, {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(`Failed to delete access record: ${data.message || res.statusText}`);
+        return;
+      }
+      setAccessRecords((prev) => prev.filter((a) => a.id !== id));
+      addAuditLog("Deleted Access Record", "Customer Access", `Deleted access record ${id}`);
+    } catch (err) {
+      alert(`Error deleting access record: ${err instanceof Error ? err.message : "Network error"}`);
+    }
   };
 
   // Digital Assets (Connected to MongoDB Atlas)
@@ -802,10 +894,20 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     setReviews((prev) => prev.map((r) => (r.id === id ? { ...r, isFeatured: !r.isFeatured } : r)));
   };
 
+  const deleteReview = (id: string) => {
+    setReviews((prev) => prev.filter((r) => r.id !== id));
+    addAuditLog("Deleted Review", "Reviews", `Deleted review ${id}`);
+  };
+
   // Support
   const updateTicketStatus = (id: string, status: SupportTicket["status"]) => {
     setTickets((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
     addAuditLog("Updated Support Ticket", "Support", `Ticket ${id} marked as ${status}`);
+  };
+
+  const deleteTicket = (id: string) => {
+    setTickets((prev) => prev.filter((t) => t.id !== id));
+    addAuditLog("Deleted Support Ticket", "Support", `Deleted ticket ${id}`);
   };
 
   const addTicketResponse = (id: string, message: string) => {
@@ -968,14 +1070,17 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
         updateCustomer,
         toggleBlockCustomer,
         addCustomerNote,
+        deleteCustomer,
         orders,
         updateOrderStatus,
         recordOrderRefund,
+        deleteOrder,
         accessRecords,
         grantAccess,
         revokeAccess,
         restoreAccess,
         extendAccess,
+        deleteAccessRecord,
         digitalAssets,
         addDigitalAsset,
         deleteDigitalAsset,
@@ -989,9 +1094,11 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
         reviews,
         updateReviewStatus,
         toggleFeaturedReview,
+        deleteReview,
         tickets,
         updateTicketStatus,
         addTicketResponse,
+        deleteTicket,
         affiliates,
         abandonedCarts,
         subscriptions,

@@ -16,7 +16,8 @@ import {
   Send,
   Eye,
   AlertTriangle,
-  Download
+  Download,
+  Trash2
 } from "lucide-react";
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import AdminCard from "@/components/admin/ui/AdminCard";
@@ -30,7 +31,8 @@ export default function EmailAccessManagementPage() {
     grantAccess,
     revokeAccess,
     restoreAccess,
-    extendAccess
+    extendAccess,
+    deleteAccessRecord
   } = useAdminData();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -276,6 +278,19 @@ export default function EmailAccessManagementPage() {
                           Restore
                         </button>
                       )}
+
+                      {/* Delete */}
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete access record for ${acc.customerEmail}?`)) {
+                            deleteAccessRecord(acc.id);
+                          }
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/5"
+                        title="Delete Access Record"
+                      >
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                   </td>
                 </tr>

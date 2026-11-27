@@ -12,14 +12,15 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Printer
+  Printer,
+  Trash2
 } from "lucide-react";
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import AdminCard from "@/components/admin/ui/AdminCard";
 import { PaymentStatus } from "@/types/admin";
 
 export default function AdminOrdersPage() {
-  const { orders, updateOrderStatus } = useAdminData();
+  const { orders, updateOrderStatus, deleteOrder } = useAdminData();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -173,13 +174,26 @@ export default function AdminOrdersPage() {
 
                   {/* Actions */}
                   <td className="py-3 px-3 text-right">
-                    <Link
-                      href={`/admin/orders/${ord.id}`}
-                      className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 inline-flex"
-                      title="View Order Details"
-                    >
-                      <Eye size={14} />
-                    </Link>
+                    <div className="flex items-center justify-end gap-1">
+                      <Link
+                        href={`/admin/orders/${ord.id}`}
+                        className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 inline-flex"
+                        title="View Order Details"
+                      >
+                        <Eye size={14} />
+                      </Link>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete order "${ord.orderNumber}"? This will also remove its access records.`)) {
+                            deleteOrder(ord.id);
+                          }
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/5 inline-flex"
+                        title="Delete Order"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

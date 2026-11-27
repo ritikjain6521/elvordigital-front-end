@@ -10,12 +10,13 @@ import {
   Sparkles,
   MessageSquare,
   ThumbsUp,
+  Trash2,
 } from "lucide-react";
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import { AdminCard } from "@/components/admin/ui/AdminCard";
 
 export default function ReviewsPage() {
-  const { reviews, updateReviewStatus, toggleFeaturedReview } = useAdminData();
+  const { reviews, updateReviewStatus, toggleFeaturedReview, deleteReview } = useAdminData();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "approved" | "pending" | "rejected">("all");
 
@@ -188,6 +189,17 @@ export default function ReviewsPage() {
                             <X className="w-4 h-4" />
                           </button>
                         )}
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`Delete review by ${r.customerName}?`)) {
+                              deleteReview(r.id);
+                            }
+                          }}
+                          className="p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/5 transition-colors"
+                          title="Delete Review"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>

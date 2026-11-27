@@ -31,10 +31,9 @@ export default function OrderSuccessPage({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Try to fetch from backend MongoDB API
     const fetchOrder = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/orders/${orderId}`);
+        const res = await fetch(`${API_BASE}/api/orders/${orderId}`, { cache: "no-store" });
         const data = await res.json();
         if (data.success && data.order) {
           setOrder(data.order);
@@ -56,56 +55,13 @@ export default function OrderSuccessPage({
         // Fallback to local admin context
       }
 
-      // 2. Check sessionStorage for recently placed order (from checkout redirect)
-      if (typeof window !== "undefined") {
-        const cachedRaw = sessionStorage.getItem("znv_recent_order");
-        if (cachedRaw) {
-          try {
-            const cached = JSON.parse(cachedRaw);
-            if (cached && cached.items && cached.items.length > 0) {
-              setOrder({
-                orderNumber: cached.orderNumber || orderId.toUpperCase(),
-                customerName: cached.customerName || "Valued Customer",
-                customerEmail: cached.customerEmail || "customer@example.com",
-                totalAmount: cached.totalAmount || 499,
-                paymentStatus: "paid",
-                items: cached.items,
-              });
-              setLoading(false);
-              return;
-            }
-          } catch (e) {
-            // Ignore parse error
-          }
-        }
-      }
-
-      // 3. Check local admin context
       const localOrder = orders.find(
         (o) => o.id === orderId || o.orderNumber === orderId
       );
       if (localOrder) {
         setOrder(localOrder);
       } else {
-        // Fallback dynamic item
-        setOrder({
-          orderNumber: orderId.toUpperCase(),
-          customerName: "Valued Customer",
-          customerEmail: "customer@example.com",
-          totalAmount: 499,
-          paymentStatus: "paid",
-          items: [
-            {
-              productName: "Digital Business Blueprint",
-              price: 499,
-              format: "PDF + Notion Playbook + Audio Summary",
-              googleDriveLink:
-                "https://drive.google.com/drive/folders/1elvoradigital-digital-business-blueprint-vault",
-              accessFolderLink: "https://cloud.elvoradigital.com/folders/digital-business-blueprint",
-              downloadFileUrl: "https://assets.elvoradigital.com/digital-business-blueprint-bundle.zip",
-            },
-          ],
-        });
+        setOrder(null);
       }
       setLoading(false);
     };
@@ -117,6 +73,38 @@ export default function OrderSuccessPage({
     return (
       <div className="min-h-screen py-24 flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!order || order.paymentStatus !== "paid") {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-24 text-center space-y-5">
+        <div className="h-16 w-16 rounded-2xl bg-red-500/20 border border-red-500/40 flex items-center justify-center mx-auto text-red-400">
+          <FolderLock size={28} />
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-black text-white">
+          Payment Not Verified
+        </h1>
+        <p className="text-sm text-[#A7A3BC] leading-relaxed">
+          {order
+            ? `Order ${order.orderNumber} currently has status "${order.paymentStatus}". Access links and email delivery are only unlocked after payment is verified.`
+            : `Order "${orderId}" could not be found or payment has not been completed.`}
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <Link
+            href="/checkout"
+            className="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs"
+          >
+            Return to Checkout
+          </Link>
+          <Link
+            href="/store"
+            className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold text-xs"
+          >
+            Browse Store
+          </Link>
+        </div>
       </div>
     );
   }

@@ -13,6 +13,7 @@ import {
   AlertCircle,
   HelpCircle,
   Shield,
+  Trash2,
 } from "lucide-react";
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import { AdminCard } from "@/components/admin/ui/AdminCard";
@@ -21,7 +22,7 @@ import { Modal } from "@/components/admin/ui/Modal";
 import { SupportTicket } from "@/types/admin";
 
 export default function SupportPage() {
-  const { tickets, updateTicketStatus, addTicketResponse, currentUser } = useAdminData();
+  const { tickets, updateTicketStatus, addTicketResponse, deleteTicket, currentUser } = useAdminData();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [activeTicket, setActiveTicket] = useState<SupportTicket | null>(null);
@@ -202,12 +203,25 @@ export default function SupportPage() {
                   </td>
                   <td className="px-4 py-3 text-xs">{t.createdAt}</td>
                   <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => setActiveTicket(t)}
-                      className="px-3 py-1 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-xs font-semibold transition-all"
-                    >
-                      Open Desk
-                    </button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => setActiveTicket(t)}
+                        className="px-3 py-1 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg text-xs font-semibold transition-all"
+                      >
+                        Open Desk
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete support ticket ${t.ticketNumber}?`)) {
+                            deleteTicket(t.id);
+                          }
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/5 transition-colors"
+                        title="Delete Ticket"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

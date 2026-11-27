@@ -12,8 +12,9 @@ import {
   Loader2,
   Zap,
   ExternalLink,
-  MailCheck,
   ShoppingBag,
+  XCircle,
+  RefreshCw,
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
@@ -31,72 +32,75 @@ function CheckoutContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-  // Pending SuperProfile order state (after clicking Pay with SuperProfile)
   const [pendingOrder, setPendingOrder] = useState<{
     orderNumber: string;
     superProfileUrl: string;
   } | null>(null);
-  const [transactionId, setTransactionId] = useState("");
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [paymentCancelled, setPaymentCancelled] = useState(false);
 
-  const confirmAndUnlockOrder = async (orderNumber: string, txnId?: string) => {
-    setIsConfirming(true);
-    setStatusMessage("Verifying payment, unlocking access & sending email...");
+  const checkPaymentVerified = async (orderNumber: string, manualClick = false) => {
+    if (manualClick) {
+      setIsCheckingStatus(true);
+      setVerificationError(null);
+    }
     try {
-      const confirmRes = await fetch(`${API_BASE}/api/payment/superprofile-confirm`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderNumber,
-          transactionId: txnId || "",
-        }),
+      const res = await fetch(`${API_BASE}/api/payment/superprofile-status/${orderNumber}`, {
+        cache: "no-store",
       });
+      const data = await res.json();
 
-      const confirmData = await confirmRes.json();
-      if (!confirmRes.ok || !confirmData.success) {
-        throw new Error(confirmData?.message || "Failed to confirm order.");
-      }
-
-      // Frontend email relay fallback if backend SMTP timed out
-      if (!confirmData.emailDispatched && confirmData.order) {
-        try {
-          await fetch("/api/send-order-email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              customerEmail: confirmData.order.customerEmail,
-              customerName: confirmData.order.customerName,
-              orderNumber: confirmData.order.orderNumber,
-              items: confirmData.order.items,
-              totalAmount: confirmData.order.totalAmount,
-            }),
-          });
-        } catch {
-          // non-blocking
+      if (data.success && data.verified && data.order) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem(
+            `elvora_order_${data.orderNumber}`,
+            JSON.stringify(data.order)
+          );
         }
+        clearCart();
+        router.push(`/order-success/${data.orderNumber}`);
+        return true;
       }
 
-      if (typeof window !== "undefined") {
-        localStorage.setItem(
-          `elvora_order_${confirmData.orderNumber}`,
-          JSON.stringify(confirmData.order)
+      if (data.paymentStatus === "failed") {
+        setPaymentCancelled(true);
+        setPendingOrder(null);
+        setVerificationError("Payment was cancelled or failed. No access granted and no email sent.");
+        return false;
+      }
+
+      if (manualClick) {
+        setVerificationError(
+          "Payment is not verified yet! Please complete the payment on SuperProfile first. If you cancelled, click 'Cancel Payment'."
         );
       }
-
-      clearCart();
-      router.push(`/order-success/${confirmData.orderNumber}`);
-    } catch (err: any) {
-      alert(err?.message || "Could not unlock order. Please try again.");
-      setIsConfirming(false);
-      setStatusMessage(null);
+      return false;
+    } catch {
+      if (manualClick) {
+        setVerificationError("Could not reach server to verify payment. Please try again.");
+      }
+      return false;
+    } finally {
+      if (manualClick) setIsCheckingStatus(false);
     }
   };
 
-  // Auto-confirm if SuperProfile redirects back to /checkout?confirmOrder=ELV-XXXX
+  // Auto-poll payment verification every 3 seconds while waiting on SuperProfile
+  useEffect(() => {
+    if (!pendingOrder?.orderNumber) return;
+    const interval = setInterval(() => {
+      checkPaymentVerified(pendingOrder.orderNumber, false);
+    }, 3000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingOrder?.orderNumber]);
+
+  // If SuperProfile redirects back with ?confirmOrder=ELV-XXXX, strictly verify payment first
   useEffect(() => {
     const confirmOrderParam = searchParams.get("confirmOrder");
     if (confirmOrderParam) {
-      confirmAndUnlockOrder(confirmOrderParam);
+      checkPaymentVerified(confirmOrderParam, true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
@@ -106,7 +110,9 @@ function CheckoutContent() {
     if (cart.length === 0) return;
 
     setIsSubmitting(true);
-    setStatusMessage("Creating your order & preparing SuperProfile checkout...");
+    setPaymentCancelled(false);
+    setVerificationError(null);
+    setStatusMessage("Creating pending order & opening SuperProfile checkout...");
 
     try {
       const itemsPayload = cart.map((item) => ({
@@ -157,14 +163,29 @@ function CheckoutContent() {
       setStatusMessage(null);
       setIsSubmitting(false);
     } catch (err: any) {
-      console.error("[SuperProfile Checkout] Error:", err);
       alert(err?.message || "Failed to start checkout. Please try again.");
       setIsSubmitting(false);
       setStatusMessage(null);
     }
   };
 
-  if (cart.length === 0 && !pendingOrder && !isConfirming) {
+  const handleCancelPayment = async () => {
+    if (!pendingOrder?.orderNumber) return;
+    try {
+      await fetch(`${API_BASE}/api/payment/superprofile-cancel`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderNumber: pendingOrder.orderNumber }),
+      });
+    } catch {
+      // non-blocking
+    }
+    setPendingOrder(null);
+    setPaymentCancelled(true);
+    setVerificationError("Payment cancelled. No access has been granted and no email was sent.");
+  };
+
+  if (cart.length === 0 && !pendingOrder && !paymentCancelled) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
         <div className="h-16 w-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4 text-purple-300">
@@ -196,20 +217,46 @@ function CheckoutContent() {
 
       <div className="mt-6 flex items-center gap-2 text-xs font-bold text-emerald-400">
         <Zap size={14} />
-        <span>SUPERPROFILE SECURE PAYMENT GATEWAY</span>
+        <span>SUPERPROFILE VERIFIED PAYMENT GATEWAY</span>
       </div>
 
       <h1 className="text-3xl font-black text-white mt-1 mb-2">Complete Your Purchase</h1>
       <p className="text-sm text-[#A7A3BC] mb-8">
-        Enter your delivery details, pay securely via SuperProfile, and get instant access + confirmation email.
+        Access &amp; email delivery are unlocked strictly after your SuperProfile payment is verified.
       </p>
 
       <div className="grid lg:grid-cols-12 gap-8 items-start">
-        {/* Left: Customer Form OR Payment Confirmation */}
         <div className="lg:col-span-7">
-          {!pendingOrder ? (
+          {paymentCancelled ? (
+            <div className="p-6 sm:p-8 rounded-2xl bg-[#17152E]/90 border border-red-500/40 space-y-5 text-center">
+              <div className="h-14 w-14 rounded-2xl bg-red-500/20 border border-red-500/40 flex items-center justify-center mx-auto text-red-400">
+                <XCircle size={28} />
+              </div>
+              <h2 className="text-xl font-black text-white">Payment Cancelled / Not Completed</h2>
+              <p className="text-xs text-red-200/80 max-w-md mx-auto">
+                Your payment was not completed. No access links were unlocked and no confirmation email was sent.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPaymentCancelled(false);
+                    setVerificationError(null);
+                  }}
+                  className="px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs"
+                >
+                  Try Payment Again
+                </button>
+                <Link
+                  href="/store"
+                  className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold text-xs"
+                >
+                  Back to Store
+                </Link>
+              </div>
+            </div>
+          ) : !pendingOrder ? (
             <form onSubmit={handlePayWithSuperProfile} className="space-y-6">
-              {/* Customer Contact Information */}
               <div className="p-6 rounded-2xl bg-[#17152E]/80 border border-white/10 space-y-4">
                 <h2 className="text-lg font-bold text-white border-b border-white/10 pb-3">
                   1. Customer &amp; Delivery Details
@@ -259,7 +306,6 @@ function CheckoutContent() {
                 </div>
               </div>
 
-              {/* SuperProfile Payment Method */}
               <div className="p-6 rounded-2xl bg-[#17152E]/80 border border-white/10 space-y-4">
                 <h2 className="text-lg font-bold text-white border-b border-white/10 pb-3">
                   2. Payment via SuperProfile
@@ -270,7 +316,8 @@ function CheckoutContent() {
                   <div className="text-xs text-purple-100 space-y-1">
                     <p className="font-bold text-white">Pay with SuperProfile (UPI, Cards, Netbanking)</p>
                     <p className="text-purple-200/80">
-                      Clicking &quot;Pay with SuperProfile&quot; will open the official SuperProfile payment page. After completing payment, your Google Drive / digital access links are unlocked immediately and emailed to <span className="font-semibold text-white">{formData.email || "your email"}</span>.
+                      Only after your payment is verified will your access links be unlocked and emailed to{" "}
+                      <span className="font-semibold text-white">{formData.email || "your email"}</span>.
                     </p>
                   </div>
                 </div>
@@ -303,20 +350,19 @@ function CheckoutContent() {
               </button>
             </form>
           ) : (
-            /* Step 2: Complete SuperProfile Payment & Unlock Access */
-            <div className="p-6 sm:p-8 rounded-2xl bg-[#17152E]/90 border border-emerald-500/40 space-y-6 shadow-2xl">
-              <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
-                <div>
-                  <span className="inline-block px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-2">
-                    Order Created: {pendingOrder.orderNumber}
-                  </span>
-                  <h2 className="text-xl font-black text-white">
-                    Complete Your SuperProfile Payment
-                  </h2>
-                  <p className="text-xs text-[#A7A3BC] mt-1">
-                    Access &amp; email will be sent to <span className="text-white font-semibold">{formData.email}</span>
-                  </p>
-                </div>
+            <div className="p-6 sm:p-8 rounded-2xl bg-[#17152E]/90 border border-amber-500/40 space-y-6 shadow-2xl">
+              <div className="border-b border-white/10 pb-4">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-wider mb-2">
+                  <Loader2 size={12} className="animate-spin" />
+                  Waiting for Payment Verification — Order {pendingOrder.orderNumber}
+                </span>
+                <h2 className="text-xl font-black text-white">
+                  Complete Payment on SuperProfile
+                </h2>
+                <p className="text-xs text-[#A7A3BC] mt-1">
+                  Once SuperProfile confirms your payment, you will automatically be redirected to your Access Vault and receive your email at{" "}
+                  <span className="text-white font-semibold">{formData.email}</span>.
+                </p>
               </div>
 
               {pendingOrder.superProfileUrl ? (
@@ -324,7 +370,7 @@ function CheckoutContent() {
                   <div className="text-xs text-gray-300">
                     <p className="font-bold text-white">SuperProfile Payment Window Opened</p>
                     <p className="text-gray-400 mt-0.5">
-                      Didn&apos;t see the payment tab? Click the button to open it.
+                      Complete your UPI/Card payment in the SuperProfile tab.
                     </p>
                   </div>
                   <a
@@ -339,49 +385,44 @@ function CheckoutContent() {
                 </div>
               ) : (
                 <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
-                  No SuperProfile URL is configured on this product yet. You can still confirm below to test access &amp; email delivery.
+                  No SuperProfile URL is configured on this product. Please add one in Admin Panel or ask Admin to verify order <span className="font-mono font-bold">{pendingOrder.orderNumber}</span>.
                 </div>
               )}
 
-              <div>
-                <label className="block text-xs font-medium text-[#A7A3BC] mb-1.5">
-                  SuperProfile Payment / Reference ID (Optional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. SP-TXN-123456"
-                  value={transactionId}
-                  onChange={(e) => setTransactionId(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#0e0d22] border border-white/15 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-400"
-                />
+              {verificationError && (
+                <div className="p-3.5 rounded-xl bg-red-500/15 border border-red-500/40 text-red-200 text-xs font-medium">
+                  {verificationError}
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  disabled={isCheckingStatus}
+                  onClick={() => checkPaymentVerified(pendingOrder.orderNumber, true)}
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-black text-sm shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {isCheckingStatus ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      <span>Checking Verification...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw size={16} />
+                      <span>Verify Payment Status</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCancelPayment}
+                  className="px-5 py-3.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-300 font-bold text-xs transition-all cursor-pointer"
+                >
+                  Cancel Payment
+                </button>
               </div>
-
-              {statusMessage && (
-                <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-200 text-xs font-semibold flex items-center gap-2">
-                  <Loader2 size={16} className="animate-spin text-emerald-300" />
-                  <span>{statusMessage}</span>
-                </div>
-              )}
-
-              <button
-                type="button"
-                disabled={isConfirming}
-                onClick={() => confirmAndUnlockOrder(pendingOrder.orderNumber, transactionId)}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-black text-base shadow-xl shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                {isConfirming ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    <span>Unlocking Access &amp; Sending Email...</span>
-                  </>
-                ) : (
-                  <>
-                    <MailCheck size={18} />
-                    <span>I Have Paid — Unlock Access &amp; Send Email</span>
-                    <ArrowRight size={18} />
-                  </>
-                )}
-              </button>
             </div>
           )}
         </div>
@@ -436,15 +477,15 @@ function CheckoutContent() {
             <div className="pt-4 border-t border-white/10 space-y-2 text-[11px] text-[#A7A3BC]">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={14} className="text-emerald-400" />
-                <span>Verified SuperProfile Payment + Instant Email Delivery</span>
+                <span>Access granted only after verified payment</span>
               </div>
               <div className="flex items-center gap-2">
                 <Lock size={14} className="text-purple-400" />
-                <span>Immediate Redirect to Access Vault Page</span>
+                <span>256-bit SSL Encrypted SuperProfile Checkout</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 size={14} className="text-emerald-400" />
-                <span>100% Lifetime Access &amp; Cloud Downloads</span>
+                <span>Instant Email &amp; Vault Redirect on Confirmation</span>
               </div>
             </div>
           </div>

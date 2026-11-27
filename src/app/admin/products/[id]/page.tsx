@@ -65,9 +65,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     photos: [] as string[],
     thumbnail: "",
 
-    // Delivery Links
+    // Delivery & Payment Links
     googleDriveLink: "",
     downloadFileUrl: "",
+    superProfileUrl: "",
 
     // Hero Key Points
     deliverables: [] as string[],
@@ -101,6 +102,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     customSections: [] as Array<{
       id: string;
       title: string;
+      heading?: string;
+      subheading?: string;
       fieldType: "text" | "image" | "video" | "link";
       layout?: "card" | "split-left" | "split-right" | "banner" | "gallery";
       content: string;
@@ -139,6 +142,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         thumbnail: product.thumbnail || (product.photos && product.photos[0]) || "",
         googleDriveLink: product.googleDriveLink || "",
         downloadFileUrl: product.downloadFileUrl || product.downloadUrl || "",
+        superProfileUrl: (product as any).superProfileUrl || "",
 
         deliverables:
           (product as any).deliverablesText ||
@@ -191,15 +195,17 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
         customSections: Array.isArray((product as any).customSections)
           ? (product as any).customSections.map((s: any, idx: number) => ({
-              id: s.id || `sec-${idx}`,
-              title: s.title || "",
-              fieldType: s.fieldType || "text",
-              layout: s.layout || "card",
-              content: s.content || "",
-              mediaUrl: s.mediaUrl || "",
-              images: Array.isArray(s.images) ? s.images : [],
-              buttonLabel: s.buttonLabel || "Open Resource",
-            }))
+            id: s.id || `sec-${idx}`,
+            title: s.title || "",
+            heading: s.heading || "",
+            subheading: s.subheading || "",
+            fieldType: s.fieldType || "text",
+            layout: s.layout || "card",
+            content: s.content || "",
+            mediaUrl: s.mediaUrl || "",
+            images: Array.isArray(s.images) ? s.images : [],
+            buttonLabel: s.buttonLabel || "Open Resource",
+          }))
           : [],
       });
     }
@@ -335,11 +341,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
           </Link>
           <button
             onClick={() => togglePublishProduct(product.id)}
-            className={`px-3 py-2 rounded-xl text-xs font-bold uppercase transition-all ${
-              product.status === "published"
+            className={`px-3 py-2 rounded-xl text-xs font-bold uppercase transition-all ${product.status === "published"
                 ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
                 : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-            }`}
+              }`}
           >
             {product.status === "published" ? "Unpublish" : "Publish"}
           </button>
@@ -369,11 +374,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                activeTab === tab.id
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${activeTab === tab.id
                   ? "bg-[#8B5CF6] text-white shadow-lg shadow-purple-500/20"
                   : "bg-[#17152E] text-[#A7A3BC] hover:text-white border border-white/5"
-              }`}
+                }`}
             >
               <Icon size={14} />
               <span>{tab.label}</span>
@@ -627,6 +631,22 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     />
                   </div>
                 </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-emerald-300 mb-1.5">
+                    SuperProfile Payment Page Link (Pay with SuperProfile)
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://superprofile.bio/vp/..."
+                    value={formData.superProfileUrl}
+                    onChange={(e) => setFormData({ ...formData, superProfileUrl: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-emerald-500/30 text-xs text-emerald-300 font-mono focus:outline-none focus:border-emerald-400"
+                  />
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    Customers clicking &quot;Pay with SuperProfile&quot; / &quot;Buy Now&quot; on the product page will be redirected to this SuperProfile checkout link.
+                  </p>
+                </div>
               </div>
             </AdminCard>
           </div>
@@ -682,18 +702,16 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     return (
                       <div
                         key={idx}
-                        className={`relative rounded-xl overflow-hidden border bg-[#0e0d22] ${
-                          isThumb ? "border-yellow-400 ring-2 ring-yellow-400/30" : "border-white/10"
-                        }`}
+                        className={`relative rounded-xl overflow-hidden border bg-[#0e0d22] ${isThumb ? "border-yellow-400 ring-2 ring-yellow-400/30" : "border-white/10"
+                          }`}
                       >
                         <img src={url} alt={`Product ${idx + 1}`} className="w-full h-28 object-cover" />
                         <div className="p-2 flex items-center justify-between gap-1 bg-black/60">
                           <button
                             type="button"
                             onClick={() => setFormData({ ...formData, thumbnail: url })}
-                            className={`text-[10px] font-bold flex items-center gap-1 ${
-                              isThumb ? "text-yellow-300" : "text-gray-300 hover:text-white"
-                            }`}
+                            className={`text-[10px] font-bold flex items-center gap-1 ${isThumb ? "text-yellow-300" : "text-gray-300 hover:text-white"
+                              }`}
                           >
                             <Star size={11} fill={isThumb ? "currentColor" : "none"} />
                             <span>{isThumb ? "Thumbnail" : "Set Thumb"}</span>
@@ -1102,7 +1120,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                         ...prev.customSections,
                         {
                           id: `sec-${Date.now()}`,
-                          title: "Sample Worksheet Preview",
+                          title: "",
+                          heading: "Sample Preview",
+                          subheading: "",
                           fieldType: "image",
                           layout: "card",
                           content: "",
@@ -1152,8 +1172,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                         updated[idx] = { ...updated[idx], title: e.target.value };
                         setFormData({ ...formData, customSections: updated });
                       }}
-                      placeholder="Section Title"
-                      className="sm:col-span-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white font-semibold"
+                      placeholder="Section Title (Eyebrow, e.g. IN-DEPTH PREVIEW)"
+                      className="sm:col-span-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-cyan-300 font-semibold"
                     />
                     <select
                       value={sec.fieldType}
@@ -1190,6 +1210,31 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                       <option value="banner">Layout: Full-Width Banner</option>
                       <option value="gallery">Layout: Multi-Image Gallery</option>
                     </select>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      value={sec.heading || ""}
+                      onChange={(e) => {
+                        const updated = [...formData.customSections];
+                        updated[idx] = { ...updated[idx], heading: e.target.value };
+                        setFormData({ ...formData, customSections: updated });
+                      }}
+                      placeholder="Section Heading (Main Bold Title)"
+                      className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white font-bold"
+                    />
+                    <input
+                      type="text"
+                      value={sec.subheading || ""}
+                      onChange={(e) => {
+                        const updated = [...formData.customSections];
+                        updated[idx] = { ...updated[idx], subheading: e.target.value };
+                        setFormData({ ...formData, customSections: updated });
+                      }}
+                      placeholder="Section Subheading (Optional subtitle)"
+                      className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-300"
+                    />
                   </div>
 
                   <textarea
@@ -1261,9 +1306,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                           updated[idx] = { ...updated[idx], mediaUrl: e.target.value };
                           setFormData({ ...formData, customSections: updated });
                         }}
-                        className={`px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-mono text-cyan-300 ${
-                          sec.fieldType === "link" ? "" : "sm:col-span-2"
-                        }`}
+                        className={`px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs font-mono text-cyan-300 ${sec.fieldType === "link" ? "" : "sm:col-span-2"
+                          }`}
                       />
                       {sec.fieldType === "link" && (
                         <input

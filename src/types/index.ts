@@ -76,6 +76,7 @@ export interface Product {
   accessFolderLink?: string;
   videoLink?: string;
   downloadFileUrl?: string;
+  superProfileUrl?: string;
   deliverablesText?: string[];
   adCopy?: {
     headline?: string;
@@ -89,6 +90,8 @@ export interface Product {
   customSections?: Array<{
     id?: string;
     title: string;
+    heading?: string;
+    subheading?: string;
     fieldType: "text" | "image" | "video" | "link";
     layout?: "card" | "split-left" | "split-right" | "banner" | "gallery";
     content?: string;

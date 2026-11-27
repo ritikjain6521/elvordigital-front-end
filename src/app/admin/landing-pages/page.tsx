@@ -9,15 +9,14 @@ import {
   Edit,
   ExternalLink,
   Plus,
-  ArrowUpRight,
-  Sparkles,
+  Trash2,
   BarChart2
 } from "lucide-react";
 import { useAdminData } from "@/context/admin/AdminDataContext";
 import AdminCard from "@/components/admin/ui/AdminCard";
 
 export default function AdminLandingPagesList() {
-  const { landingPages } = useAdminData();
+  const { landingPages, deleteLandingPage } = useAdminData();
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredLps = landingPages.filter((lp) => {
@@ -102,7 +101,7 @@ export default function AdminLandingPagesList() {
                     {lp.productName}
                   </td>
                   <td className="py-3 px-3 font-mono text-[11px] text-gray-400">
-                    /product/{lp.slug}
+                    /lp/{lp.slug}
                   </td>
                   <td className="py-3 px-3 font-bold text-white">
                     {lp.views.toLocaleString()}
@@ -121,10 +120,10 @@ export default function AdminLandingPagesList() {
                   <td className="py-3 px-3 text-right">
                     <div className="flex items-center justify-end gap-1.5">
                       <Link
-                        href={`/product/${lp.slug}`}
+                        href={`/lp/${lp.slug}`}
                         target="_blank"
                         className="p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-white/5"
-                        title="View Live Storefront Page"
+                        title="View Live Landing Page"
                       >
                         <ExternalLink size={14} />
                       </Link>
@@ -136,6 +135,17 @@ export default function AdminLandingPagesList() {
                         <Edit size={13} />
                         <span>Visual Builder</span>
                       </Link>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete landing page "${lp.title}"?`)) {
+                            deleteLandingPage(lp.id);
+                          }
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-red-400 rounded-lg hover:bg-white/5"
+                        title="Delete Landing Page"
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </div>
                   </td>
                 </tr>

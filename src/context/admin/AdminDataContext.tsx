@@ -62,13 +62,14 @@ interface AdminDataContextType {
   products: AdminProduct[];
   addProduct: (product: Omit<AdminProduct, "id" | "totalSales" | "totalRevenue" | "createdAt" | "updatedAt">) => void;
   updateProduct: (id: string, updates: Partial<AdminProduct>) => void;
-  deleteProduct: (id: string) => void;
-  togglePublishProduct: (id: string) => void;
+  deleteProduct: (id: string) => Promise<void>;
+  togglePublishProduct: (id: string) => Promise<void>;
 
   // Landing Pages
   landingPages: LandingPageConfig[];
-  updateLandingPage: (id: string, updates: Partial<LandingPageConfig>) => void;
-  createLandingPage: (lp: LandingPageConfig) => void;
+  updateLandingPage: (id: string, updates: Partial<LandingPageConfig>) => Promise<void>;
+  createLandingPage: (lp: Omit<LandingPageConfig, "id"> & { id?: string }) => Promise<LandingPageConfig | null>;
+  deleteLandingPage: (id: string) => Promise<void>;
 
   // Customers
   customers: Customer[];
@@ -179,7 +180,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     const fetchMongoDatabase = async () => {
       // 1. Fetch real products
       try {
-        const res = await fetch(`${API_BASE}/api/products`);
+        const res = await fetch(`${API_BASE}/api/products`, { cache: "no-store" });
         const data = await res.json();
         if (data.success && Array.isArray(data.products)) {
           setProducts(data.products.map((p: any) => ({
@@ -211,6 +212,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
             accessFolderLink: p.accessFolderLink || "",
             videoLink: p.videoLink || "",
             downloadFileUrl: p.downloadFileUrl || "",
+            superProfileUrl: p.superProfileUrl || "",
             photos: p.photos || [],
             status: p.status || "published",
             totalSales: p.totalSales || 0,
@@ -339,6 +341,34 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
       } catch {
         // Fallback
       }
+
+      // 6. Fetch real landing pages from MongoDB
+      try {
+        const res = await fetch(`${API_BASE}/api/landing-pages`, { cache: "no-store" });
+        const data = await res.json();
+        if (data.success && Array.isArray(data.landingPages)) {
+          setLandingPages(
+            data.landingPages.map((lp: any) => ({
+              id: lp._id || lp.id,
+              productId: lp.productId,
+              productSlug: lp.productSlug,
+              productName: lp.productName,
+              title: lp.title,
+              slug: lp.slug,
+              status: lp.status || "published",
+              views: lp.views || 0,
+              conversions: lp.conversions || 0,
+              conversionRate: lp.conversionRate || 0,
+              lastUpdated: lp.updatedAt
+                ? new Date(lp.updatedAt).toISOString().split("T")[0]
+                : new Date().toISOString().split("T")[0],
+              sections: Array.isArray(lp.sections) ? lp.sections : [],
+            }))
+          );
+        }
+      } catch {
+        // Fallback
+      }
     };
 
     fetchMongoDatabase();
@@ -404,42 +434,155 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
     addAuditLog("Updated Product", "Products", `Modified details for product ID ${id}`);
   };
 
-  const deleteProduct = (id: string) => {
+  const deleteProduct = async (id: string) => {
     const target = products.find((p) => p.id === id);
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-    addAuditLog("Deleted Product", "Products", `Deleted "${target?.name || id}"`);
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
+      const res = await fetch(`${API_BASE}/api/products/${id}`, {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert(`Failed to delete product from database: ${data.message || res.statusText}`);
+        return;
+      }
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+      addAuditLog("Deleted Product", "Products", `Deleted "${target?.name || id}" from MongoDB`);
+    } catch (err) {
+      alert(`Error deleting product: ${err instanceof Error ? err.message : "Network error"}`);
+    }
   };
 
-  const togglePublishProduct = (id: string) => {
-    setProducts((prev) =>
-      prev.map((p) => {
-        if (p.id === id) {
-          const nextStatus = p.status === "published" ? "unpublished" : "published";
-          addAuditLog(
-            nextStatus === "published" ? "Published Product" : "Unpublished Product",
-            "Products",
-            `Changed status of "${p.name}" to ${nextStatus}`
-          );
-          return { ...p, status: nextStatus };
-        }
-        return p;
-      })
-    );
+  const togglePublishProduct = async (id: string) => {
+    const target = products.find((p) => p.id === id);
+    if (!target) return;
+    const nextStatus = target.status === "published" ? "unpublished" : "published";
+
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
+      const res = await fetch(`${API_BASE}/api/products/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(`Failed to update product status: ${data.message || res.statusText}`);
+        return;
+      }
+      setProducts((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, status: nextStatus } : p))
+      );
+      addAuditLog(
+        nextStatus === "published" ? "Published Product" : "Unpublished Product",
+        "Products",
+        `Changed status of "${target.name}" to ${nextStatus}`
+      );
+    } catch (err) {
+      alert(`Error updating status: ${err instanceof Error ? err.message : "Network error"}`);
+    }
   };
 
   // Landing pages
-  const updateLandingPage = (id: string, updates: Partial<LandingPageConfig>) => {
-    setLandingPages((prev) =>
-      prev.map((lp) =>
-        lp.id === id ? { ...lp, ...updates, lastUpdated: new Date().toISOString().split("T")[0] } : lp
-      )
-    );
-    addAuditLog("Updated Landing Page", "Landing Pages", `Updated section layout for LP ${id}`);
+  const updateLandingPage = async (id: string, updates: Partial<LandingPageConfig>) => {
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
+      const res = await fetch(`${API_BASE}/api/landing-pages/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(updates),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.landingPage) {
+        setLandingPages((prev) =>
+          prev.map((lp) =>
+            lp.id === id
+              ? {
+                ...lp,
+                ...updates,
+                lastUpdated: new Date().toISOString().split("T")[0],
+              }
+              : lp
+          )
+        );
+        addAuditLog("Updated Landing Page", "Landing Pages", `Updated section layout for LP ${id}`);
+      } else {
+        alert(`Failed to save landing page: ${data.message || res.statusText}`);
+      }
+    } catch (err) {
+      alert(`Error updating landing page: ${err instanceof Error ? err.message : "Network error"}`);
+    }
   };
 
-  const createLandingPage = (lp: LandingPageConfig) => {
-    setLandingPages((prev) => [lp, ...prev]);
-    addAuditLog("Created Landing Page", "Landing Pages", `Created new landing page for ${lp.productName}`);
+  const createLandingPage = async (
+    lp: Omit<LandingPageConfig, "id"> & { id?: string }
+  ): Promise<LandingPageConfig | null> => {
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
+      const res = await fetch(`${API_BASE}/api/landing-pages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(lp),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.landingPage) {
+        const saved: LandingPageConfig = {
+          id: data.landingPage._id || data.landingPage.id,
+          productId: data.landingPage.productId,
+          productSlug: data.landingPage.productSlug,
+          productName: data.landingPage.productName,
+          title: data.landingPage.title,
+          slug: data.landingPage.slug,
+          status: data.landingPage.status || "published",
+          views: data.landingPage.views || 0,
+          conversions: data.landingPage.conversions || 0,
+          conversionRate: data.landingPage.conversionRate || 0,
+          lastUpdated: new Date().toISOString().split("T")[0],
+          sections: Array.isArray(data.landingPage.sections) ? data.landingPage.sections : [],
+        };
+        setLandingPages((prev) => [saved, ...prev]);
+        addAuditLog("Created Landing Page", "Landing Pages", `Created new landing page for ${saved.productName}`);
+        return saved;
+      }
+      alert(`Failed to create landing page: ${data.message || res.statusText}`);
+      return null;
+    } catch (err) {
+      alert(`Error creating landing page: ${err instanceof Error ? err.message : "Network error"}`);
+      return null;
+    }
+  };
+
+  const deleteLandingPage = async (id: string) => {
+    try {
+      const token = typeof window !== "undefined" ? sessionStorage.getItem("znv_admin_token") : "";
+      const res = await fetch(`${API_BASE}/api/landing-pages/${id}`, {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      if (res.ok) {
+        setLandingPages((prev) => prev.filter((lp) => lp.id !== id));
+        addAuditLog("Deleted Landing Page", "Landing Pages", `Deleted landing page ${id}`);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(`Failed to delete landing page: ${data.message || res.statusText}`);
+      }
+    } catch (err) {
+      alert(`Error deleting landing page: ${err instanceof Error ? err.message : "Network error"}`);
+    }
   };
 
   // Customers
@@ -820,6 +963,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
         landingPages,
         updateLandingPage,
         createLandingPage,
+        deleteLandingPage,
         customers,
         updateCustomer,
         toggleBlockCustomer,

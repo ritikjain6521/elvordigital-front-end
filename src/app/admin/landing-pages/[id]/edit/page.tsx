@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -39,6 +39,13 @@ export default function LandingPageBuilderPage({ params }: { params: Promise<{ i
   const [selectedSectionId, setSelectedSectionId] = useState<string>(
     landingPage?.sections[0]?.id || "sec-hero"
   );
+
+  useEffect(() => {
+    if (landingPage && sections.length === 0 && landingPage.sections?.length > 0) {
+      setSections(landingPage.sections);
+      setSelectedSectionId(landingPage.sections[0].id);
+    }
+  }, [landingPage, sections.length]);
 
   if (!landingPage) {
     return (
@@ -124,7 +131,7 @@ export default function LandingPageBuilderPage({ params }: { params: Promise<{ i
               </span>
             </h1>
             <p className="text-xs text-[#A7A3BC]">
-              Modifies layout, copy, and CTAs for /product/{landingPage.slug}
+              Modifies layout, copy, and CTAs for /lp/{landingPage.slug}
             </p>
           </div>
         </div>
@@ -156,12 +163,12 @@ export default function LandingPageBuilderPage({ params }: { params: Promise<{ i
           </div>
 
           <Link
-            href={`/product/${landingPage.slug}`}
+            href={`/lp/${landingPage.slug}`}
             target="_blank"
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-white"
           >
             <ExternalLink size={13} />
-            <span className="hidden sm:inline">Storefront</span>
+            <span className="hidden sm:inline">View Live</span>
           </Link>
 
           <button

@@ -94,6 +94,7 @@ function mapMongoToProduct(p: any): Product {
     accessFolderLink: p.accessFolderLink || "",
     videoLink: p.videoLink || "",
     downloadFileUrl: p.downloadFileUrl || "",
+    superProfileUrl: p.superProfileUrl || "",
     accentGradient: p.accentGradient || "from-purple-600 to-pink-500",
     learningOutcomes: p.learningOutcomes || [
       "Launch profitable, scalable digital marketing campaigns",
@@ -155,6 +156,21 @@ export async function fetchLiveProductBySlug(slug: string): Promise<Product | nu
       const data = await res.json();
       if (data.success && data.product) {
         return mapMongoToProduct(data.product);
+      }
+    }
+  } catch {
+    // Backend unreachable
+  }
+  return null;
+}
+
+export async function fetchLiveLandingPageBySlug(slug: string): Promise<any | null> {
+  try {
+    const res = await fetch(`${API_BASE}/api/landing-pages/${slug}`, { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.landingPage) {
+        return data.landingPage;
       }
     }
   } catch {

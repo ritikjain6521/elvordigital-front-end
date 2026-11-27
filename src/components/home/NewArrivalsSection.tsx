@@ -11,7 +11,7 @@ export default function NewArrivalsSection() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/products`)
+    fetch(`${API_BASE}/api/products`, { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         if (data.success && Array.isArray(data.products)) {

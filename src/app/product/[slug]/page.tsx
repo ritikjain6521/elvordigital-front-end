@@ -1,7 +1,11 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetailsPage from "@/components/product/ProductDetailsPage";
-import { fetchLiveProductBySlug, fetchLiveProducts } from "@/lib/apiProducts";
+import {
+  fetchLiveLandingPageBySlug,
+  fetchLiveProductBySlug,
+  fetchLiveProducts,
+} from "@/lib/apiProducts";
 
 interface ProductPageProps {
   params: Promise<{
@@ -9,11 +13,27 @@ interface ProductPageProps {
   }>;
 }
 
+async function resolveProductOrLandingPage(slug: string) {
+  const direct = await fetchLiveProductBySlug(slug);
+  if (direct) return direct;
+
+  const lp = await fetchLiveLandingPageBySlug(slug);
+  if (lp) {
+    const linked =
+      (lp.productSlug ? await fetchLiveProductBySlug(lp.productSlug) : null) ||
+      (lp.productId ? await fetchLiveProductBySlug(lp.productId) : null);
+    if (linked) {
+      return linked;
+    }
+  }
+  return null;
+}
+
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await fetchLiveProductBySlug(slug);
+  const product = await resolveProductOrLandingPage(slug);
   if (!product) {
     return { title: "Product Not Found | ElvorDigital" };
   }
@@ -32,9 +52,8 @@ export async function generateMetadata({
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
 
-  // Fetch current product and all products in parallel
   const [product, allProducts] = await Promise.all([
-    fetchLiveProductBySlug(slug),
+    resolveProductOrLandingPage(slug),
     fetchLiveProducts(),
   ]);
 
@@ -42,16 +61,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  // Related = same category, excluding current product, up to 4
   const relatedProducts = allProducts
-    .filter((p) => p.slug !== slug && p.category === product.category)
+    .filter((p) => p.slug !== product.slug && p.category === product.category)
     .slice(0, 4);
 
-  // If not enough in same category, fill with other products
   const related =
     relatedProducts.length >= 2
       ? relatedProducts
-      : allProducts.filter((p) => p.slug !== slug).slice(0, 4);
+      : allProducts.filter((p) => p.slug !== product.slug).slice(0, 4);
 
   return (
     <main className="relative z-10 flex-1">

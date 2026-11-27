@@ -78,25 +78,25 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
     product.reviews && product.reviews.length > 0
       ? product.reviews
       : [
-          {
-            author: "Aarav Mehta",
-            rating: 5,
-            title: "Amazing value & instant access!",
-            comment:
-              "Everything was super well organized and downloaded instantly. Worth every rupee!",
-            date: "Nov 20, 2026",
-            verified: true,
-          },
-          {
-            author: "Priya Sharma",
-            rating: 5,
-            title: "Instant Google Drive access worked seamlessly",
-            comment:
-              "Immediately received the download folder and bonus resources. High quality and ready to use.",
-            date: "Nov 18, 2026",
-            verified: true,
-          },
-        ]
+        {
+          author: "Aarav Mehta",
+          rating: 5,
+          title: "Amazing value & instant access!",
+          comment:
+            "Everything was super well organized and downloaded instantly. Worth every rupee!",
+          date: "Nov 20, 2026",
+          verified: true,
+        },
+        {
+          author: "Priya Sharma",
+          rating: 5,
+          title: "Instant Google Drive access worked seamlessly",
+          comment:
+            "Immediately received the download folder and bonus resources. High quality and ready to use.",
+          date: "Nov 18, 2026",
+          verified: true,
+        },
+      ]
   );
   const [avgRating, setAvgRating] = useState<number>(product.rating || 5.0);
   const [reviewFormOpen, setReviewFormOpen] = useState(false);
@@ -175,6 +175,13 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
   };
 
   const handleBuyNow = () => {
+    if (product.isFree) {
+      const freeLink = product.downloadFileUrl || product.googleDriveLink;
+      if (freeLink) {
+        window.open(freeLink, "_blank", "noopener,noreferrer");
+        return;
+      }
+    }
     addToCart(product, 1);
     router.push("/checkout");
   };
@@ -193,8 +200,8 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
     product.deliverablesText && product.deliverablesText.length > 0
       ? product.deliverablesText
       : product.whatsIncluded && product.whatsIncluded.length > 0
-      ? product.whatsIncluded.map((w) => w.title)
-      : (product.features || [])
+        ? product.whatsIncluded.map((w) => w.title)
+        : (product.features || [])
           .slice(0, 7)
           .map((f) => (typeof f === "string" ? f : f.title));
 
@@ -202,7 +209,9 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
     product.adCopy?.callToAction?.trim() ||
     (product.isFree
       ? "⬇️ DOWNLOAD FREE NOW"
-      : `🛒 BUY NOW — Only ₹${product.price.toLocaleString("en-IN")}`);
+      : product.superProfileUrl?.trim()
+        ? `⚡ Pay with SuperProfile — ₹${product.price.toLocaleString("en-IN")}`
+        : `🛒 BUY NOW — Only ₹${product.price.toLocaleString("en-IN")}`);
 
   const normalizedFeatures = (product.features || []).map((f) => {
     if (typeof f === "string") {
@@ -222,9 +231,9 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
   const audienceItems =
     product.targetAudienceList && product.targetAudienceList.length > 0
       ? product.targetAudienceList.map((label, idx) => ({
-          emoji: DEFAULT_AUDIENCE[idx % DEFAULT_AUDIENCE.length].emoji,
-          label,
-        }))
+        emoji: DEFAULT_AUDIENCE[idx % DEFAULT_AUDIENCE.length].emoji,
+        label,
+      }))
       : DEFAULT_AUDIENCE;
 
 
@@ -341,11 +350,10 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
 
                   <button
                     onClick={handleAddToCart}
-                    className={`px-5 py-4 rounded-xl text-sm font-bold border transition-all flex items-center justify-center gap-2 ${
-                      inCart
+                    className={`px-5 py-4 rounded-xl text-sm font-bold border transition-all flex items-center justify-center gap-2 ${inCart
                         ? "bg-emerald-600/20 border-emerald-500/40 text-emerald-300"
                         : "bg-white/5 hover:bg-white/10 border-white/15 text-white"
-                    }`}
+                      }`}
                   >
                     {inCart ? <Check size={16} /> : <ShoppingBag size={16} />}
                     <span>{inCart ? "In Cart" : "Add to Cart"}</span>
@@ -354,11 +362,10 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                   <button
                     onClick={handleToggleWishlist}
                     aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-                    className={`p-4 rounded-xl border transition-colors flex items-center justify-center ${
-                      inWishlist
+                    className={`p-4 rounded-xl border transition-colors flex items-center justify-center ${inWishlist
                         ? "bg-pink-500 border-pink-400 text-white"
                         : "bg-white/5 hover:bg-white/10 border-white/15 text-gray-300 hover:text-pink-400"
-                    }`}
+                      }`}
                   >
                     <Heart size={18} fill={inWishlist ? "currentColor" : "none"} />
                   </button>
@@ -422,11 +429,10 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                           key={idx}
                           type="button"
                           onClick={() => setSelectedHeroImage(imgUrl)}
-                          className={`relative w-16 h-12 rounded-lg overflow-hidden border transition-all shrink-0 ${
-                            selectedHeroImage === imgUrl
+                          className={`relative w-16 h-12 rounded-lg overflow-hidden border transition-all shrink-0 ${selectedHeroImage === imgUrl
                               ? "border-yellow-400 ring-2 ring-yellow-400/40"
                               : "border-white/15 opacity-60 hover:opacity-100"
-                          }`}
+                            }`}
                         >
                           <img
                             src={imgUrl}
@@ -596,102 +602,90 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
       {(product.adCopy?.adMediaUrl ||
         (product.adCopy?.adImages && product.adCopy.adImages.length > 0) ||
         product.adCopy?.headline) && (
-        <section className="py-16 px-4">
-          <div className="max-w-6xl mx-auto rounded-3xl bg-gradient-to-br from-purple-900/40 via-[#14122d] to-blue-900/40 border border-purple-500/30 p-6 sm:p-10 shadow-2xl">
-            <div className="grid lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-6 space-y-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-pink-300 text-[11px] font-bold uppercase tracking-wider">
-                  <Sparkles size={12} />
-                  <span>Featured Product Spotlight</span>
-                </span>
-                {product.adCopy?.headline && (
-                  <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
-                    {product.adCopy.headline}
-                  </h3>
-                )}
-                {product.adCopy?.hook && (
-                  <p className="text-sm font-semibold text-cyan-300">{product.adCopy.hook}</p>
-                )}
-                {product.adCopy?.primaryText && (
-                  <p className="text-sm text-white/70 leading-relaxed">
-                    {product.adCopy.primaryText}
-                  </p>
-                )}
-                <button
-                  onClick={handleBuyNow}
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-black text-sm shadow-lg"
-                >
-                  <span>{product.adCopy?.callToAction || "Get Instant Access"}</span>
-                  <ArrowRight size={15} />
-                </button>
-              </div>
+          <section className="py-16 px-4">
+            <div className="max-w-6xl mx-auto rounded-3xl bg-gradient-to-br from-purple-900/40 via-[#14122d] to-blue-900/40 border border-purple-500/30 p-6 sm:p-10 shadow-2xl">
+              <div className="grid lg:grid-cols-12 gap-8 items-center">
+                <div className="lg:col-span-6 space-y-4">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/15 border border-pink-500/30 text-pink-300 text-[11px] font-bold uppercase tracking-wider">
+                    <Sparkles size={12} />
+                    <span>Featured Product Spotlight</span>
+                  </span>
+                  {product.adCopy?.headline && (
+                    <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
+                      {product.adCopy.headline}
+                    </h3>
+                  )}
+                  {product.adCopy?.hook && (
+                    <p className="text-sm font-semibold text-cyan-300">{product.adCopy.hook}</p>
+                  )}
+                  {product.adCopy?.primaryText && (
+                    <p className="text-sm text-white/70 leading-relaxed">
+                      {product.adCopy.primaryText}
+                    </p>
+                  )}
+                  <button
+                    onClick={handleBuyNow}
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-black text-sm shadow-lg"
+                  >
+                    <span>{product.adCopy?.callToAction || "Get Instant Access"}</span>
+                    <ArrowRight size={15} />
+                  </button>
+                </div>
 
-              {(product.adCopy?.adMediaUrl ||
-                (product.adCopy?.adImages && product.adCopy.adImages.length > 0)) && (
-                <div className="lg:col-span-6 space-y-3">
-                  {product.adCopy?.adMediaUrl && (
-                    <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#090816] aspect-video">
-                      {getVideoEmbedUrl(product.adCopy.adMediaUrl) ? (
-                        <iframe
-                          src={getVideoEmbedUrl(product.adCopy.adMediaUrl)!}
-                          className="w-full h-full"
-                          allowFullScreen
-                          title={`${product.name} Preview`}
-                        />
-                      ) : /\.(mp4|webm|ogg)(\?|$)/i.test(product.adCopy.adMediaUrl) ? (
-                        <video
-                          src={product.adCopy.adMediaUrl}
-                          controls
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <img
-                          src={product.adCopy.adMediaUrl}
-                          alt={product.adCopy.headline || product.name}
-                          className="w-full h-full object-cover"
-                        />
+                {(product.adCopy?.adMediaUrl ||
+                  (product.adCopy?.adImages && product.adCopy.adImages.length > 0)) && (
+                    <div className="lg:col-span-6 space-y-3">
+                      {product.adCopy?.adMediaUrl && (
+                        <div className="rounded-2xl overflow-hidden border border-white/10 bg-[#090816] aspect-video">
+                          {getVideoEmbedUrl(product.adCopy.adMediaUrl) ? (
+                            <iframe
+                              src={getVideoEmbedUrl(product.adCopy.adMediaUrl)!}
+                              className="w-full h-full"
+                              allowFullScreen
+                              title={`${product.name} Preview`}
+                            />
+                          ) : /\.(mp4|webm|ogg)(\?|$)/i.test(product.adCopy.adMediaUrl) ? (
+                            <video
+                              src={product.adCopy.adMediaUrl}
+                              controls
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <img
+                              src={product.adCopy.adMediaUrl}
+                              alt={product.adCopy.headline || product.name}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
+                      )}
+
+                      {product.adCopy?.adImages && product.adCopy.adImages.length > 0 && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          {product.adCopy.adImages.map((img, i) => (
+                            <div
+                              key={i}
+                              className="rounded-xl overflow-hidden border border-white/10 bg-[#090816] aspect-video"
+                            >
+                              <img
+                                src={img}
+                                alt={`Preview ${i + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
                   )}
-
-                  {product.adCopy?.adImages && product.adCopy.adImages.length > 0 && (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      {product.adCopy.adImages.map((img, i) => (
-                        <div
-                          key={i}
-                          className="rounded-xl overflow-hidden border border-white/10 bg-[#090816] aspect-video"
-                        >
-                          <img
-                            src={img}
-                            alt={`Preview ${i + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
       {product.customSections && product.customSections.length > 0 && (
         <section className="py-12 px-4">
           <div className="max-w-6xl mx-auto space-y-8">
-            <div className="text-center">
-              <span className="text-xs font-bold uppercase tracking-widest text-cyan-400">
-                In-Depth Preview
-              </span>
-              <h3 className="text-3xl sm:text-4xl font-black text-white mt-1">
-                Product Showcase &amp;{" "}
-                <span className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
-                  Sample Pages
-                </span>
-              </h3>
-            </div>
-
             <div className="grid md:grid-cols-2 gap-6">
               {product.customSections.map((sec, idx) => {
                 const layout = sec.layout || "card";
@@ -700,14 +694,14 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                   sec.images && sec.images.length > 0
                     ? sec.images
                     : sec.mediaUrl
-                    ? [sec.mediaUrl]
-                    : [];
+                      ? [sec.mediaUrl]
+                      : [];
 
                 const renderMedia = () => {
                   if (sec.fieldType === "image" && sec.mediaUrl) {
                     return (
                       <div className="rounded-2xl overflow-hidden border border-white/15 bg-[#090816] aspect-video shadow-xl">
-                        <img src={sec.mediaUrl} alt={sec.title} className="w-full h-full object-cover" />
+                        <img src={sec.mediaUrl} alt={sec.heading || sec.title} className="w-full h-full object-cover" />
                       </div>
                     );
                   }
@@ -715,7 +709,7 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                     return (
                       <div className="rounded-2xl overflow-hidden border border-white/15 bg-[#090816] aspect-video shadow-xl">
                         {embedUrl ? (
-                          <iframe src={embedUrl} className="w-full h-full" allowFullScreen title={sec.title} />
+                          <iframe src={embedUrl} className="w-full h-full" allowFullScreen title={sec.heading || sec.title} />
                         ) : (
                           <video src={sec.mediaUrl} controls className="w-full h-full object-cover" />
                         )}
@@ -724,6 +718,26 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                   }
                   return null;
                 };
+
+                const renderHeader = (centered = false) => (
+                  <div className={centered ? "text-center space-y-1.5" : "space-y-1.5"}>
+                    {sec.title && sec.heading && (
+                      <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-cyan-400">
+                        {sec.title}
+                      </span>
+                    )}
+                    {(sec.heading || sec.title) && (
+                      <h4 className={centered ? "text-2xl sm:text-3xl font-black text-white" : "text-xl sm:text-2xl font-black text-white"}>
+                        {sec.heading || sec.title}
+                      </h4>
+                    )}
+                    {sec.subheading && (
+                      <p className="text-xs sm:text-sm font-medium text-purple-300">
+                        {sec.subheading}
+                      </p>
+                    )}
+                  </div>
+                );
 
                 // LAYOUT: SPLIT LEFT / SPLIT RIGHT
                 if (layout === "split-left" || layout === "split-right") {
@@ -737,7 +751,7 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                         {renderMedia()}
                       </div>
                       <div className={`space-y-4 ${imageFirst ? "order-2" : "order-2 lg:order-1"}`}>
-                        <h4 className="text-2xl sm:text-3xl font-black text-white">{sec.title}</h4>
+                        {renderHeader(false)}
                         {sec.content && (
                           <p className="text-sm sm:text-base text-white/75 leading-relaxed whitespace-pre-line">
                             {sec.content}
@@ -767,7 +781,7 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                       className="md:col-span-2 p-8 sm:p-10 rounded-3xl bg-gradient-to-r from-purple-900/50 via-pink-900/30 to-blue-900/50 border border-purple-500/30 text-center space-y-6 shadow-2xl"
                     >
                       <div className="max-w-2xl mx-auto space-y-3">
-                        <h4 className="text-2xl sm:text-4xl font-black text-white">{sec.title}</h4>
+                        {renderHeader(true)}
                         {sec.content && (
                           <p className="text-sm sm:text-base text-white/75 leading-relaxed whitespace-pre-line">
                             {sec.content}
@@ -800,7 +814,7 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                       className="md:col-span-2 p-6 sm:p-8 rounded-3xl bg-white/5 border border-white/10 space-y-5"
                     >
                       <div className="text-center max-w-2xl mx-auto space-y-2">
-                        <h4 className="text-2xl sm:text-3xl font-black text-white">{sec.title}</h4>
+                        {renderHeader(true)}
                         {sec.content && (
                           <p className="text-sm text-white/70 leading-relaxed whitespace-pre-line">
                             {sec.content}
@@ -816,7 +830,7 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                             >
                               <img
                                 src={imgUrl}
-                                alt={`${sec.title} ${gIdx + 1}`}
+                                alt={`${sec.heading || sec.title} ${gIdx + 1}`}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               />
                             </div>
@@ -834,7 +848,7 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                     className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4 flex flex-col justify-between hover:border-purple-500/40 transition-all"
                   >
                     <div className="space-y-3">
-                      <h4 className="text-lg font-bold text-white">{sec.title}</h4>
+                      {renderHeader(false)}
                       {sec.content && (
                         <p className="text-sm text-white/65 leading-relaxed whitespace-pre-line">
                           {sec.content}
@@ -1086,9 +1100,8 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                     <span className="font-semibold text-white text-sm">{faq.question}</span>
                     <ChevronDown
                       size={18}
-                      className={`text-purple-400 transition-transform flex-shrink-0 ${
-                        openFaq === i ? "rotate-180" : ""
-                      }`}
+                      className={`text-purple-400 transition-transform flex-shrink-0 ${openFaq === i ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
                   {openFaq === i && (
@@ -1122,7 +1135,9 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
           >
             {product.isFree
               ? "⬇️ DOWNLOAD FREE NOW"
-              : `🛒 GET INSTANT ACCESS — ₹${product.price.toLocaleString("en-IN")} Only`}
+              : product.superProfileUrl?.trim()
+                ? `⚡ Pay with SuperProfile — ₹${product.price.toLocaleString("en-IN")} Only`
+                : `🛒 GET INSTANT ACCESS — ₹${product.price.toLocaleString("en-IN")} Only`}
           </button>
           <p className="text-xs text-white/35 mt-4">🔒 Secure Checkout • Instant Access • No Subscription</p>
         </div>
@@ -1184,7 +1199,11 @@ export default function ProductDetailsPage({ product, relatedProducts = [] }: Pr
                 onClick={handleBuyNow}
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 text-white font-black text-xs shadow-lg shadow-purple-600/30 transition-all"
               >
-                {product.isFree ? "Download Free" : "🛒 Buy Now"}
+                {product.isFree
+                  ? "Download Free"
+                  : product.superProfileUrl?.trim()
+                    ? "⚡ Pay with SuperProfile"
+                    : "🛒 Buy Now"}
               </button>
             </div>
           </div>

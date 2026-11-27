@@ -38,7 +38,7 @@ export default function CreateProductPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>("hero");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const INITIAL_FORM_DATA = {
     name: "",
     slug: "",
     sku: "",
@@ -47,19 +47,19 @@ export default function CreateProductPage() {
     categoryName: "Ebooks & Guides",
     shortDescription: "",
     fullDescription: "",
-    price: 199,
-    originalPrice: 999,
+    price: 0,
+    originalPrice: 0,
     isFree: false,
-    badge: "Bestseller" as "Bestseller" | "New" | "Featured" | "Popular" | "54% OFF" | "Free",
-    isFeatured: true,
+    badge: "Featured" as "Bestseller" | "New" | "Featured" | "Popular" | "54% OFF" | "Free",
+    isFeatured: false,
     isBestSeller: false,
-    isNewArrival: true,
-    productFormat: "Printable PDF Bundle • Instant Access",
-    compatibility: "Mobile, Tablet, Laptop & Print",
-    fileSize: "Instant Digital Download",
-    fileType: "PDF / ZIP",
-    version: "2026.1",
-    licenseType: "Personal & Classroom Use",
+    isNewArrival: false,
+    productFormat: "",
+    compatibility: "",
+    fileSize: "",
+    fileType: "",
+    version: "",
+    licenseType: "",
     status: "published" as "published" | "draft",
     accentGradient: "from-purple-600 to-pink-500",
 
@@ -67,69 +67,29 @@ export default function CreateProductPage() {
     photos: [] as string[],
     thumbnail: "",
 
-    // Delivery link (used after checkout)
+    // Delivery & Payment links
     googleDriveLink: "",
     downloadFileUrl: "",
+    superProfileUrl: "",
 
     // Hero Key Points (✓ checkmarks)
-    deliverables: [
-      "11,000+ Printable Worksheets",
-      "Learning Through Fun Activities",
-      "Preschool to Primary Learning",
-      "Perfect for Home & Classroom",
-      "Instant Digital Access",
-    ],
+    deliverables: [] as string[],
 
     // What's Inside (Feature / Category cards)
-    features: [
-      {
-        icon: "🔤",
-        title: "ABC Alphabet Tracing",
-        description: "Letter formation & tracing worksheets for early learners",
-      },
-      {
-        icon: "🔢",
-        title: "Numbers & Counting",
-        description: "Number recognition, counting, and sequencing",
-      },
-      {
-        icon: "🎨",
-        title: "Coloring & Creative Art",
-        description: "Fun coloring pages and drawing practice sheets",
-      },
-    ] as Array<{ icon?: string; title: string; description: string }>,
+    features: [] as Array<{ icon?: string; title: string; description: string }>,
 
     // Why Choose This Bundle? cards
-    whatsIncluded: [
-      {
-        title: "Massive Worksheet Collection",
-        description: "Covering all subjects and early learning skill levels",
-        format: "📄",
-        count: "11,000+ Sheets",
-      },
-      {
-        title: "Home & Classroom Ready",
-        description: "Ideal for parents, teachers, tutors, and homeschoolers",
-        format: "🏠",
-        count: "Age 2–10",
-      },
-      {
-        title: "Instant Lifetime Access",
-        description: "Download immediately after checkout and print unlimited copies",
-        format: "⚡",
-        count: "Lifetime",
-      },
-    ],
+    whatsIncluded: [] as Array<{ title: string; description: string; format: string; count: string }>,
 
     // Bonus Cards
     bonuses: [] as Array<{ title: string; value: string; description: string }>,
 
     // Perfect For Everyone (Target Audience)
-    targetAudienceList: ["Parents", "Teachers", "Schools", "Homeschoolers", "Tutors", "Educators"],
+    targetAudienceList: [] as string[],
 
     // CTA & Offer
-    urgencyNotice: "🔥 LIMITED-TIME SPECIAL OFFER",
-    guaranteeText: "🔒 100% Secure Payment | ⚡ Instant Digital Access | 🖨️ Printable PDFs",
+    urgencyNotice: "",
+    guaranteeText: "",
     adCopy: {
       headline: "",
       hook: "",
@@ -141,22 +101,14 @@ export default function CreateProductPage() {
     },
 
     // FAQs
-    faqs: [
-      {
-        question: "How do I access the product after purchase?",
-        answer:
-          "Immediately after payment confirmation, you get instant download access and an email with your direct link.",
-      },
-      {
-        question: "Is this a one-time payment?",
-        answer: "Yes! Pay once and enjoy lifetime access with unlimited prints.",
-      },
-    ],
+    faqs: [] as Array<{ question: string; answer: string }>,
 
     // Custom Sections
     customSections: [] as Array<{
       id: string;
       title: string;
+      heading?: string;
+      subheading?: string;
       fieldType: "text" | "image" | "video" | "link";
       layout?: "card" | "split-left" | "split-right" | "banner" | "gallery";
       content: string;
@@ -164,7 +116,9 @@ export default function CreateProductPage() {
       images?: string[];
       buttonLabel: string;
     }>,
-  });
+  };
+
+  const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
   const [newKeyPoint, setNewKeyPoint] = useState("");
@@ -286,8 +240,12 @@ export default function CreateProductPage() {
       `Published product "${formData.name}"`
     );
 
+    const createdName = formData.name;
+    setFormData(INITIAL_FORM_DATA);
+    setNewPhotoUrl("");
+    setNewKeyPoint("");
     setIsSubmitting(false);
-    alert(`Product "${formData.name}" created successfully as ${statusToSet}!`);
+    alert(`Product "${createdName}" created successfully as ${statusToSet}!`);
     router.push("/admin/products");
   };
 
@@ -313,6 +271,18 @@ export default function CreateProductPage() {
           <span>Back to Products</span>
         </Link>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled={isSubmitting}
+            onClick={() => {
+              setFormData(INITIAL_FORM_DATA);
+              setNewPhotoUrl("");
+              setNewKeyPoint("");
+            }}
+            className="px-4 py-2 rounded-xl bg-white/5 hover:bg-red-500/20 border border-white/10 text-xs font-semibold text-gray-300 hover:text-red-300 transition-colors"
+          >
+            Clear Form
+          </button>
           <button
             type="button"
             disabled={isSubmitting}
@@ -636,6 +606,22 @@ export default function CreateProductPage() {
                       className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-white/10 text-xs text-cyan-300 font-mono"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-emerald-300 mb-1.5">
+                    SuperProfile Payment Page Link (Pay with SuperProfile)
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://superprofile.bio/vp/..."
+                    value={formData.superProfileUrl}
+                    onChange={(e) => setFormData({ ...formData, superProfileUrl: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#0e0d22] border border-emerald-500/30 text-xs text-emerald-300 font-mono focus:outline-none focus:border-emerald-400"
+                  />
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    Customers clicking &quot;Pay with SuperProfile&quot; / &quot;Buy Now&quot; on the product page will be redirected to this SuperProfile checkout link.
+                  </p>
                 </div>
 
                 <div className="flex flex-wrap gap-6 pt-2">
@@ -1160,7 +1146,9 @@ export default function CreateProductPage() {
                         ...prev.customSections,
                         {
                           id: `sec-${Date.now()}`,
-                          title: "Sample Worksheet Preview",
+                          title: "",
+                          heading: "Sample Preview",
+                          subheading: "",
                           fieldType: "image",
                           layout: "card",
                           content: "",
@@ -1210,8 +1198,8 @@ export default function CreateProductPage() {
                         updated[idx] = { ...updated[idx], title: e.target.value };
                         setFormData({ ...formData, customSections: updated });
                       }}
-                      placeholder="Section Title"
-                      className="sm:col-span-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white font-semibold"
+                      placeholder="Section Title (Eyebrow, e.g. IN-DEPTH PREVIEW)"
+                      className="sm:col-span-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-cyan-300 font-semibold"
                     />
                     <select
                       value={sec.fieldType}
@@ -1248,6 +1236,31 @@ export default function CreateProductPage() {
                       <option value="banner">Layout: Full-Width Banner</option>
                       <option value="gallery">Layout: Multi-Image Gallery</option>
                     </select>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      value={sec.heading || ""}
+                      onChange={(e) => {
+                        const updated = [...formData.customSections];
+                        updated[idx] = { ...updated[idx], heading: e.target.value };
+                        setFormData({ ...formData, customSections: updated });
+                      }}
+                      placeholder="Section Heading (Main Bold Title)"
+                      className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white font-bold"
+                    />
+                    <input
+                      type="text"
+                      value={sec.subheading || ""}
+                      onChange={(e) => {
+                        const updated = [...formData.customSections];
+                        updated[idx] = { ...updated[idx], subheading: e.target.value };
+                        setFormData({ ...formData, customSections: updated });
+                      }}
+                      placeholder="Section Subheading (Optional subtitle)"
+                      className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-300"
+                    />
                   </div>
 
                   <textarea

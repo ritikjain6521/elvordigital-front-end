@@ -48,7 +48,7 @@ import {
   DEFAULT_EMAIL_TEMPLATES,
   INITIAL_EMAIL_LOGS,
 } from "@/data/admin/mockData";
-import { API_BASE } from "@/lib/api";
+import { API_BASE, resolveMediaUrl } from "@/lib/api";
 
 interface AdminDataContextType {
   // Current user & role
@@ -218,7 +218,9 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
             videoLink: p.videoLink || "",
             downloadFileUrl: p.downloadFileUrl || "",
             superProfileUrl: p.superProfileUrl || "",
-            photos: p.photos || [],
+            photos: Array.isArray(p.photos) ? p.photos.map((u: string) => resolveMediaUrl(u)).filter(Boolean) : [],
+            thumbnail: resolveMediaUrl(p.thumbnail) || resolveMediaUrl(Array.isArray(p.photos) ? p.photos[0] : "") || "",
+            customSections: Array.isArray(p.customSections) ? p.customSections : [],
             status: p.status || "published",
             totalSales: p.totalSales || 0,
             totalRevenue: p.totalRevenue || 0,

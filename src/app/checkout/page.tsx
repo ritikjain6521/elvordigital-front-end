@@ -53,7 +53,7 @@ function CheckoutContent() {
 
       if (data.success && data.verified && data.order) {
         if (typeof window !== "undefined") {
-          sessionStorage.removeItem("elvora_pending_sp_order");
+          localStorage.removeItem("elvora_pending_sp_order");
           localStorage.setItem(
             `elvora_order_${data.orderNumber}`,
             JSON.stringify(data.order)
@@ -66,7 +66,7 @@ function CheckoutContent() {
 
       if (data.paymentStatus === "failed") {
         if (typeof window !== "undefined") {
-          sessionStorage.removeItem("elvora_pending_sp_order");
+          localStorage.removeItem("elvora_pending_sp_order");
         }
         setPaymentCancelled(true);
         setPendingOrder(null);
@@ -106,12 +106,12 @@ function CheckoutContent() {
     const spSecret = searchParams.get("sp_secret");
     const spPaid = searchParams.get("sp_paid");
 
-    // Only read sessionStorage if the URL actually came back from a SuperProfile redirect
+    // Only read localStorage if the URL actually came back from a SuperProfile redirect
     if (spSecret && (spPaid === "1" || confirmOrderParam || spSecret)) {
       let targetOrder = confirmOrderParam || pendingOrder?.orderNumber || "";
       if (!targetOrder && typeof window !== "undefined") {
         try {
-          const saved = sessionStorage.getItem("elvora_pending_sp_order");
+          const saved = localStorage.getItem("elvora_pending_sp_order");
           targetOrder = saved ? JSON.parse(saved)?.orderNumber || "" : "";
         } catch {
           // ignore
@@ -129,7 +129,7 @@ function CheckoutContent() {
           .then((data) => {
             if (data.success && data.verified && data.order) {
               if (typeof window !== "undefined") {
-                sessionStorage.removeItem("elvora_pending_sp_order");
+                localStorage.removeItem("elvora_pending_sp_order");
                 localStorage.setItem(`elvora_order_${data.orderNumber}`, JSON.stringify(data.order));
               }
               clearCart();
@@ -206,7 +206,7 @@ function CheckoutContent() {
         superProfileUrl: spUrl,
       };
       if (typeof window !== "undefined") {
-        sessionStorage.setItem(
+        localStorage.setItem(
           "elvora_pending_sp_order",
           JSON.stringify({ ...nextPending, email: formData.email })
         );
@@ -233,7 +233,7 @@ function CheckoutContent() {
       // non-blocking
     }
     if (typeof window !== "undefined") {
-      sessionStorage.removeItem("elvora_pending_sp_order");
+      localStorage.removeItem("elvora_pending_sp_order");
     }
     setPendingOrder(null);
     setPaymentCancelled(true);

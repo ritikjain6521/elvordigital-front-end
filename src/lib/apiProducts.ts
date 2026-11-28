@@ -1,7 +1,7 @@
 import { Product, ProductCategory, CategoryInfo } from "@/types";
 import { CATEGORIES } from "@/data/categories";
 
-import { API_BASE as _API_BASE } from "@/lib/api";
+import { API_BASE as _API_BASE, resolveMediaUrl } from "@/lib/api";
 const API_BASE = _API_BASE;
 
 function mapMongoToProduct(p: any): Product {
@@ -60,7 +60,8 @@ function mapMongoToProduct(p: any): Product {
           },
         ];
 
-  const photos = Array.isArray(p.photos) ? p.photos : [];
+  const photos = Array.isArray(p.photos) ? p.photos.map((u: string) => resolveMediaUrl(u)).filter(Boolean) : [];
+  const resolvedThumb = resolveMediaUrl(p.thumbnail) || photos[0] || "";
 
   return {
     id: String(p._id || p.id),
@@ -89,7 +90,7 @@ function mapMongoToProduct(p: any): Product {
     bonuses,
     faqs,
     photos,
-    thumbnail: p.thumbnail || photos[0],
+    thumbnail: resolvedThumb,
     googleDriveLink: p.googleDriveLink || "",
     accessFolderLink: p.accessFolderLink || "",
     videoLink: p.videoLink || "",
